@@ -4,7 +4,7 @@
  * @author nmby
  */
 module xyz.hotchpotch.hogandiff.core {
-    requires xyz.hotchpotch.hogandiff.util;
+    requires transitive xyz.hotchpotch.hogandiff.util;
     
     exports xyz.hotchpotch.hogandiff.core;
 }

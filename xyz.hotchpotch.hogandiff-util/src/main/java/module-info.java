@@ -5,4 +5,5 @@
  */
 module xyz.hotchpotch.hogandiff.util {
     exports xyz.hotchpotch.hogandiff.util;
+    exports xyz.hotchpotch.hogandiff.util.function;
 }
