@@ -23,4 +23,5 @@
 hs_err_pid*
 
 # manually added
-*/bin
+*/bin/
+/build/
