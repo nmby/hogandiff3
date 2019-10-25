@@ -1,5 +1,5 @@
 /**
- * 方眼Diffアプリケーション（GUI）を提供します。<br>
+ * 方眼Diff GUIアプリケーションを提供します。<br>
  * 
  * @author nmby
  */
@@ -10,5 +10,5 @@ module xyz.hotchpotch.hogandiff.gui {
     requires javafx.graphics;
     requires java.desktop;
     
-    opens xyz.hotchpotch.hogandiff to javafx.graphics, javafx.fxml;
+    opens xyz.hotchpotch.hogandiff.gui to javafx.graphics, javafx.fxml;
 }

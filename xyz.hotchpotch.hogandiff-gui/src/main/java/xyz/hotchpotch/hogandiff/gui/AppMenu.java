@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff;
+package xyz.hotchpotch.hogandiff.gui;
 
 import java.nio.file.Path;
 import java.util.List;

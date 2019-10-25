@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff;
+package xyz.hotchpotch.hogandiff.gui;
 
 import java.awt.Desktop;
 import java.io.File;
