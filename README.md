@@ -94,5 +94,5 @@
 ## 連絡先
 
 e-mail  : nmby@hotchpotch.xyz  
-website : https://xyz.hotchpotch.hogandiff/
+website : https://hogandiff.hotchpotch.xyz/
 
