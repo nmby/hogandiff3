@@ -3,7 +3,7 @@
 chcp 65001
 
 set JDEPS_CMD=c:\pleiades_201909\java\13\bin\jdeps
-set VERSION=0.6.2
+set VERSION=0.6.3
 set ENV=win64
 
 set MODULE_PATH_JRE=C:\pleiades_201909\java\13\jmods
