@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellReplica.CellId;
 import xyz.hotchpotch.hogandiff.excel.SComparator;
 import xyz.hotchpotch.hogandiff.excel.SResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -395,8 +396,8 @@ public class SComparatorImpl<T> implements SComparator<T> {
             return columnPairs.stream().filter(Pair::isPaired).map(cp -> {
                 int column1 = cp.a();
                 int column2 = cp.b();
-                String address1 = CellReplica.idxToAddress(row1, column1);
-                String address2 = CellReplica.idxToAddress(row2, column2);
+                String address1 = CellId.idxToAddress(row1, column1);
+                String address2 = CellId.idxToAddress(row2, column2);
                 CellReplica<T> cell1 = map1.get(address1);
                 CellReplica<T> cell2 = map2.get(address2);
                 T value1 = (cell1 == null ? null : cell1.data());
