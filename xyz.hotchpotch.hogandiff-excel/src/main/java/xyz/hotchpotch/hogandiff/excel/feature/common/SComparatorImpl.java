@@ -310,17 +310,17 @@ public class SComparatorImpl<T> implements SComparator<T> {
         this.considerColumnGaps = considerColumnGaps;
         
         if (considerRowGaps && considerColumnGaps) {
-            rowsMapper = mapper(CellReplica::row, CellReplica::data, dataComparator);
-            columnsMapper = mapper(CellReplica::column, CellReplica::data, dataComparator);
+            rowsMapper = mapper(c -> c.id().row(), CellReplica::data, dataComparator);
+            columnsMapper = mapper(c -> c.id().column(), CellReplica::data, dataComparator);
         } else if (considerRowGaps) {
-            rowsMapper = mapper(CellReplica::row, CellReplica::column, Comparator.naturalOrder());
-            columnsMapper = mapper(CellReplica::column);
+            rowsMapper = mapper(c -> c.id().row(), c -> c.id().column(), Comparator.naturalOrder());
+            columnsMapper = mapper(c -> c.id().column());
         } else if (considerColumnGaps) {
-            rowsMapper = mapper(CellReplica::row);
-            columnsMapper = mapper(CellReplica::column, CellReplica::row, Comparator.naturalOrder());
+            rowsMapper = mapper(c -> c.id().row());
+            columnsMapper = mapper(c -> c.id().column(), c -> c.id().row(), Comparator.naturalOrder());
         } else {
-            rowsMapper = mapper(CellReplica::row);
-            columnsMapper = mapper(CellReplica::column);
+            rowsMapper = mapper(c -> c.id().row());
+            columnsMapper = mapper(c -> c.id().column());
         }
     }
     
@@ -385,9 +385,9 @@ public class SComparatorImpl<T> implements SComparator<T> {
         assert columnPairs != null;
         
         Map<String, CellReplica<T>> map1 = cells1.stream()
-                .collect(Collectors.toMap(CellReplica::address, Function.identity()));
+                .collect(Collectors.toMap(c -> c.id().address(), Function.identity()));
         Map<String, CellReplica<T>> map2 = cells2.stream()
-                .collect(Collectors.toMap(CellReplica::address, Function.identity()));
+                .collect(Collectors.toMap(c -> c.id().address(), Function.identity()));
         
         return rowPairs.parallelStream().filter(Pair::isPaired).flatMap(rp -> {
             int row1 = rp.a();

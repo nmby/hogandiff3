@@ -44,11 +44,11 @@ public class PaintDiffCellsReader<T> extends BufferingReader {
     private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
     
     private static final Comparator<CellReplica<?>> cellSorter = (c1, c2) -> {
-        if (c1.row() != c2.row()) {
-            return c1.row() < c2.row() ? -1 : 1;
+        if (c1.id().row() != c2.id().row()) {
+            return c1.id().row() < c2.id().row() ? -1 : 1;
         }
-        if (c1.column() != c2.column()) {
-            return c1.column() < c2.column() ? -1 : 1;
+        if (c1.id().column() != c2.id().column()) {
+            return c1.id().column() < c2.id().column() ? -1 : 1;
         }
         return 0;
     };
@@ -103,9 +103,9 @@ public class PaintDiffCellsReader<T> extends BufferingReader {
         this.diffAddresses = diffCells.stream()
                 .sorted(cellSorter)
                 .collect(Collectors.groupingBy(
-                        CellReplica::row,
+                        c -> c.id().row(),
                         Collectors.mapping(
-                                CellReplica::address,
+                                c -> c.id().address(),
                                 Collectors.toCollection(ArrayDeque::new))));
         this.targetRows = diffAddresses.keySet().stream()
                 .sorted()

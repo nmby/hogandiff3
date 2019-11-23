@@ -136,7 +136,7 @@ public class BookPainterWithPoiUserApi implements BookPainter {
                 PoiUtil.paintColumns(sheet, piece.redundantColumns(), redundantColor);
                 
                 Set<CellAddress> addresses = piece.diffCells().stream()
-                        .map(c -> new CellAddress(c.row(), c.column()))
+                        .map(c -> new CellAddress(c.id().row(), c.id().column()))
                         .collect(Collectors.toSet());
                 PoiUtil.paintCells(sheet, addresses, diffColor);
             });

@@ -163,48 +163,12 @@ public class CellReplica<T> {
     private final CellId id;
     private final T data;
     
-    @Deprecated
-    protected CellReplica() {
-        this.id = null;
-        this.data = null;
-    }
-    
-    private CellReplica(CellId id, T data) {
+    protected CellReplica(CellId id, T data) {
         assert id != null;
         assert data != null;
         
         this.id = id;
         this.data = data;
-    }
-    
-    /**
-     * 行インデックス（0開始）を返します。<br>
-     * 
-     * @return 行インデックス（0開始）
-     */
-    @Deprecated
-    public int row() {
-        return id.row;
-    }
-    
-    /**
-     * 列インデックス（0開始）を返します。<br>
-     * 
-     * @return 列インデックス（0開始）
-     */
-    @Deprecated
-    public int column() {
-        return id.column;
-    }
-    
-    /**
-     * セルアドレス（{@code "A1"} 形式）を返します。<br>
-     * 
-     * @return セルアドレス（{@code "A1"} 形式）
-     */
-    @Deprecated
-    public String address() {
-        return CellId.idxToAddress(row(), column());
     }
     
     /**
@@ -223,5 +187,24 @@ public class CellReplica<T> {
      */
     public T data() {
         return data;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof CellReplica) {
+            CellReplica<?> other = (CellReplica<?>) o;
+            return id.equals(other.id) && data.equals(other.data);
+        }
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, data);
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%s: %s", id, data);
     }
 }

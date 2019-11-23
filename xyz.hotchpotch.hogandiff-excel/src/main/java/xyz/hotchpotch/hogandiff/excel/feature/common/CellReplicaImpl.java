@@ -93,6 +93,8 @@ public class CellReplicaImpl<T> extends CellReplica<T> {
     private final T data;
     
     private CellReplicaImpl(int row, int column, T data) {
+        super(CellId.of(row, column), data);
+        
         assert 0 <= row;
         assert 0 <= column;
         
@@ -101,12 +103,10 @@ public class CellReplicaImpl<T> extends CellReplica<T> {
         this.data = data;
     }
     
-    @Override
     public int row() {
         return row;
     }
     
-    @Override
     public int column() {
         return column;
     }
@@ -117,15 +117,15 @@ public class CellReplicaImpl<T> extends CellReplica<T> {
     }
     
     /**
-     * {@code o} も {@link CellReplica} であり、
-     * {@link CellReplica#row()}, {@link CellReplica#column()} の値がそれぞれ等しく、
-     * {@link CellReplica#data()} が同値と判定される場合に
+     * {@code o} も {@link CellReplicaImpl} であり、
+     * {@link CellReplicaImpl#row()}, {@link CellReplicaImpl#column()} の値がそれぞれ等しく、
+     * {@link CellReplicaImpl#data()} が同値と判定される場合に
      * {@code true} を返します。<br>
      */
     @Override
     public boolean equals(Object o) {
-        if (o instanceof CellReplica) {
-            CellReplica<?> other = (CellReplica<?>) o;
+        if (o instanceof CellReplicaImpl) {
+            CellReplicaImpl<?> other = (CellReplicaImpl<?>) o;
             return row == other.row()
                     && column == other.column()
                     && Objects.equals(data, other.data());
@@ -140,6 +140,6 @@ public class CellReplicaImpl<T> extends CellReplica<T> {
     
     @Override
     public String toString() {
-        return String.format("%s: %s", address(), data == null ? "" : data);
+        return String.format("%s: %s", CellId.idxToAddress(row, column), data == null ? "" : data);
     }
 }
