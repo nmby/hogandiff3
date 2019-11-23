@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import xyz.hotchpotch.hogandiff.excel.CellReplica.CellId;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -293,7 +294,7 @@ public class SResult<T> {
                 } else {
                     redundantColumns.get(side).forEach(column -> str
                             .append("    ")
-                            .append(CellReplica.columnIdxToStr(column))
+                            .append(CellId.columnIdxToStr(column))
                             .append("列").append(BR));
                 }
             }
@@ -351,7 +352,7 @@ public class SResult<T> {
             str.append("Column Gaps :").append(BR);
             
             Function<List<Integer>, String> columnsToStr = columns -> columns.stream()
-                    .map(CellReplica::columnIdxToStr)
+                    .map(CellId::columnIdxToStr)
                     .collect(Collectors.joining(", "));
             
             if (!redundantColumns.a().isEmpty()) {

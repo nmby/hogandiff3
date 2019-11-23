@@ -22,6 +22,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellReplica.CellId;
 import xyz.hotchpotch.hogandiff.excel.feature.basic.stax.XSSFBookPainterWithStax.StylesManager;
 import xyz.hotchpotch.hogandiff.excel.util.StaxUtil;
 import xyz.hotchpotch.hogandiff.excel.util.StaxUtil.NONS_QNAME;
@@ -159,9 +160,9 @@ public class PaintDiffCellsReader<T> extends BufferingReader {
         String addr = addrs.poll();
         
         while (nextC != null && addr != null) {
-            int sourceColumn = CellReplica.addressToIdx(
+            int sourceColumn = CellId.addressToIdx(
                     nextC.peek().asStartElement().getAttributeByName(NONS_QNAME.R).getValue()).b();
-            int targetColumn = CellReplica.addressToIdx(addr).b();
+            int targetColumn = CellId.addressToIdx(addr).b();
             
             if (targetColumn < sourceColumn) {
                 createCell(addr);

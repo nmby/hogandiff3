@@ -16,7 +16,7 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellReplica.CellId;
 import xyz.hotchpotch.hogandiff.excel.feature.basic.stax.XSSFBookPainterWithStax.StylesManager;
 import xyz.hotchpotch.hogandiff.excel.util.StaxUtil;
 import xyz.hotchpotch.hogandiff.excel.util.StaxUtil.NONS_QNAME;
@@ -104,7 +104,7 @@ public class PaintRedundantCellsReader extends BufferingReader {
         }
         
         String address = event.asStartElement().getAttributeByName(NONS_QNAME.R).getValue();
-        Pair<Integer> idx = CellReplica.addressToIdx(address);
+        Pair<Integer> idx = CellId.addressToIdx(address);
         int row = idx.a();
         int column = idx.b();
         

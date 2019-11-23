@@ -66,7 +66,7 @@ public class CellReplicaImpl<T> extends CellReplica<T> {
         Objects.requireNonNull(address, "address");
         Objects.requireNonNull(data, "data");
         
-        Pair<Integer> idx = CellReplica.addressToIdx(address);
+        Pair<Integer> idx = CellId.addressToIdx(address);
         return new CellReplicaImpl<>(idx.a(), idx.b(), data);
     }
     
@@ -81,7 +81,7 @@ public class CellReplicaImpl<T> extends CellReplica<T> {
     public static <T> CellReplica<T> empty(String address) {
         Objects.requireNonNull(address, "address");
         
-        Pair<Integer> idx = CellReplica.addressToIdx(address);
+        Pair<Integer> idx = CellId.addressToIdx(address);
         return new CellReplicaImpl<>(idx.a(), idx.b(), null);
     }
     

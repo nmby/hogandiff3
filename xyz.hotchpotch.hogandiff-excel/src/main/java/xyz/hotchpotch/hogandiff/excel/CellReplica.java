@@ -47,6 +47,44 @@ public abstract class CellReplica<T> {
             return new CellAddress(row, column).formatAsString();
         }
         
+        /**
+         * セルアドレス（{@code "A1"} 形式）を
+         * 行・列のインデックス（{@code (0, 0)} 形式）に変換します。<br>
+         * 
+         * @param address セルアドレス（{@code "A1"} 形式）
+         * @return 行・列のインデックスのペア
+         * @throws NullPointerException {@code address} が {@code null} の場合
+         */
+        public static Pair<Integer> addressToIdx(String address) {
+            Objects.requireNonNull(address, "address");
+            
+            CellAddress ca = new CellAddress(address);
+            return Pair.of(ca.getRow(), ca.getColumn());
+        }
+        
+        /**
+         * 列のインデックス（{@code 0} など）を記号（{@code "A"} など）に変換します。<br>
+         * 
+         * @param column 列インデックス（0 開始）
+         * @return 列の記号（{@code "A"} など）
+         * @throws IndexOutOfBoundsException {@code column} が 0 未満の場合
+         */
+        public static String columnIdxToStr(int column) {
+            if (column < 0) {
+                throw new IndexOutOfBoundsException(String.format("column:%d", column));
+            }
+            
+            String address = new CellAddress(0, column).formatAsString();
+            return address.substring(0, address.length() - 1);
+        }
+        
+        public static CellId of(int row, int column) {
+            if (row < 0 || column < 0) {
+                throw new IndexOutOfBoundsException(String.format("(%d, %d)", row, column));
+            }
+            return new CellId(row, column);
+        }
+        
         // [instance members] --------------------------------------------------
         
         private final int row;
@@ -107,51 +145,6 @@ public abstract class CellReplica<T> {
         }
     }
     
-    /**
-     * セルアドレス（{@code "A1"} 形式）を
-     * 行・列のインデックス（{@code (0, 0)} 形式）に変換します。<br>
-     * 
-     * @param address セルアドレス（{@code "A1"} 形式）
-     * @return 行・列のインデックスのペア
-     * @throws NullPointerException {@code address} が {@code null} の場合
-     */
-    public static Pair<Integer> addressToIdx(String address) {
-        Objects.requireNonNull(address, "address");
-        
-        CellAddress ca = new CellAddress(address);
-        return Pair.of(ca.getRow(), ca.getColumn());
-    }
-    
-    /**
-     * 列のインデックス（{@code 0} など）を記号（{@code "A"} など）に変換します。<br>
-     * 
-     * @param column 列インデックス（0 開始）
-     * @return 列の記号（{@code "A"} など）
-     * @throws IndexOutOfBoundsException {@code column} が 0 未満の場合
-     */
-    public static String columnIdxToStr(int column) {
-        if (column < 0) {
-            throw new IndexOutOfBoundsException(String.format("column:%d", column));
-        }
-        
-        String address = new CellAddress(0, column).formatAsString();
-        return address.substring(0, address.length() - 1);
-    }
-    
-    /**
-     * 列の記号（{@code "A"} など）を列のインデックス（{@code 0} など）に変換します。<br>
-     * 
-     * @param columnStr 列の記号（{@code "A"} など）
-     * @return 列インデックス（0 開始）
-     * @throws NullPointerException {@code columnStr} が {@code null} の場合
-     */
-    public static int columnStrToIdx(String columnStr) {
-        Objects.requireNonNull(columnStr, "columnStr");
-        
-        CellAddress ca = new CellAddress(columnStr + "1");
-        return ca.getColumn();
-    }
-    
     // [instance members] ******************************************************
     
     /**
@@ -159,6 +152,7 @@ public abstract class CellReplica<T> {
      * 
      * @return 行インデックス（0開始）
      */
+    @Deprecated
     public abstract int row();
     
     /**
@@ -166,6 +160,7 @@ public abstract class CellReplica<T> {
      * 
      * @return 列インデックス（0開始）
      */
+    @Deprecated
     public abstract int column();
     
     /**
@@ -173,8 +168,18 @@ public abstract class CellReplica<T> {
      * 
      * @return セルアドレス（{@code "A1"} 形式）
      */
+    @Deprecated
     public String address() {
         return CellId.idxToAddress(row(), column());
+    }
+    
+    /**
+     * セルの識別子を返します。<br>
+     * 
+     * @return セルの識別子
+     */
+    public CellId id() {
+        throw new UnsupportedOperationException("これから実装します。");
     }
     
     /**
