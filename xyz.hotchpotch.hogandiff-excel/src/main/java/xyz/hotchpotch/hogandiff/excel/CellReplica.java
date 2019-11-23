@@ -18,7 +18,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 // 将来的には、図形オブジェクト等も扱えるようにしたい。
 // この場合は行・列以外の識別子が必要だからもう一段の抽象化が必要となるが、
 // それは将来のバージョンに譲ることとする。
-public interface CellReplica<T> {
+public abstract class CellReplica<T> {
     
     // [static members] ********************************************************
     
@@ -90,21 +90,21 @@ public interface CellReplica<T> {
      * 
      * @return 行インデックス（0開始）
      */
-    int row();
+    public abstract int row();
     
     /**
      * 列インデックス（0開始）を返します。<br>
      * 
      * @return 列インデックス（0開始）
      */
-    int column();
+    public abstract int column();
     
     /**
      * セルアドレス（{@code "A1"} 形式）を返します。<br>
      * 
      * @return セルアドレス（{@code "A1"} 形式）
      */
-    default String address() {
+    public String address() {
         return idxToAddress(row(), column());
     }
     
@@ -113,5 +113,5 @@ public interface CellReplica<T> {
      * 
      * @return セルデータ
      */
-    T data();
+    public abstract T data();
 }
