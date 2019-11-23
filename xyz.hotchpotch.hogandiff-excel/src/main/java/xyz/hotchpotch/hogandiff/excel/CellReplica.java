@@ -18,7 +18,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 // 将来的には、図形オブジェクト等も扱えるようにしたい。
 // この場合は行・列以外の識別子が必要だからもう一段の抽象化が必要となるが、
 // それは将来のバージョンに譲ることとする。
-public abstract class CellReplica<T> {
+public class CellReplica<T> {
     
     // [static members] ********************************************************
     
@@ -27,7 +27,7 @@ public abstract class CellReplica<T> {
      * 
      * @author nmby
      */
-    public static class CellId {
+    public static class CellId implements Comparable<CellId> {
         
         // [static members] ----------------------------------------------------
         
@@ -143,9 +143,39 @@ public abstract class CellReplica<T> {
         public String toString() {
             return address();
         }
+        
+        @Override
+        public int compareTo(CellId o) {
+            return row != o.row
+                    ? Integer.compare(row, o.row)
+                    : Integer.compare(column, o.column);
+        }
+    }
+    
+    public static <T> CellReplica<T> of(int row, int column, T data) {
+        Objects.requireNonNull(data, "data");
+        
+        return new CellReplica<>(CellId.of(row, column), data);
     }
     
     // [instance members] ******************************************************
+    
+    private final CellId id;
+    private final T data;
+    
+    @Deprecated
+    protected CellReplica() {
+        this.id = null;
+        this.data = null;
+    }
+    
+    private CellReplica(CellId id, T data) {
+        assert id != null;
+        assert data != null;
+        
+        this.id = id;
+        this.data = data;
+    }
     
     /**
      * 行インデックス（0開始）を返します。<br>
@@ -153,7 +183,9 @@ public abstract class CellReplica<T> {
      * @return 行インデックス（0開始）
      */
     @Deprecated
-    public abstract int row();
+    public int row() {
+        return id.row;
+    }
     
     /**
      * 列インデックス（0開始）を返します。<br>
@@ -161,7 +193,9 @@ public abstract class CellReplica<T> {
      * @return 列インデックス（0開始）
      */
     @Deprecated
-    public abstract int column();
+    public int column() {
+        return id.column;
+    }
     
     /**
      * セルアドレス（{@code "A1"} 形式）を返します。<br>
@@ -179,7 +213,7 @@ public abstract class CellReplica<T> {
      * @return セルの識別子
      */
     public CellId id() {
-        throw new UnsupportedOperationException("これから実装します。");
+        return id;
     }
     
     /**
@@ -187,5 +221,7 @@ public abstract class CellReplica<T> {
      * 
      * @return セルデータ
      */
-    public abstract T data();
+    public T data() {
+        return data;
+    }
 }

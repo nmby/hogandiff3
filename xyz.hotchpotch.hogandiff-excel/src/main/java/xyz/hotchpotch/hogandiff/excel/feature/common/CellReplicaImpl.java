@@ -12,6 +12,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @param <T> セルデータの型
  * @author nmby
  */
+@Deprecated
 public class CellReplicaImpl<T> extends CellReplica<T> {
     
     // [static members] ********************************************************
