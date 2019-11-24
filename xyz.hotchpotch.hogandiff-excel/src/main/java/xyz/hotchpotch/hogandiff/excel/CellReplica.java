@@ -1,5 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import org.apache.poi.ss.util.CellAddress;
@@ -153,6 +155,20 @@ public class CellReplica<T> {
     }
     
     /**
+     * セル内容物の種類（例えば、セル内文字列、セルコメント、罫線など）を表します。<br>
+     * 
+     * @author nmby
+     */
+    public static interface CellContentType<U> {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+        
+        String tag();
+    }
+    
+    /**
      * 新しい {@link CellReplica} を生成して返します。<br>
      * 
      * @param <T> セルデータの型
@@ -163,10 +179,17 @@ public class CellReplica<T> {
      * @throws NullPointerException {@code data} が {@code null} の場合
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが範囲外の場合
      */
+    @Deprecated
     public static <T> CellReplica<T> of(int row, int column, T data) {
         Objects.requireNonNull(data, "data");
         
         return new CellReplica<>(CellId.of(row, column), data);
+    }
+    
+    public static <U> CellReplica<?> of(int row, int column, CellContentType<U> type, U content) {
+        Objects.requireNonNull(type, "type");
+        
+        return new CellReplica<>(CellId.of(row, column), type, content);
     }
     
     /**
@@ -185,13 +208,27 @@ public class CellReplica<T> {
     // [instance members] ******************************************************
     
     private final CellId id;
+    
+    private final Map<CellContentType<?>, Object> contents = new HashMap<>();
+    
+    @Deprecated
     private final T data;
     
-    protected CellReplica(CellId id, T data) {
+    @Deprecated
+    private CellReplica(CellId id, T data) {
         assert id != null;
         
         this.id = id;
         this.data = data;
+    }
+    
+    private <U> CellReplica(CellId id, CellContentType<U> type, U content) {
+        assert id != null;
+        assert type != null;
+        
+        this.id = id;
+        this.data = null;
+        contents.put(type, content);
     }
     
     /**
@@ -208,22 +245,74 @@ public class CellReplica<T> {
      * 
      * @return セルデータ
      */
+    @Deprecated
     public T data() {
         return data;
+    }
+    
+    /**
+     * 指定された種類のセル内容物を返します。<br>
+     * 
+     * @param <U> セル内容物の型
+     * @param type セル内容物の種類
+     * @return セル内容物（格納されていない場合は {@code null}）
+     * @throws NullPointerException {@code type} が {@code null} の場合
+     */
+    @SuppressWarnings("unchecked")
+    public <U> U getContent(CellContentType<U> type) {
+        Objects.requireNonNull(type, "type");
+        
+        return (U) contents.get(type);
+    }
+    
+    /**
+     * このセルに内容物を追加します。<br>
+     * 
+     * @param <U> セル内容物の型
+     * @param type セル内容物の種類
+     * @param content セル内容物
+     * @throws NullPointerException {@code type} が {@code null} の場合
+     */
+    public <U> void setContent(CellContentType<U> type, U content) {
+        Objects.requireNonNull(type, "type");
+        
+        contents.put(type, content);
+    }
+    
+    /**
+     * 指定されたセルの全ての内容物をこのセルに追加します。<br>
+     * 
+     * @param other このセルに追加する内容物を保持するセル
+     * @throws NullPointerException {@code other} が {@code null} の場合
+     * @throws IllegalArgumentException このセルと {@code other} の id が異なる場合
+     * @throws IllegalArgumentException {@code other} が保持する内容物をこのセルが既に保持している場合
+     */
+    public void addAll(CellReplica<?> other) {
+        Objects.requireNonNull(other, "other");
+        if (!id.equals(other.id)) {
+            throw new IllegalArgumentException(String.format("idが異なります: %s vs %s", id, other.id));
+        }
+        
+        other.contents.forEach((type, content) -> {
+            if (contents.containsKey(type)) {
+                throw new IllegalArgumentException("内容物が既に格納されています: " + type.tag());
+            }
+            contents.put(type, content);
+        });
     }
     
     @Override
     public boolean equals(Object o) {
         if (o instanceof CellReplica) {
             CellReplica<?> other = (CellReplica<?>) o;
-            return id.equals(other.id) && data.equals(other.data);
+            return id.equals(other.id) && data.equals(other.data) && contents.equals(other.contents);
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(id, data);
+        return Objects.hash(id, data, contents);
     }
     
     @Override
