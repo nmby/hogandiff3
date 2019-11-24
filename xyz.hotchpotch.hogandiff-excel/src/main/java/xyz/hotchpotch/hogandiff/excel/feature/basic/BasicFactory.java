@@ -40,7 +40,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  *
  * @author nmby
  */
-public class BasicFactory implements Factory<String> {
+public class BasicFactory implements Factory {
     
     // [static members] ********************************************************
     
@@ -58,7 +58,7 @@ public class BasicFactory implements Factory<String> {
      * 
      * @return 新しいファクトリ
      */
-    public static Factory<String> of() {
+    public static Factory of() {
         return new BasicFactory();
     }
     

@@ -55,9 +55,9 @@ public class AppTask<T> extends Task<Void> {
      * @return 新しいタスク
      * 
      */
-    public static <T> Task<Void> of(
+    public static Task<Void> of(
             Settings settings,
-            Factory<T> factory) {
+            Factory factory) {
         
         Objects.requireNonNull(settings, "settings");
         Objects.requireNonNull(factory, "factory");
@@ -68,13 +68,13 @@ public class AppTask<T> extends Task<Void> {
     // [instance members] ******************************************************
     
     private final Settings settings;
-    private final Factory<T> factory;
+    private final Factory factory;
     private final AppMenu menu;
     private final StringBuilder str = new StringBuilder();
     
     private AppTask(
             Settings settings,
-            Factory<T> factory) {
+            Factory factory) {
         
         assert settings != null;
         assert factory != null;
