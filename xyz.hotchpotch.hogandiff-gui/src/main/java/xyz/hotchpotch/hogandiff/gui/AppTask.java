@@ -97,7 +97,7 @@ public class AppTask<T> extends Task<Void> {
         List<Pair<String>> pairs = pairingSheets(2, 5);
         
         // 3. シート同士の比較
-        BResult<T> results = compareSheets(pairs, 5, 75);
+        BResult results = compareSheets(pairs, 5, 75);
         
         // 4. 比較結果の表示（テキスト）
         if (settings.get(AppSettingKeys.SHOW_RESULT_TEXT)) {
@@ -207,7 +207,7 @@ public class AppTask<T> extends Task<Void> {
     }
     
     // 3. シート同士の比較
-    private BResult<T> compareSheets(
+    private BResult compareSheets(
             List<Pair<String>> pairs,
             int progressBefore, int progressAfter)
             throws ApplicationException {
@@ -262,7 +262,7 @@ public class AppTask<T> extends Task<Void> {
     // 4. 比較結果の表示（テキスト）
     private void showResultText(
             Path workDir,
-            BResult<T> results,
+            BResult results,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
@@ -295,7 +295,7 @@ public class AppTask<T> extends Task<Void> {
     // 5. 比較結果の表示（Excelブック）
     private void showPaintedSheets(
             Path workDir,
-            BResult<T> results,
+            BResult results,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
@@ -312,7 +312,7 @@ public class AppTask<T> extends Task<Void> {
     
     private void showPaintedSheets1(
             Path workDir,
-            BResult<T> results,
+            BResult results,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
@@ -349,7 +349,7 @@ public class AppTask<T> extends Task<Void> {
     
     private void showPaintedSheets2(
             Path workDir,
-            BResult<T> results,
+            BResult results,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         

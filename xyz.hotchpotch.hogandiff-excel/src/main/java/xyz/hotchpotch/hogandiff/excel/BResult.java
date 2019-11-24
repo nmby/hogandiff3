@@ -14,10 +14,9 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 /**
  * Excepブック同士の比較結果を表す不変クラスです。<br>
  * 
- * @param <T> セルデータの型
  * @author nmby
  */
-public class BResult<T> {
+public class BResult {
     
     // [static members] ********************************************************
     
@@ -36,7 +35,7 @@ public class BResult<T> {
      *          {@code bookPath1}, {@code bookPath2}, {@code sheetPairs}, {@code results}
      *          のいずれかが {@code null} の場合
      */
-    public static <T> BResult<T> of(
+    public static BResult of(
             Path bookPath1,
             Path bookPath2,
             List<Pair<String>> sheetPairs,
@@ -47,7 +46,7 @@ public class BResult<T> {
         Objects.requireNonNull(sheetPairs, "sheetPairs");
         Objects.requireNonNull(results, "results");
         
-        return new BResult<>(bookPath1, bookPath2, sheetPairs, results);
+        return new BResult(bookPath1, bookPath2, sheetPairs, results);
     }
     
     // [instance members] ******************************************************
