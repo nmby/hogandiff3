@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -260,18 +261,21 @@ public class SComparatorImpl<T> implements SComparator {
      * @param <T> セルデータの型
      * @param considerRowGaps 比較において行の余剰／欠損を考慮する場合は {@code true}
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
+     * @param diffChecker 2つのセル内容物が異なるときに {@code true} を返すプレディケータ
      * @return 新しいコンパレータ
      */
     public static <T extends Comparable<? super T>> SComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
-            CellContentType<T> targetContentType) {
+            CellContentType<T> targetContentType,
+            BiPredicate<CellReplica, CellReplica> diffChecker) {
         
         return of(
                 considerRowGaps,
                 considerColumnGaps,
                 Comparator.naturalOrder(),
-                targetContentType);
+                targetContentType,
+                diffChecker);
     }
     
     /**
@@ -282,6 +286,7 @@ public class SComparatorImpl<T> implements SComparator {
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
      * @param dataComparator {@code T} 型オブジェクトの比較関数
      * @param targetContentType 対象とするセル内容物の種類
+     * @param diffChecker 2つのセル内容物が異なるときに {@code true} を返すプレディケータ
      * @return 新しいコンパレータ
      * @throws NullPointerException {@code dataComparator} が {@code null} の場合
      */
@@ -289,15 +294,18 @@ public class SComparatorImpl<T> implements SComparator {
             boolean considerRowGaps,
             boolean considerColumnGaps,
             Comparator<? super T> dataComparator,
-            CellContentType<T> targetContentType) {
+            CellContentType<T> targetContentType,
+            BiPredicate<CellReplica, CellReplica> diffChecker) {
         
         Objects.requireNonNull(dataComparator, "dataComparator");
+        Objects.requireNonNull(diffChecker, "diffChecker");
         
         return new SComparatorImpl<>(
                 considerRowGaps,
                 considerColumnGaps,
                 dataComparator,
-                targetContentType);
+                targetContentType,
+                diffChecker);
     }
     
     // [instance members] ******************************************************
@@ -306,29 +314,34 @@ public class SComparatorImpl<T> implements SComparator {
     private final boolean considerColumnGaps;
     private final Mapper<T> rowsMapper;
     private final Mapper<T> columnsMapper;
-    private final CellContentType<T> targetContentType;
+    private final BiPredicate<CellReplica, CellReplica> diffChecker;
     
     private SComparatorImpl(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             Comparator<? super T> dataComparator,
-            CellContentType<T> targetContentType) {
+            CellContentType<T> targetContentType,
+            BiPredicate<CellReplica, CellReplica> diffChecker) {
         
         assert dataComparator != null;
+        assert diffChecker != null;
         
         this.considerRowGaps = considerRowGaps;
         this.considerColumnGaps = considerColumnGaps;
-        this.targetContentType = targetContentType;
+        this.diffChecker = diffChecker;
         
         if (considerRowGaps && considerColumnGaps) {
-            rowsMapper = mapper(c -> c.id().row(), c -> c.getContent(targetContentType), dataComparator, targetContentType);
-            columnsMapper = mapper(c -> c.id().column(), c -> c.getContent(targetContentType), dataComparator, targetContentType);
+            rowsMapper = mapper(c -> c.id().row(), c -> c.getContent(targetContentType), dataComparator,
+                    targetContentType);
+            columnsMapper = mapper(c -> c.id().column(), c -> c.getContent(targetContentType), dataComparator,
+                    targetContentType);
         } else if (considerRowGaps) {
             rowsMapper = mapper(c -> c.id().row(), c -> c.id().column(), Comparator.naturalOrder(), targetContentType);
             columnsMapper = mapper(c -> c.id().column());
         } else if (considerColumnGaps) {
             rowsMapper = mapper(c -> c.id().row());
-            columnsMapper = mapper(c -> c.id().column(), c -> c.id().row(), Comparator.naturalOrder(), targetContentType);
+            columnsMapper = mapper(c -> c.id().column(), c -> c.id().row(), Comparator.naturalOrder(),
+                    targetContentType);
         } else {
             rowsMapper = mapper(c -> c.id().row());
             columnsMapper = mapper(c -> c.id().column());
@@ -394,6 +407,7 @@ public class SComparatorImpl<T> implements SComparator {
         assert cells1 != cells2;
         assert rowPairs != null;
         assert columnPairs != null;
+        assert diffChecker != null;
         
         Map<String, CellReplica> map1 = cells1.stream()
                 .collect(Collectors.toMap(c -> c.id().address(), Function.identity()));
@@ -411,14 +425,12 @@ public class SComparatorImpl<T> implements SComparator {
                 String address2 = CellId.idxToAddress(row2, column2);
                 CellReplica cell1 = map1.get(address1);
                 CellReplica cell2 = map2.get(address2);
-                T value1 = (cell1 == null ? null : cell1.getContent(targetContentType));
-                T value2 = (cell2 == null ? null : cell2.getContent(targetContentType));
                 
-                return Objects.equals(value1, value2)
-                        ? null
-                        : Pair.<CellReplica> of(
+                return diffChecker.test(cell1, cell2)
+                        ? Pair.of(
                                 cell1 != null ? cell1 : CellReplica.empty(row1, column1),
-                                cell2 != null ? cell2 : CellReplica.empty(row2, column2));
+                                cell2 != null ? cell2 : CellReplica.empty(row2, column2))
+                        : null;
             });
         }).filter(p -> p != null).collect(Collectors.toList());
     }

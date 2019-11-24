@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -45,7 +46,7 @@ public class BasicFactory implements Factory {
     // [static members] ********************************************************
     
     public static final CellContentType<String> normalStringContent = new CellContentType<>() {
-
+        
         @Override
         public String tag() {
             // TODO 後で見直す
@@ -66,7 +67,7 @@ public class BasicFactory implements Factory {
     
     private BasicFactory() {
     }
-
+    
     @Override
     public Set<CellContentType<?>> targetContentTypes() {
         return Set.of(normalStringContent);
@@ -177,7 +178,21 @@ public class BasicFactory implements Factory {
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
         boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
         
-        return SComparatorImpl.of(considerRowGaps, considerColumnGaps, normalStringContent);
+        return SComparatorImpl.of(
+                considerRowGaps,
+                considerColumnGaps,
+                normalStringContent,
+                (cell1, cell2) -> {
+                    String value1 = Optional
+                            .ofNullable(cell1)
+                            .map(c -> c.getContent(normalStringContent))
+                            .orElse("");
+                    String value2 = Optional
+                            .ofNullable(cell2)
+                            .map(c -> c.getContent(normalStringContent))
+                            .orElse("");
+                    return !Objects.equals(value1, value2);
+                });
     }
     
     /**
