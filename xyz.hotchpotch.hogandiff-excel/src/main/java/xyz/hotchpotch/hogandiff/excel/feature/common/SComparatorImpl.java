@@ -25,7 +25,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @param <T> セルデータの型
  * @author nmby
  */
-public class SComparatorImpl<T> implements SComparator<T> {
+public class SComparatorImpl<T> implements SComparator {
     
     // [static members] ********************************************************
     
@@ -262,7 +262,7 @@ public class SComparatorImpl<T> implements SComparator<T> {
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
      * @return 新しいコンパレータ
      */
-    public static <T extends Comparable<? super T>> SComparator<T> of(
+    public static <T extends Comparable<? super T>> SComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             CellContentType<T> targetContentType) {
@@ -285,7 +285,7 @@ public class SComparatorImpl<T> implements SComparator<T> {
      * @return 新しいコンパレータ
      * @throws NullPointerException {@code dataComparator} が {@code null} の場合
      */
-    public static <T> SComparator<T> of(
+    public static <T> SComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             Comparator<? super T> dataComparator,

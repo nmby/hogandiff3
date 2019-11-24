@@ -67,7 +67,7 @@ public interface Factory<T> {
      * @param settings 設定
      * @return セルセット同士を比較するコンパレータ
      */
-    SComparator<T> comparator(Settings settings);
+    SComparator comparator(Settings settings);
     
     /**
      * Excelブックの差分個所に色を付けて新しいファイルとして保存する

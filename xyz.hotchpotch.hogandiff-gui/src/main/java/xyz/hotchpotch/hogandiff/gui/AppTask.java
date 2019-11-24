@@ -221,7 +221,7 @@ public class AppTask<T> extends Task<Void> {
             SheetLoader loader2 = bookPath1.equals(bookPath2)
                     ? loader1
                     : factory.sheetLoader(settings, bookPath2);
-            SComparator<T> comparator = factory.comparator(settings);
+            SComparator comparator = factory.comparator(settings);
             
             Map<Pair<String>, SResult> results = new HashMap<>();
             List<Pair<String>> pairedPairs = pairs.stream()

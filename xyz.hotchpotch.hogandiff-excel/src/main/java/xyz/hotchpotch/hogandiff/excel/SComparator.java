@@ -6,11 +6,10 @@ import java.util.Set;
  * 2つのシートから抽出したセルセット同士を比較するコンパレータを表します。<br>
  * これは、{@link #compare(Set, Set)} を関数メソッドに持つ関数型インタフェースです。<br>
  * 
- * @param <T> セルデータの型
  * @author nmby
  */
 @FunctionalInterface
-public interface SComparator<T> {
+public interface SComparator {
     
     // [static members] ********************************************************
     

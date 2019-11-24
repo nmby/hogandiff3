@@ -171,7 +171,7 @@ public class BasicFactory implements Factory<String> {
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
     @Override
-    public SComparator<String> comparator(Settings settings) {
+    public SComparator comparator(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
