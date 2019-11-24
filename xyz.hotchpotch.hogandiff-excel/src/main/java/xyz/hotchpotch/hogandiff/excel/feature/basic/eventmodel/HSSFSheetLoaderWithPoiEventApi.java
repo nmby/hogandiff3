@@ -37,6 +37,7 @@ import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
+import xyz.hotchpotch.hogandiff.excel.feature.basic.BasicFactory;
 import xyz.hotchpotch.hogandiff.excel.util.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.util.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.util.SheetHandler;
@@ -302,10 +303,13 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader<String> {
                     throw new AssertionError(record.getSid());
                 }
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellReplica.of(
+                    @SuppressWarnings("unchecked")
+                    CellReplica<String> cell = (CellReplica<String>) CellReplica.of(
                             cellRec.getRow(),
                             cellRec.getColumn(),
-                            value));
+                            BasicFactory.normalStringContent,
+                            value);
+                    cells.add(cell);
                 }
                 
             } else if (record.getSid() == StringRecord.sid) {
@@ -316,10 +320,13 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader<String> {
                 StringRecord sRec = (StringRecord) record;
                 String value = sRec.getString();
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellReplica.of(
+                    @SuppressWarnings("unchecked")
+                    CellReplica<String> cell = (CellReplica<String>) CellReplica.of(
                             prevFormulaRec.getRow(),
                             prevFormulaRec.getColumn(),
-                            sRec.getString()));
+                            BasicFactory.normalStringContent,
+                            sRec.getString());
+                    cells.add(cell);
                 }
                 prevFormulaRec = null;
                 

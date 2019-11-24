@@ -31,6 +31,7 @@ import xyz.hotchpotch.hogandiff.excel.CellReplica.CellId;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
+import xyz.hotchpotch.hogandiff.excel.feature.basic.BasicFactory;
 import xyz.hotchpotch.hogandiff.excel.util.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.util.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.util.SaxUtil;
@@ -182,7 +183,13 @@ public class XSSFSheetLoaderWithSax implements SheetLoader<String> {
                 }
                 if (value != null && !"".equals(value)) {
                     Pair<Integer> idx = CellId.addressToIdx(address);
-                    cells.add(CellReplica.of(idx.a(), idx.b(), value));
+                    @SuppressWarnings("unchecked")
+                    CellReplica<String> cell = (CellReplica<String>) CellReplica.of(
+                            idx.a(),
+                            idx.b(),
+                            BasicFactory.normalStringContent,
+                            value);
+                    cells.add(cell);
                 }
                 
                 qNames.removeFirst();

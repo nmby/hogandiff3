@@ -44,7 +44,7 @@ public class BasicFactory implements Factory<String> {
     
     // [static members] ********************************************************
     
-    private static final CellContentType<String> normalStringContent = new CellContentType<>() {
+    public static final CellContentType<String> normalStringContent = new CellContentType<>() {
 
         @Override
         public String tag() {
@@ -132,12 +132,14 @@ public class BasicFactory implements Factory<String> {
         // Settings 丸ごとではなく、必要な個別のパラメータを渡すこととする。
         
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
+        @SuppressWarnings("unchecked")
         Function<Cell, CellReplica<String>> converter = cell -> {
             String data = PoiUtil.getCellContentAsString(cell, useCachedValue);
             return data != null && !"".equals(data)
-                    ? CellReplica.of(
+                    ? (CellReplica<String>) CellReplica.of(
                             cell.getRowIndex(),
                             cell.getColumnIndex(),
+                            normalStringContent,
                             data)
                     : null;
         };

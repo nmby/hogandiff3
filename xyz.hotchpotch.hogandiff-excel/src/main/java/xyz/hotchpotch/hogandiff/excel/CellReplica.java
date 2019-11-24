@@ -168,24 +168,6 @@ public class CellReplica<T> {
         String tag();
     }
     
-    /**
-     * 新しい {@link CellReplica} を生成して返します。<br>
-     * 
-     * @param <T> セルデータの型
-     * @param row 行番号（0開始）
-     * @param column 列番号（0開始）
-     * @param data セルデータ
-     * @return 新しいセル
-     * @throws NullPointerException {@code data} が {@code null} の場合
-     * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが範囲外の場合
-     */
-    @Deprecated
-    public static <T> CellReplica<T> of(int row, int column, T data) {
-        Objects.requireNonNull(data, "data");
-        
-        return new CellReplica<>(CellId.of(row, column), data);
-    }
-    
     public static <U> CellReplica<?> of(int row, int column, CellContentType<U> type, U content) {
         Objects.requireNonNull(type, "type");
         
@@ -202,7 +184,7 @@ public class CellReplica<T> {
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが範囲外の場合
      */
     public static <T> CellReplica<T> empty(int row, int column) {
-        return new CellReplica<>(CellId.of(row, column), null);
+        return new CellReplica<>(CellId.of(row, column));
     }
     
     // [instance members] ******************************************************
@@ -214,14 +196,6 @@ public class CellReplica<T> {
     @Deprecated
     private final T data;
     
-    @Deprecated
-    private CellReplica(CellId id, T data) {
-        assert id != null;
-        
-        this.id = id;
-        this.data = data;
-    }
-    
     private <U> CellReplica(CellId id, CellContentType<U> type, U content) {
         assert id != null;
         assert type != null;
@@ -229,6 +203,13 @@ public class CellReplica<T> {
         this.id = id;
         this.data = null;
         contents.put(type, content);
+    }
+    
+    private CellReplica(CellId id) {
+        assert id != null;
+        
+        this.id = id;
+        this.data = null;
     }
     
     /**
