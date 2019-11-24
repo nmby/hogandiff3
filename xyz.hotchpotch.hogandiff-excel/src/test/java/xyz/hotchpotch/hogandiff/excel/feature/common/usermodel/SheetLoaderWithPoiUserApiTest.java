@@ -12,17 +12,21 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellReplica.CellContentType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.feature.basic.BasicFactory;
 import xyz.hotchpotch.hogandiff.excel.util.PoiUtil;
 
 class SheetLoaderWithPoiUserApiTest {
     
     // [static members] ********************************************************
     
-    private static final Function<Cell, CellReplica<String>> converter = cell -> CellReplica.of(
+    @SuppressWarnings("unchecked")
+    private static final Function<Cell, CellReplica<String>> converter = cell -> (CellReplica<String>) CellReplica.of(
             cell.getRowIndex(),
             cell.getColumnIndex(),
+            BasicFactory.normalStringContent,
             PoiUtil.getCellContentAsString(cell, false));
     
     private static Path test1_xls;
@@ -128,38 +132,39 @@ class SheetLoaderWithPoiUserApiTest {
     @Test
     void testLoadCells_正常系1() throws ExcelHandlingException {
         SheetLoader<String> testee = SheetLoaderWithPoiUserApi.of(converter);
+        CellContentType<String> type = BasicFactory.normalStringContent;
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(0, 0, "これはワークシートです。"),
-                        CellReplica.of(2, 1, "X"),
-                        CellReplica.of(3, 1, "Y"),
-                        CellReplica.of(4, 1, "Z"),
-                        CellReplica.of(2, 2, "90"),
-                        CellReplica.of(3, 2, "20"),
-                        CellReplica.of(4, 2, "60")),
+                        CellReplica.of(0, 0, type, "これはワークシートです。"),
+                        CellReplica.of(2, 1, type, "X"),
+                        CellReplica.of(3, 1, type, "Y"),
+                        CellReplica.of(4, 1, type, "Z"),
+                        CellReplica.of(2, 2, type, "90"),
+                        CellReplica.of(3, 2, type, "20"),
+                        CellReplica.of(4, 2, type, "60")),
                 testee.loadCells(test1_xls, "A1_ワークシート"));
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(0, 0, "これはワークシートです。"),
-                        CellReplica.of(2, 1, "X"),
-                        CellReplica.of(3, 1, "Y"),
-                        CellReplica.of(4, 1, "Z"),
-                        CellReplica.of(2, 2, "90"),
-                        CellReplica.of(3, 2, "20"),
-                        CellReplica.of(4, 2, "60")),
+                        CellReplica.of(0, 0, type, "これはワークシートです。"),
+                        CellReplica.of(2, 1, type, "X"),
+                        CellReplica.of(3, 1, type, "Y"),
+                        CellReplica.of(4, 1, type, "Z"),
+                        CellReplica.of(2, 2, type, "90"),
+                        CellReplica.of(3, 2, type, "20"),
+                        CellReplica.of(4, 2, type, "60")),
                 testee.loadCells(test1_xlsx, "A1_ワークシート"));
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(0, 0, "これはワークシートです。"),
-                        CellReplica.of(2, 1, "X"),
-                        CellReplica.of(3, 1, "Y"),
-                        CellReplica.of(4, 1, "Z"),
-                        CellReplica.of(2, 2, "90"),
-                        CellReplica.of(3, 2, "20"),
-                        CellReplica.of(4, 2, "60")),
+                        CellReplica.of(0, 0, type, "これはワークシートです。"),
+                        CellReplica.of(2, 1, type, "X"),
+                        CellReplica.of(3, 1, type, "Y"),
+                        CellReplica.of(4, 1, type, "Z"),
+                        CellReplica.of(2, 2, type, "90"),
+                        CellReplica.of(3, 2, type, "20"),
+                        CellReplica.of(4, 2, type, "60")),
                 testee.loadCells(test1_xlsm, "A1_ワークシート"));
     }
 }

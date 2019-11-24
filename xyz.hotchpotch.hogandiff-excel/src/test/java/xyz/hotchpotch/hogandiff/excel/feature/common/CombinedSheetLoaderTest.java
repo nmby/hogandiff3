@@ -11,13 +11,16 @@ import org.junit.jupiter.api.Test;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.feature.basic.BasicFactory;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 class CombinedSheetLoaderTest {
     
     // [static members] ********************************************************
     
-    private static final CellReplica<String> cell1 = CellReplica.of(1, 2, "success");
+    @SuppressWarnings("unchecked")
+    private static final CellReplica<String> cell1 = (CellReplica<String>) CellReplica.of(
+            1, 2, BasicFactory.normalStringContent, "success");
     
     private static final SheetLoader<String> successLoader = (bookPath, sheetName) -> Set.of(cell1);
     
