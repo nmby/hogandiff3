@@ -18,38 +18,36 @@ import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 /**
  * 処理が成功するまで複数のローダーで順に処理を行う {@link SheetLoader} の実装です。<br>
  *
- * @param <T> セルデータの型
  * @author nmby
  */
 @BookHandler
 @SheetHandler
-public class CombinedSheetLoader<T> implements SheetLoader<T> {
+public class CombinedSheetLoader implements SheetLoader {
     
     // [static members] ********************************************************
     
     /**
      * 新しいローダーを構成します。<br>
      * 
-     * @param <T> セルデータの型
      * @param suppliers このローダーを構成するローダーたちのサプライヤ
      * @return 新しいローダー
      * @throws NullPointerException {@code suppliers} が {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
-    public static <T> SheetLoader<T> of(List<UnsafeSupplier<SheetLoader<T>>> suppliers) {
+    public static SheetLoader of(List<UnsafeSupplier<SheetLoader>> suppliers) {
         Objects.requireNonNull(suppliers, "suppliers");
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
         }
         
-        return new CombinedSheetLoader<>(suppliers);
+        return new CombinedSheetLoader(suppliers);
     }
     
     // [instance members] ******************************************************
     
-    private final List<UnsafeSupplier<SheetLoader<T>>> suppliers;
+    private final List<UnsafeSupplier<SheetLoader>> suppliers;
     
-    private CombinedSheetLoader(List<UnsafeSupplier<SheetLoader<T>>> suppliers) {
+    private CombinedSheetLoader(List<UnsafeSupplier<SheetLoader>> suppliers) {
         assert suppliers != null;
         
         this.suppliers = List.copyOf(suppliers);
@@ -87,10 +85,10 @@ public class CombinedSheetLoader<T> implements SheetLoader<T> {
         ExcelHandlingException failed = new ExcelHandlingException(String.format(
                 "処理に失敗しました：%s - %s", bookPath, sheetName));
         
-        Iterator<UnsafeSupplier<SheetLoader<T>>> itr = suppliers.iterator();
+        Iterator<UnsafeSupplier<SheetLoader>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
-                SheetLoader<T> loader = itr.next().get();
+                SheetLoader loader = itr.next().get();
                 return loader.loadCells(bookPath, sheetName);
             } catch (Exception e) {
                 e.printStackTrace();

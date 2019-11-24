@@ -59,7 +59,7 @@ class SheetLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_例外系_非チェック例外() {
-        SheetLoader<String> testee = SheetLoaderWithPoiUserApi.of(converter);
+        SheetLoader testee = SheetLoaderWithPoiUserApi.of(converter);
         
         // 対照群
         assertDoesNotThrow(
@@ -88,7 +88,7 @@ class SheetLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_例外系_チェック例外() {
-        SheetLoader<String> testee = SheetLoaderWithPoiUserApi.of(converter);
+        SheetLoader testee = SheetLoaderWithPoiUserApi.of(converter);
         
         // 存在しないファイル
         assertThrows(
@@ -130,7 +130,7 @@ class SheetLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_正常系1() throws ExcelHandlingException {
-        SheetLoader<String> testee = SheetLoaderWithPoiUserApi.of(converter);
+        SheetLoader testee = SheetLoaderWithPoiUserApi.of(converter);
         CellContentType<String> type = BasicFactory.normalStringContent;
         
         assertEquals(

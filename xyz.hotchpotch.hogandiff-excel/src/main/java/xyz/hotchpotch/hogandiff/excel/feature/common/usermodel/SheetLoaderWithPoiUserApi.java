@@ -28,29 +28,27 @@ import xyz.hotchpotch.hogandiff.excel.util.SheetHandler;
  * .xlsx/.xlsm/.xls 形式のExcelブックのワークシートから
  * セルデータを抽出する {@link SheetLoader} の実装です。<br>
  *
- * @param <T> セルデータの型
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS, BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class SheetLoaderWithPoiUserApi<T> implements SheetLoader<T> {
+public class SheetLoaderWithPoiUserApi implements SheetLoader {
     
     // [static members] ********************************************************
     
     /**
      * 新しいローダーを構成します。<br>
      * 
-     * @param <T> セルデータの型
      * @param converter セル変換関数
      * @return 新しいローダー
      * @throws NullPointerException {@code converter} が {@code null} の場合
      */
-    public static <T> SheetLoader<T> of(
+    public static SheetLoader of(
             Function<Cell, CellReplica> converter) {
         
         Objects.requireNonNull(converter, "converter");
         
-        return new SheetLoaderWithPoiUserApi<>(converter);
+        return new SheetLoaderWithPoiUserApi(converter);
     }
     
     // [instance members] ******************************************************

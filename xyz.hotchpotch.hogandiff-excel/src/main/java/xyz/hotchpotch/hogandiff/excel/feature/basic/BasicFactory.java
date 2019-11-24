@@ -121,7 +121,7 @@ public class BasicFactory implements Factory<String> {
      *              {@code bookPath} がサポートされないブック形式の場合
      */
     @Override
-    public SheetLoader<String> sheetLoader(Settings settings, Path bookPath)
+    public SheetLoader sheetLoader(Settings settings, Path bookPath)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(settings, "settings");

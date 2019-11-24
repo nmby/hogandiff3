@@ -51,7 +51,7 @@ import xyz.hotchpotch.hogandiff.excel.util.SheetHandler;
  */
 @BookHandler(targetTypes = { BookType.XLS })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader<String> {
+public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
     
     // [static members] ********************************************************
     
@@ -397,7 +397,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader<String> {
      *              数式文字列を抽出する場合は {@code false}
      * @return 新しいローダー
      */
-    public static SheetLoader<String> of(boolean extractCachedValue) {
+    public static SheetLoader of(boolean extractCachedValue) {
         return new HSSFSheetLoaderWithPoiEventApi(extractCachedValue);
     }
     

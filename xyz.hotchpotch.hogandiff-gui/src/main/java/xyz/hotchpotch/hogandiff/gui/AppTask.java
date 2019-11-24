@@ -217,8 +217,8 @@ public class AppTask<T> extends Task<Void> {
             
             Path bookPath1 = settings.get(AppSettingKeys.CURR_BOOK_PATH1);
             Path bookPath2 = settings.get(AppSettingKeys.CURR_BOOK_PATH2);
-            SheetLoader<T> loader1 = factory.sheetLoader(settings, bookPath1);
-            SheetLoader<T> loader2 = bookPath1.equals(bookPath2)
+            SheetLoader loader1 = factory.sheetLoader(settings, bookPath1);
+            SheetLoader loader2 = bookPath1.equals(bookPath2)
                     ? loader1
                     : factory.sheetLoader(settings, bookPath2);
             SComparator<T> comparator = factory.comparator(settings);

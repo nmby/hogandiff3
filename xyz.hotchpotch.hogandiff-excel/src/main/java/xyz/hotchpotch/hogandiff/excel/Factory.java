@@ -58,7 +58,7 @@ public interface Factory<T> {
      * @return Excelシートからセルデータを抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    SheetLoader<T> sheetLoader(Settings settings, Path bookPath)
+    SheetLoader sheetLoader(Settings settings, Path bookPath)
             throws ExcelHandlingException;
     
     /**

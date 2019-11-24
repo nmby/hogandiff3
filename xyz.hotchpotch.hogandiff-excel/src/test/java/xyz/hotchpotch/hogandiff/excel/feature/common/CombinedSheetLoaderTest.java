@@ -21,9 +21,9 @@ class CombinedSheetLoaderTest {
     private static final CellReplica cell1 = CellReplica.of(
             1, 2, BasicFactory.normalStringContent, "success");
     
-    private static final SheetLoader<String> successLoader = (bookPath, sheetName) -> Set.of(cell1);
+    private static final SheetLoader successLoader = (bookPath, sheetName) -> Set.of(cell1);
     
-    private static final SheetLoader<String> failLoader = (bookPath, sheetName) -> {
+    private static final SheetLoader failLoader = (bookPath, sheetName) -> {
         throw new RuntimeException("fail");
     };
     
@@ -51,7 +51,7 @@ class CombinedSheetLoaderTest {
     
     @Test
     void testLoadCells_パラメータチェック() {
-        SheetLoader<?> testee = CombinedSheetLoader.of(List.of(
+        SheetLoader testee = CombinedSheetLoader.of(List.of(
                 UnsafeSupplier.from(() -> successLoader)));
         
         // null パラメータ
@@ -71,9 +71,9 @@ class CombinedSheetLoaderTest {
     
     @Test
     void testLoadCells_失敗系() {
-        SheetLoader<?> testeeF = CombinedSheetLoader.of(List.of(
+        SheetLoader testeeF = CombinedSheetLoader.of(List.of(
                 UnsafeSupplier.from(() -> failLoader)));
-        SheetLoader<?> testeeFFF = CombinedSheetLoader.of(List.of(
+        SheetLoader testeeFFF = CombinedSheetLoader.of(List.of(
                 UnsafeSupplier.from(() -> failLoader),
                 UnsafeSupplier.from(() -> failLoader),
                 UnsafeSupplier.from(() -> failLoader)));
@@ -91,9 +91,9 @@ class CombinedSheetLoaderTest {
     
     @Test
     void testLoadSheetNames_成功系() throws ExcelHandlingException {
-        SheetLoader<?> testeeS = CombinedSheetLoader.of(List.of(
+        SheetLoader testeeS = CombinedSheetLoader.of(List.of(
                 UnsafeSupplier.from(() -> successLoader)));
-        SheetLoader<?> testeeFFSF = CombinedSheetLoader.of(List.of(
+        SheetLoader testeeFFSF = CombinedSheetLoader.of(List.of(
                 UnsafeSupplier.from(() -> failLoader),
                 UnsafeSupplier.from(() -> failLoader),
                 UnsafeSupplier.from(() -> successLoader),
