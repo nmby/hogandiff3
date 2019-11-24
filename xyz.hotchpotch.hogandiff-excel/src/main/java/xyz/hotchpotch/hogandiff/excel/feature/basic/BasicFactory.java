@@ -13,6 +13,7 @@ import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellReplica.CellContentType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SComparator;
@@ -43,6 +44,15 @@ public class BasicFactory implements Factory<String> {
     
     // [static members] ********************************************************
     
+    private static final CellContentType<String> normalStringContent = new CellContentType<>() {
+
+        @Override
+        public String tag() {
+            // TODO 後で見直す
+            return "";
+        }
+    };
+    
     /**
      * 新しいファクトリを返します。<br>
      * 
@@ -55,6 +65,11 @@ public class BasicFactory implements Factory<String> {
     // [instance members] ******************************************************
     
     private BasicFactory() {
+    }
+
+    @Override
+    public Set<CellContentType<?>> targetContentTypes() {
+        return Set.of(normalStringContent);
     }
     
     /**

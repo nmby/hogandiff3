@@ -1,7 +1,9 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.nio.file.Path;
+import java.util.Set;
 
+import xyz.hotchpotch.hogandiff.excel.CellReplica.CellContentType;
 import xyz.hotchpotch.hogandiff.excel.feature.basic.BasicFactory;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -30,6 +32,13 @@ public interface Factory<T> {
     // それらを統合的に扱う feature とか。
     
     // [instance members] ******************************************************
+    
+    /**
+     * このファクトリが対象とするセル内容物の種類を返します。<br>
+     * 
+     * @return このファクトリが対象とするセル内容物の種類
+     */
+    Set<CellContentType<?>> targetContentTypes();
     
     /**
      * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
