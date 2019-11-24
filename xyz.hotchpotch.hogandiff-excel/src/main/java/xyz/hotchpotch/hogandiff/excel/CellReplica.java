@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.apache.poi.ss.util.CellAddress;
 
+import xyz.hotchpotch.hogandiff.excel.feature.basic.BasicFactory;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -193,15 +194,11 @@ public class CellReplica<T> {
     
     private final Map<CellContentType<?>, Object> contents = new HashMap<>();
     
-    @Deprecated
-    private final T data;
-    
     private <U> CellReplica(CellId id, CellContentType<U> type, U content) {
         assert id != null;
         assert type != null;
         
         this.id = id;
-        this.data = null;
         contents.put(type, content);
     }
     
@@ -209,7 +206,6 @@ public class CellReplica<T> {
         assert id != null;
         
         this.id = id;
-        this.data = null;
     }
     
     /**
@@ -219,16 +215,6 @@ public class CellReplica<T> {
      */
     public CellId id() {
         return id;
-    }
-    
-    /**
-     * セルデータを返します。<br>
-     * 
-     * @return セルデータ
-     */
-    @Deprecated
-    public T data() {
-        return data;
     }
     
     /**
@@ -286,18 +272,20 @@ public class CellReplica<T> {
     public boolean equals(Object o) {
         if (o instanceof CellReplica) {
             CellReplica<?> other = (CellReplica<?>) o;
-            return id.equals(other.id) && data.equals(other.data) && contents.equals(other.contents);
+            return Objects.equals(id, other.id)
+                    && Objects.equals(contents, other.contents);
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(id, data, contents);
+        return Objects.hash(id, contents);
     }
     
     @Override
     public String toString() {
-        return String.format("%s: %s", id, data);
+        // TODO: 汎用化する
+        return String.format("%s: %s", id, getContent(BasicFactory.normalStringContent));
     }
 }

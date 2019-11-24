@@ -178,7 +178,7 @@ public class BasicFactory implements Factory<String> {
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
         boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
         
-        return SComparatorImpl.of(considerRowGaps, considerColumnGaps);
+        return SComparatorImpl.of(considerRowGaps, considerColumnGaps, normalStringContent);
     }
     
     /**

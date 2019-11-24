@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellReplica.CellContentType;
 import xyz.hotchpotch.hogandiff.excel.CellReplica.CellId;
 import xyz.hotchpotch.hogandiff.excel.SComparator;
 import xyz.hotchpotch.hogandiff.excel.SResult;
@@ -92,7 +93,8 @@ public class SComparatorImpl<T> implements SComparator<T> {
     private static <T, U> Mapper<T> mapper(
             ToIntFunction<CellReplica<T>> verticality,
             Function<CellReplica<T>, ? extends U> extractor,
-            Comparator<? super U> comparator) {
+            Comparator<? super U> comparator,
+            CellContentType<T> targetContentType) {
         
         assert verticality != null;
         assert extractor != null;
@@ -111,7 +113,7 @@ public class SComparatorImpl<T> implements SComparator<T> {
             
             Matcher<List<CellReplica<T>>> matcher = Matcher.minimumEditDistanceMatcherOf(
                     List::size,
-                    (list1, list2) -> evaluateDiff(list1, list2, extractor, comparator));
+                    (list1, list2) -> evaluateDiff(list1, list2, extractor, comparator, targetContentType));
             
             return matcher.makePairs(cellsList1, cellsList2).stream()
                     .map(p -> p.map(i -> i + start))
@@ -123,7 +125,8 @@ public class SComparatorImpl<T> implements SComparator<T> {
             List<CellReplica<T>> list1,
             List<CellReplica<T>> list2,
             Function<CellReplica<T>, ? extends U> extractor,
-            Comparator<? super U> comparator) {
+            Comparator<? super U> comparator,
+            CellContentType<T> targetContentType) {
         
         assert list1 != null;
         assert list2 != null;
@@ -145,12 +148,12 @@ public class SComparatorImpl<T> implements SComparator<T> {
             if (comp <= 0) {
                 CellReplica<T> cell1 = itr1.next();
                 key1 = extractor.apply(cell1);
-                value1 = cell1.data();
+                value1 = cell1.getContent(targetContentType);
             }
             if (0 <= comp) {
                 CellReplica<T> cell2 = itr2.next();
                 key2 = extractor.apply(cell2);
-                value2 = cell2.data();
+                value2 = cell2.getContent(targetContentType);
             }
             comp = comparator.compare(key1, key2);
             if (comp == 0 && !Objects.equals(value1, value2)) {
@@ -261,12 +264,14 @@ public class SComparatorImpl<T> implements SComparator<T> {
      */
     public static <T extends Comparable<? super T>> SComparator<T> of(
             boolean considerRowGaps,
-            boolean considerColumnGaps) {
+            boolean considerColumnGaps,
+            CellContentType<T> targetContentType) {
         
         return of(
                 considerRowGaps,
                 considerColumnGaps,
-                Comparator.naturalOrder());
+                Comparator.naturalOrder(),
+                targetContentType);
     }
     
     /**
@@ -276,20 +281,23 @@ public class SComparatorImpl<T> implements SComparator<T> {
      * @param considerRowGaps 比較において行の余剰／欠損を考慮する場合は {@code true}
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
      * @param dataComparator {@code T} 型オブジェクトの比較関数
+     * @param targetContentType 対象とするセル内容物の種類
      * @return 新しいコンパレータ
      * @throws NullPointerException {@code dataComparator} が {@code null} の場合
      */
     public static <T> SComparator<T> of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
-            Comparator<? super T> dataComparator) {
+            Comparator<? super T> dataComparator,
+            CellContentType<T> targetContentType) {
         
         Objects.requireNonNull(dataComparator, "dataComparator");
         
         return new SComparatorImpl<>(
                 considerRowGaps,
                 considerColumnGaps,
-                dataComparator);
+                dataComparator,
+                targetContentType);
     }
     
     // [instance members] ******************************************************
@@ -298,26 +306,29 @@ public class SComparatorImpl<T> implements SComparator<T> {
     private final boolean considerColumnGaps;
     private final Mapper<T> rowsMapper;
     private final Mapper<T> columnsMapper;
+    private final CellContentType<T> targetContentType;
     
     private SComparatorImpl(
             boolean considerRowGaps,
             boolean considerColumnGaps,
-            Comparator<? super T> dataComparator) {
+            Comparator<? super T> dataComparator,
+            CellContentType<T> targetContentType) {
         
         assert dataComparator != null;
         
         this.considerRowGaps = considerRowGaps;
         this.considerColumnGaps = considerColumnGaps;
+        this.targetContentType = targetContentType;
         
         if (considerRowGaps && considerColumnGaps) {
-            rowsMapper = mapper(c -> c.id().row(), CellReplica::data, dataComparator);
-            columnsMapper = mapper(c -> c.id().column(), CellReplica::data, dataComparator);
+            rowsMapper = mapper(c -> c.id().row(), c -> c.getContent(targetContentType), dataComparator, targetContentType);
+            columnsMapper = mapper(c -> c.id().column(), c -> c.getContent(targetContentType), dataComparator, targetContentType);
         } else if (considerRowGaps) {
-            rowsMapper = mapper(c -> c.id().row(), c -> c.id().column(), Comparator.naturalOrder());
+            rowsMapper = mapper(c -> c.id().row(), c -> c.id().column(), Comparator.naturalOrder(), targetContentType);
             columnsMapper = mapper(c -> c.id().column());
         } else if (considerColumnGaps) {
             rowsMapper = mapper(c -> c.id().row());
-            columnsMapper = mapper(c -> c.id().column(), c -> c.id().row(), Comparator.naturalOrder());
+            columnsMapper = mapper(c -> c.id().column(), c -> c.id().row(), Comparator.naturalOrder(), targetContentType);
         } else {
             rowsMapper = mapper(c -> c.id().row());
             columnsMapper = mapper(c -> c.id().column());
@@ -400,8 +411,8 @@ public class SComparatorImpl<T> implements SComparator<T> {
                 String address2 = CellId.idxToAddress(row2, column2);
                 CellReplica<T> cell1 = map1.get(address1);
                 CellReplica<T> cell2 = map2.get(address2);
-                T value1 = (cell1 == null ? null : cell1.data());
-                T value2 = (cell2 == null ? null : cell2.data());
+                T value1 = (cell1 == null ? null : cell1.getContent(targetContentType));
+                T value2 = (cell2 == null ? null : cell2.getContent(targetContentType));
                 
                 return Objects.equals(value1, value2)
                         ? null
