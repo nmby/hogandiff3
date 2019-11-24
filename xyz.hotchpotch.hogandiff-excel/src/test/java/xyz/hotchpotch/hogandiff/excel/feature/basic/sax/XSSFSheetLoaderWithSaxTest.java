@@ -143,7 +143,7 @@ class XSSFSheetLoaderWithSaxTest {
         SheetLoader<String> testee = XSSFSheetLoaderWithSax.of(true, test3_xlsx);
         CellContentType<String> type = BasicFactory.normalStringContent;
         
-        List<CellReplica<? extends String>> actual = new ArrayList<>(
+        List<CellReplica> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
         actual.sort(Comparator.comparing(CellReplica::id));
         
@@ -246,7 +246,7 @@ class XSSFSheetLoaderWithSaxTest {
         SheetLoader<String> testee = XSSFSheetLoaderWithSax.of(false, test3_xlsx);
         CellContentType<String> type = BasicFactory.normalStringContent;
         
-        List<CellReplica<? extends String>> actual = new ArrayList<>(
+        List<CellReplica> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
         actual.sort(Comparator.comparing(CellReplica::id));
         

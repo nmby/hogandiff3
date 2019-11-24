@@ -77,7 +77,7 @@ public class CombinedSheetLoader<T> implements SheetLoader<T> {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellReplica<T>> loadCells(Path bookPath, String sheetName)
+    public Set<CellReplica> loadCells(Path bookPath, String sheetName)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(bookPath, "bookPath");

@@ -36,12 +36,12 @@ public class SResult<T> {
         
         private final List<Integer> redundantRows;
         private final List<Integer> redundantColumns;
-        private final List<CellReplica<T>> diffCells;
+        private final List<CellReplica> diffCells;
         
         private Piece(
                 List<Integer> redundantRows,
                 List<Integer> redundantColumns,
-                List<CellReplica<T>> diffCells) {
+                List<CellReplica> diffCells) {
             
             assert redundantRows != null;
             assert redundantColumns != null;
@@ -76,7 +76,7 @@ public class SResult<T> {
          * 
          * @return 差分セル
          */
-        public List<CellReplica<T>> diffCells() {
+        public List<CellReplica> diffCells() {
             return diffCells;
         }
     }
@@ -107,7 +107,7 @@ public class SResult<T> {
             List<Integer> redundantRows2,
             List<Integer> redundantColumns1,
             List<Integer> redundantColumns2,
-            List<Pair<CellReplica<T>>> diffCells) {
+            List<Pair<CellReplica>> diffCells) {
         
         Objects.requireNonNull(redundantRows1, "redundantRows1");
         Objects.requireNonNull(redundantRows2, "redundantRows2");
@@ -137,7 +137,7 @@ public class SResult<T> {
     private final boolean considerColumnGaps;
     private final Pair<List<Integer>> redundantRows;
     private final Pair<List<Integer>> redundantColumns;
-    private final List<Pair<CellReplica<T>>> diffCells;
+    private final List<Pair<CellReplica>> diffCells;
     
     private SResult(
             boolean considerRowGaps,
@@ -146,7 +146,7 @@ public class SResult<T> {
             List<Integer> redundantRows2,
             List<Integer> redundantColumns1,
             List<Integer> redundantColumns2,
-            List<Pair<CellReplica<T>>> diffCells) {
+            List<Pair<CellReplica>> diffCells) {
         
         assert redundantRows1 != null;
         assert redundantRows2 != null;
@@ -215,7 +215,7 @@ public class SResult<T> {
      * 
      * @return 差分セル
      */
-    public List<Pair<CellReplica<T>>> diffCells() {
+    public List<Pair<CellReplica>> diffCells() {
         // 不変なのでこのまま返しちゃって問題ない。
         return diffCells;
     }
@@ -304,11 +304,11 @@ public class SResult<T> {
         if (diffCells.isEmpty()) {
             str.append(BR).append("    (なし)").append(BR);
         } else {
-            Iterator<Pair<CellReplica<T>>> itr = diffCells.iterator();
+            Iterator<Pair<CellReplica>> itr = diffCells.iterator();
             while (itr.hasNext()) {
-                Pair<CellReplica<T>> pair = itr.next();
-                CellReplica<T> cell1 = pair.a();
-                CellReplica<T> cell2 = pair.b();
+                Pair<CellReplica> pair = itr.next();
+                CellReplica cell1 = pair.a();
+                CellReplica cell2 = pair.b();
                 str.append(BR);
                 str.append("    ").append(cell1).append(BR);
                 str.append("    ").append(cell2).append(BR);

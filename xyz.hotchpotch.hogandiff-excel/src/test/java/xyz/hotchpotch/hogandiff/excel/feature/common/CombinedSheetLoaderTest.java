@@ -18,8 +18,7 @@ class CombinedSheetLoaderTest {
     
     // [static members] ********************************************************
     
-    @SuppressWarnings("unchecked")
-    private static final CellReplica<String> cell1 = (CellReplica<String>) CellReplica.of(
+    private static final CellReplica cell1 = CellReplica.of(
             1, 2, BasicFactory.normalStringContent, "success");
     
     private static final SheetLoader<String> successLoader = (bookPath, sheetName) -> Set.of(cell1);

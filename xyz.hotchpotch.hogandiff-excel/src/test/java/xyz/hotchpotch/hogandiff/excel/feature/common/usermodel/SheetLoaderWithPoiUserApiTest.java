@@ -22,8 +22,7 @@ class SheetLoaderWithPoiUserApiTest {
     
     // [static members] ********************************************************
     
-    @SuppressWarnings("unchecked")
-    private static final Function<Cell, CellReplica<String>> converter = cell -> (CellReplica<String>) CellReplica.of(
+    private static final Function<Cell, CellReplica> converter = cell -> CellReplica.of(
             cell.getRowIndex(),
             cell.getColumnIndex(),
             BasicFactory.normalStringContent,

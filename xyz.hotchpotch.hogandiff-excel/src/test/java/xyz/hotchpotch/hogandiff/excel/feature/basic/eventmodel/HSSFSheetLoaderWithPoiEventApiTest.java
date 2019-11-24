@@ -156,7 +156,7 @@ class HSSFSheetLoaderWithPoiEventApiTest {
         SheetLoader<String> testee = HSSFSheetLoaderWithPoiEventApi.of(true);
         CellContentType<String> type = BasicFactory.normalStringContent;
         
-        List<CellReplica<? extends String>> actual = new ArrayList<>(
+        List<CellReplica> actual = new ArrayList<>(
                 testee.loadCells(test3_xls, "A_バリエーション"));
         actual.sort((c1, c2) -> {
             if (c1.id().row() != c2.id().row()) {

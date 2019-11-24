@@ -12,7 +12,6 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 /**
  * Excelシート上のセルを表します。<br>
  *
- * @param <T> セルデータの型
  * @author nmby
  */
 // 設計メモ：
@@ -21,7 +20,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 // 将来的には、図形オブジェクト等も扱えるようにしたい。
 // この場合は行・列以外の識別子が必要だからもう一段の抽象化が必要となるが、
 // それは将来のバージョンに譲ることとする。
-public class CellReplica<T> {
+public class CellReplica {
     
     // [static members] ********************************************************
     
@@ -169,23 +168,22 @@ public class CellReplica<T> {
         String tag();
     }
     
-    public static <U> CellReplica<?> of(int row, int column, CellContentType<U> type, U content) {
+    public static <U> CellReplica of(int row, int column, CellContentType<U> type, U content) {
         Objects.requireNonNull(type, "type");
         
-        return new CellReplica<>(CellId.of(row, column), type, content);
+        return new CellReplica(CellId.of(row, column), type, content);
     }
     
     /**
      * 空の {@link CellReplica} を生成して返します。<br>
      * 
-     * @param <T> セルデータの型
      * @param row 行番号（0開始）
      * @param column 列番号（0開始）
      * @return 空のセル
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが範囲外の場合
      */
-    public static <T> CellReplica<T> empty(int row, int column) {
-        return new CellReplica<>(CellId.of(row, column));
+    public static CellReplica empty(int row, int column) {
+        return new CellReplica(CellId.of(row, column));
     }
     
     // [instance members] ******************************************************
@@ -254,7 +252,7 @@ public class CellReplica<T> {
      * @throws IllegalArgumentException このセルと {@code other} の id が異なる場合
      * @throws IllegalArgumentException {@code other} が保持する内容物をこのセルが既に保持している場合
      */
-    public void addAll(CellReplica<?> other) {
+    public void addAll(CellReplica other) {
         Objects.requireNonNull(other, "other");
         if (!id.equals(other.id)) {
             throw new IllegalArgumentException(String.format("idが異なります: %s vs %s", id, other.id));
@@ -271,7 +269,7 @@ public class CellReplica<T> {
     @Override
     public boolean equals(Object o) {
         if (o instanceof CellReplica) {
-            CellReplica<?> other = (CellReplica<?>) o;
+            CellReplica other = (CellReplica) o;
             return Objects.equals(id, other.id)
                     && Objects.equals(contents, other.contents);
         }
