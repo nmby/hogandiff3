@@ -40,7 +40,7 @@ public class BResult<T> {
             Path bookPath1,
             Path bookPath2,
             List<Pair<String>> sheetPairs,
-            Map<Pair<String>, SResult<T>> results) {
+            Map<Pair<String>, SResult> results) {
         
         Objects.requireNonNull(bookPath1, "bookPath1");
         Objects.requireNonNull(bookPath2, "bookPath2");
@@ -54,13 +54,13 @@ public class BResult<T> {
     
     private final Pair<Path> bookPath;
     private final List<Pair<String>> sheetPairs;
-    private final Map<Pair<String>, SResult<T>> results;
+    private final Map<Pair<String>, SResult> results;
     
     private BResult(
             Path bookPath1,
             Path bookPath2,
             List<Pair<String>> sheetPairs,
-            Map<Pair<String>, SResult<T>> results) {
+            Map<Pair<String>, SResult> results) {
         
         assert bookPath1 != null;
         assert bookPath2 != null;
@@ -78,7 +78,7 @@ public class BResult<T> {
      * @param side Excelブックの側
      * @return 片側のExcelブックについての差分内容（シート名とそのシート上の差分個所のマップ）
      */
-    public Map<String, Piece<T>> getPiece(Side side) {
+    public Map<String, Piece> getPiece(Side side) {
         Objects.requireNonNull(side, "side");
         
         return results.entrySet().stream()
@@ -87,7 +87,7 @@ public class BResult<T> {
                         entry -> entry.getValue().getPiece(side)));
     }
     
-    private String getText(Function<SResult<T>, String> func) {
+    private String getText(Function<SResult, String> func) {
         
         return sheetPairs.stream().map(pair -> {
             

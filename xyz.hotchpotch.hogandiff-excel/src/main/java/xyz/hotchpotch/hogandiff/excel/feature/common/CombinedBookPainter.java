@@ -83,7 +83,7 @@ public class CombinedBookPainter implements BookPainter {
     public <T> void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            Map<String, Piece<T>> diffs)
+            Map<String, Piece> diffs)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(srcBookPath, "srcBookPath");

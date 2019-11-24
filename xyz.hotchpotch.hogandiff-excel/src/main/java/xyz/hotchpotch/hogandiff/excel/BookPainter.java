@@ -34,6 +34,6 @@ public interface BookPainter {
     <T> void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            Map<String, Piece<T>> diffs)
+            Map<String, Piece> diffs)
             throws ExcelHandlingException;
 }

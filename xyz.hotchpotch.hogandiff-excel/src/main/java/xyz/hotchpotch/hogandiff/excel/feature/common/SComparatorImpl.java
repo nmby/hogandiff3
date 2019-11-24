@@ -344,7 +344,7 @@ public class SComparatorImpl<T> implements SComparator<T> {
      *              {@code cells1}, {@code cells2} が同一インスタンスの場合
      */
     @Override
-    public SResult<T> compare(
+    public SResult compare(
             Set<CellReplica> cells1,
             Set<CellReplica> cells2) {
         

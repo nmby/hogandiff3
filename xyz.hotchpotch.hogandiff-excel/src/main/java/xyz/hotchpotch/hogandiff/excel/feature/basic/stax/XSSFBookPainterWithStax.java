@@ -218,7 +218,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
     public <T> void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            Map<String, Piece<T>> diffs)
+            Map<String, Piece> diffs)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(srcBookPath, "srcBookPath");
@@ -377,7 +377,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             FileSystem inFs,
             FileSystem outFs,
             Path bookPath,
-            Map<String, Piece<T>> diffs)
+            Map<String, Piece> diffs)
             throws ExcelHandlingException {
         
         final String stylesEntry = "xl/styles.xml";
@@ -402,10 +402,10 @@ public class XSSFBookPainterWithStax implements BookPainter {
         Map<String, String> sheetNameToSource = SaxUtil.loadSheetInfo(bookPath).stream()
                 .collect(Collectors.toMap(SheetInfo::name, SheetInfo::source));
         
-        for (Entry<String, Piece<T>> diff : diffs.entrySet()) {
+        for (Entry<String, Piece> diff : diffs.entrySet()) {
             String sheetName = diff.getKey();
             String source = sheetNameToSource.get(sheetName);
-            Piece<T> piece = diff.getValue();
+            Piece piece = diff.getValue();
             
             processWorksheetEntry(inFs, outFs, stylesManager, source, piece);
         }
@@ -428,7 +428,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             FileSystem outFs,
             StylesManager stylesManager,
             String source,
-            Piece<T> piece)
+            Piece piece)
             throws ExcelHandlingException {
         
         try (InputStream is = Files.newInputStream(inFs.getPath(source));

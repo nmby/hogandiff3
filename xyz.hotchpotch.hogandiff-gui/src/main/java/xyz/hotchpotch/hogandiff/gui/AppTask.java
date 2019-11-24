@@ -223,7 +223,7 @@ public class AppTask<T> extends Task<Void> {
                     : factory.sheetLoader(settings, bookPath2);
             SComparator<T> comparator = factory.comparator(settings);
             
-            Map<Pair<String>, SResult<T>> results = new HashMap<>();
+            Map<Pair<String>, SResult> results = new HashMap<>();
             List<Pair<String>> pairedPairs = pairs.stream()
                     .filter(Pair::isPaired)
                     .collect(Collectors.toList());
@@ -240,7 +240,7 @@ public class AppTask<T> extends Task<Void> {
                 
                 Set<CellReplica> cells1 = loader1.loadCells(bookPath1, pair.a());
                 Set<CellReplica> cells2 = loader2.loadCells(bookPath2, pair.b());
-                SResult<T> result = comparator.compare(cells1, cells2);
+                SResult result = comparator.compare(cells1, cells2);
                 results.put(pair, result);
                 
                 str.append(result.getSummary().indent(8)).append(BR);
@@ -328,7 +328,7 @@ public class AppTask<T> extends Task<Void> {
             str.append(String.format("  - %s\n\n", dst));
             updateMessage(str.toString());
             
-            Map<String, SResult.Piece<T>> result = new HashMap<>(results.getPiece(Side.A));
+            Map<String, SResult.Piece> result = new HashMap<>(results.getPiece(Side.A));
             result.putAll(results.getPiece(Side.B));
             painter.paintAndSave(src, dst, result);
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
