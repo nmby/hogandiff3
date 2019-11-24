@@ -23,7 +23,6 @@ import xyz.hotchpotch.hogandiff.excel.feature.basic.eventmodel.HSSFSheetLoaderWi
 import xyz.hotchpotch.hogandiff.excel.feature.basic.sax.XSSFSheetLoaderWithSax;
 import xyz.hotchpotch.hogandiff.excel.feature.basic.stax.XSSFBookPainterWithStax;
 import xyz.hotchpotch.hogandiff.excel.feature.basic.usermodel.BookPainterWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.feature.common.CellReplicaImpl;
 import xyz.hotchpotch.hogandiff.excel.feature.common.CombinedBookLoader;
 import xyz.hotchpotch.hogandiff.excel.feature.common.CombinedBookPainter;
 import xyz.hotchpotch.hogandiff.excel.feature.common.CombinedSheetLoader;
@@ -121,9 +120,10 @@ public class BasicFactory implements Factory<String> {
         Function<Cell, CellReplica<String>> converter = cell -> {
             String data = PoiUtil.getCellContentAsString(cell, useCachedValue);
             return data != null && !"".equals(data)
-                    ? CellReplicaImpl.of(
+                    ? CellReplica.of(
                             cell.getRowIndex(),
-                            cell.getColumnIndex(), data)
+                            cell.getColumnIndex(),
+                            data)
                     : null;
         };
         

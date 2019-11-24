@@ -14,14 +14,13 @@ import org.junit.jupiter.api.Test;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
-import xyz.hotchpotch.hogandiff.excel.feature.common.CellReplicaImpl;
 import xyz.hotchpotch.hogandiff.excel.util.PoiUtil;
 
 class SheetLoaderWithPoiUserApiTest {
     
     // [static members] ********************************************************
     
-    private static final Function<Cell, CellReplica<String>> converter = cell -> CellReplicaImpl.of(
+    private static final Function<Cell, CellReplica<String>> converter = cell -> CellReplica.of(
             cell.getRowIndex(),
             cell.getColumnIndex(),
             PoiUtil.getCellContentAsString(cell, false));
@@ -132,35 +131,35 @@ class SheetLoaderWithPoiUserApiTest {
         
         assertEquals(
                 Set.of(
-                        CellReplicaImpl.of(0, 0, "これはワークシートです。"),
-                        CellReplicaImpl.of(2, 1, "X"),
-                        CellReplicaImpl.of(3, 1, "Y"),
-                        CellReplicaImpl.of(4, 1, "Z"),
-                        CellReplicaImpl.of(2, 2, "90"),
-                        CellReplicaImpl.of(3, 2, "20"),
-                        CellReplicaImpl.of(4, 2, "60")),
+                        CellReplica.of(0, 0, "これはワークシートです。"),
+                        CellReplica.of(2, 1, "X"),
+                        CellReplica.of(3, 1, "Y"),
+                        CellReplica.of(4, 1, "Z"),
+                        CellReplica.of(2, 2, "90"),
+                        CellReplica.of(3, 2, "20"),
+                        CellReplica.of(4, 2, "60")),
                 testee.loadCells(test1_xls, "A1_ワークシート"));
         
         assertEquals(
                 Set.of(
-                        CellReplicaImpl.of(0, 0, "これはワークシートです。"),
-                        CellReplicaImpl.of(2, 1, "X"),
-                        CellReplicaImpl.of(3, 1, "Y"),
-                        CellReplicaImpl.of(4, 1, "Z"),
-                        CellReplicaImpl.of(2, 2, "90"),
-                        CellReplicaImpl.of(3, 2, "20"),
-                        CellReplicaImpl.of(4, 2, "60")),
+                        CellReplica.of(0, 0, "これはワークシートです。"),
+                        CellReplica.of(2, 1, "X"),
+                        CellReplica.of(3, 1, "Y"),
+                        CellReplica.of(4, 1, "Z"),
+                        CellReplica.of(2, 2, "90"),
+                        CellReplica.of(3, 2, "20"),
+                        CellReplica.of(4, 2, "60")),
                 testee.loadCells(test1_xlsx, "A1_ワークシート"));
         
         assertEquals(
                 Set.of(
-                        CellReplicaImpl.of(0, 0, "これはワークシートです。"),
-                        CellReplicaImpl.of(2, 1, "X"),
-                        CellReplicaImpl.of(3, 1, "Y"),
-                        CellReplicaImpl.of(4, 1, "Z"),
-                        CellReplicaImpl.of(2, 2, "90"),
-                        CellReplicaImpl.of(3, 2, "20"),
-                        CellReplicaImpl.of(4, 2, "60")),
+                        CellReplica.of(0, 0, "これはワークシートです。"),
+                        CellReplica.of(2, 1, "X"),
+                        CellReplica.of(3, 1, "Y"),
+                        CellReplica.of(4, 1, "Z"),
+                        CellReplica.of(2, 2, "90"),
+                        CellReplica.of(3, 2, "20"),
+                        CellReplica.of(4, 2, "60")),
                 testee.loadCells(test1_xlsm, "A1_ワークシート"));
     }
 }

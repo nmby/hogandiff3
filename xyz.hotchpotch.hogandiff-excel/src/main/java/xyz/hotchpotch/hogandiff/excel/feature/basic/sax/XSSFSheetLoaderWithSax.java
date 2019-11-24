@@ -27,15 +27,16 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellReplica.CellId;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
-import xyz.hotchpotch.hogandiff.excel.feature.common.CellReplicaImpl;
 import xyz.hotchpotch.hogandiff.excel.util.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.util.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.util.SaxUtil;
 import xyz.hotchpotch.hogandiff.excel.util.SaxUtil.SheetInfo;
 import xyz.hotchpotch.hogandiff.excel.util.SheetHandler;
+import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
  * SAX (Simple API for XML) を利用して、
@@ -180,7 +181,8 @@ public class XSSFSheetLoaderWithSax implements SheetLoader<String> {
                     }
                 }
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellReplicaImpl.of(address, value));
+                    Pair<Integer> idx = CellId.addressToIdx(address);
+                    cells.add(CellReplica.of(idx.a(), idx.b(), value));
                 }
                 
                 qNames.removeFirst();

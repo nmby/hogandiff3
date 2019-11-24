@@ -37,7 +37,6 @@ import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
-import xyz.hotchpotch.hogandiff.excel.feature.common.CellReplicaImpl;
 import xyz.hotchpotch.hogandiff.excel.util.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.util.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.util.SheetHandler;
@@ -303,7 +302,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader<String> {
                     throw new AssertionError(record.getSid());
                 }
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellReplicaImpl.of(
+                    cells.add(CellReplica.of(
                             cellRec.getRow(),
                             cellRec.getColumn(),
                             value));
@@ -317,7 +316,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader<String> {
                 StringRecord sRec = (StringRecord) record;
                 String value = sRec.getString();
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellReplicaImpl.of(
+                    cells.add(CellReplica.of(
                             prevFormulaRec.getRow(),
                             prevFormulaRec.getColumn(),
                             sRec.getString()));

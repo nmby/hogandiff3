@@ -152,10 +152,34 @@ public class CellReplica<T> {
         }
     }
     
+    /**
+     * 新しい {@link CellReplica} を生成して返します。<br>
+     * 
+     * @param <T> セルデータの型
+     * @param row 行番号（0開始）
+     * @param column 列番号（0開始）
+     * @param data セルデータ
+     * @return 新しいセル
+     * @throws NullPointerException {@code data} が {@code null} の場合
+     * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが範囲外の場合
+     */
     public static <T> CellReplica<T> of(int row, int column, T data) {
         Objects.requireNonNull(data, "data");
         
         return new CellReplica<>(CellId.of(row, column), data);
+    }
+    
+    /**
+     * 空の {@link CellReplica} を生成して返します。<br>
+     * 
+     * @param <T> セルデータの型
+     * @param row 行番号（0開始）
+     * @param column 列番号（0開始）
+     * @return 空のセル
+     * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが範囲外の場合
+     */
+    public static <T> CellReplica<T> empty(int row, int column) {
+        return new CellReplica<>(CellId.of(row, column), null);
     }
     
     // [instance members] ******************************************************
@@ -165,7 +189,6 @@ public class CellReplica<T> {
     
     protected CellReplica(CellId id, T data) {
         assert id != null;
-        assert data != null;
         
         this.id = id;
         this.data = data;
