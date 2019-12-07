@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -310,12 +311,19 @@ public class GuiController {
         });
         
         buttonDeleteOldWorkDir.setOnAction(event -> {
-            try (Stream<Path> children = Files.walk(workDir)) {
-                children.filter(path -> !path.equals(workDir))
-                        .sorted(Comparator.reverseOrder())
-                        .forEach(UnsafeConsumer.toConsumer(Files::deleteIfExists));
-            } catch (Exception e) {
-                //nop
+            Optional<ButtonType> result = new Alert(
+                    AlertType.CONFIRMATION,
+                    "次のフォルダの内容物を全て削除します。よろしいですか？\n" + workDir)
+                            .showAndWait();
+            
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                try (Stream<Path> children = Files.walk(workDir)) {
+                    children.filter(path -> !path.equals(workDir))
+                            .sorted(Comparator.reverseOrder())
+                            .forEach(UnsafeConsumer.toConsumer(Files::deleteIfExists));
+                } catch (Exception e) {
+                    //nop
+                }
             }
         });
         
