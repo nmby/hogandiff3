@@ -4,7 +4,7 @@
 	<!--ANT 1.7 is required                                        -->
 
 	<!--define app properties-->
-	<property name="app.version" value="0.6.3"/>
+	<property name="app.version" value="0.6.4"/>
 	<property name="app.env" value="win64"/>
 	
 	<property name="poi" value="poi-4.1.1"/>
