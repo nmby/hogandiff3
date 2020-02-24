@@ -87,7 +87,7 @@
     - 詳細は[OpenJFXのWebサイト](https://openjfx.io/)および「方眼Diff-x.x.x-zzz\jre-min\legal\」、「方眼Diff-x.x.x-zzz\lib\javafx-13\legal\」両フォルダ内の関連ファイルをご参照ください。
 - Apache POI
     - Apache License, Version 2.0 ライセンスにより提供されています。
-    - 詳細は[Apache POIのWebサイト](https://poi.apache.org/)および「方眼Diff-x.x.x-zzz\lib\poi-4.1.1\」フォルダ内の関連ファイルをご参照ください。
+    - 詳細は[Apache POIのWebサイト](https://poi.apache.org/)および「方眼Diff-x.x.x-zzz\lib\poi-4.1.2\」フォルダ内の関連ファイルをご参照ください。
 
 あなたが方眼Diffを利用する場合は以上の全てのライセンスに従う必要があります。
 
