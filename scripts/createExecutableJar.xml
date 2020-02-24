@@ -4,9 +4,9 @@
 	<!--ANT 1.7 is required                                        -->
 
 	<!--define app properties-->
-	<property name="app.version" value="0.6.4" />
+	<property name="app.version" value="0.6.5" />
 
-	<property name="poi" value="poi-4.1.1" />
+	<property name="poi" value="poi-4.1.2" />
 	<property name="javafx" value="javafx-13" />
 	<property name="javafx-sdk" value="javafx-sdk-13" />
 
@@ -26,9 +26,9 @@
 			<manifest>
 				<attribute name="Main-Class" value="xyz.hotchpotch.hogandiff.gui.AppMain" />
 				<attribute name="Class-Path" value=". 
-					lib/${poi}/poi-4.1.1.jar 
-					lib/${poi}/poi-ooxml-4.1.1.jar 
-					lib/${poi}/poi-ooxml-schemas-4.1.1.jar 
+					lib/${poi}/poi-4.1.2.jar 
+					lib/${poi}/poi-ooxml-4.1.2.jar 
+					lib/${poi}/poi-ooxml-schemas-4.1.2.jar 
 					lib/${poi}/lib/commons-codec-1.13.jar 
 					lib/${poi}/lib/commons-collections4-4.4.jar 
 					lib/${poi}/lib/commons-compress-1.19 
@@ -53,9 +53,9 @@
 
 		<copy file="${dir.userlib}/${poi}/LICENSE"                            todir="${dir.out.lib}/${poi}" />
 		<copy file="${dir.userlib}/${poi}/NOTICE"                             todir="${dir.out.lib}/${poi}" />
-		<copy file="${dir.userlib}/${poi}/poi-4.1.1.jar"                      todir="${dir.out.lib}/${poi}" />
-		<copy file="${dir.userlib}/${poi}/poi-ooxml-4.1.1.jar"                todir="${dir.out.lib}/${poi}" />
-		<copy file="${dir.userlib}/${poi}/poi-ooxml-schemas-4.1.1.jar"        todir="${dir.out.lib}/${poi}" />
+		<copy file="${dir.userlib}/${poi}/poi-4.1.2.jar"                      todir="${dir.out.lib}/${poi}" />
+		<copy file="${dir.userlib}/${poi}/poi-ooxml-4.1.2.jar"                todir="${dir.out.lib}/${poi}" />
+		<copy file="${dir.userlib}/${poi}/poi-ooxml-schemas-4.1.2.jar"        todir="${dir.out.lib}/${poi}" />
 		<copy file="${dir.userlib}/${poi}/lib/commons-codec-1.13.jar"         todir="${dir.out.lib}/${poi}/lib" />
 		<copy file="${dir.userlib}/${poi}/lib/commons-collections4-4.4.jar"   todir="${dir.out.lib}/${poi}/lib" />
 		<copy file="${dir.userlib}/${poi}/lib/commons-compress-1.19.jar"      todir="${dir.out.lib}/${poi}/lib" />
