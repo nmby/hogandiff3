@@ -7,11 +7,10 @@ import java.util.Set;
  * Excelシートからセルデータを抽出するローダーを表します。<br>
  * これは、{@link #loadCells(Path, String)} を関数メソッドに持つ関数型インタフェースです。<br>
  *
- * @param <T> セルデータの型
  * @author nmby
  */
 @FunctionalInterface
-public interface SheetLoader<T> {
+public interface SheetLoader {
     
     // [static members] ********************************************************
     

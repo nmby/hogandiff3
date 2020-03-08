@@ -39,7 +39,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  *
  * @author nmby
  */
-public class BasicFactory implements Factory<String> {
+public class BasicFactory implements Factory {
     
     // [static members] ********************************************************
     
@@ -48,7 +48,7 @@ public class BasicFactory implements Factory<String> {
      * 
      * @return 新しいファクトリ
      */
-    public static Factory<String> of() {
+    public static Factory of() {
         return new BasicFactory();
     }
     
@@ -106,7 +106,7 @@ public class BasicFactory implements Factory<String> {
      *              {@code bookPath} がサポートされないブック形式の場合
      */
     @Override
-    public SheetLoader<String> sheetLoader(Settings settings, Path bookPath)
+    public SheetLoader sheetLoader(Settings settings, Path bookPath)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(settings, "settings");
@@ -154,7 +154,7 @@ public class BasicFactory implements Factory<String> {
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
     @Override
-    public SComparator<String> comparator(Settings settings) {
+    public SComparator comparator(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);

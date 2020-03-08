@@ -215,10 +215,10 @@ public class XSSFBookPainterWithStax implements BookPainter {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public <T> void paintAndSave(
+    public void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            Map<String, Piece<T>> diffs)
+            Map<String, Piece> diffs)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(srcBookPath, "srcBookPath");
@@ -373,11 +373,11 @@ public class XSSFBookPainterWithStax implements BookPainter {
      * @param results
      * @throws ExcelHandlingException
      */
-    private <T> void processWorksheetEntries(
+    private void processWorksheetEntries(
             FileSystem inFs,
             FileSystem outFs,
             Path bookPath,
-            Map<String, Piece<T>> diffs)
+            Map<String, Piece> diffs)
             throws ExcelHandlingException {
         
         final String stylesEntry = "xl/styles.xml";
@@ -402,10 +402,10 @@ public class XSSFBookPainterWithStax implements BookPainter {
         Map<String, String> sheetNameToSource = SaxUtil.loadSheetInfo(bookPath).stream()
                 .collect(Collectors.toMap(SheetInfo::name, SheetInfo::source));
         
-        for (Entry<String, Piece<T>> diff : diffs.entrySet()) {
+        for (Entry<String, Piece> diff : diffs.entrySet()) {
             String sheetName = diff.getKey();
             String source = sheetNameToSource.get(sheetName);
-            Piece<T> piece = diff.getValue();
+            Piece piece = diff.getValue();
             
             processWorksheetEntry(inFs, outFs, stylesManager, source, piece);
         }
@@ -423,12 +423,12 @@ public class XSSFBookPainterWithStax implements BookPainter {
         }
     }
     
-    private <T> void processWorksheetEntry(
+    private void processWorksheetEntry(
             FileSystem inFs,
             FileSystem outFs,
             StylesManager stylesManager,
             String source,
-            Piece<T> piece)
+            Piece piece)
             throws ExcelHandlingException {
         
         try (InputStream is = Files.newInputStream(inFs.getPath(source));

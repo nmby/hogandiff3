@@ -18,7 +18,7 @@ class CombinedBookPainterTest {
     
     private static final BookPainter successPainter = new BookPainter() {
         @Override
-        public <T> void paintAndSave(Path srcBookPath, Path dstBookPath, Map<String, Piece<T>> diffs)
+        public void paintAndSave(Path srcBookPath, Path dstBookPath, Map<String, Piece> diffs)
                 throws ExcelHandlingException {
             // nop
         }
@@ -26,7 +26,7 @@ class CombinedBookPainterTest {
     
     private static final BookPainter failPainter = new BookPainter() {
         @Override
-        public <T> void paintAndSave(Path srcBookPath, Path dstBookPath, Map<String, Piece<T>> diffs)
+        public void paintAndSave(Path srcBookPath, Path dstBookPath, Map<String, Piece> diffs)
                 throws ExcelHandlingException {
             
             throw new ExcelHandlingException();

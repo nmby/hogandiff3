@@ -45,7 +45,7 @@ import xyz.hotchpotch.hogandiff.excel.util.SheetHandler;
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class XSSFSheetLoaderWithSax implements SheetLoader<String> {
+public class XSSFSheetLoaderWithSax implements SheetLoader {
     
     // [static members] ********************************************************
     
@@ -206,7 +206,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader<String> {
      *              ローダーの構成に失敗した場合。
      *              具体的には、Excelブックから共通情報の取得に失敗した場合
      */
-    public static SheetLoader<String> of(
+    public static SheetLoader of(
             boolean extractCachedValue,
             Path bookPath)
             throws ExcelHandlingException {

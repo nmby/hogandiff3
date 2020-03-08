@@ -20,10 +20,9 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 /**
  * {@link SComparator} の標準的な実装です。<br>
  *
- * @param <T> セルデータの型
  * @author nmby
  */
-public class SComparatorImpl<T> implements SComparator<T> {
+public class SComparatorImpl implements SComparator {
     
     // [static members] ********************************************************
     
@@ -31,7 +30,6 @@ public class SComparatorImpl<T> implements SComparator<T> {
      * 行同士または列同士の対応関係を決定するマッパーを表します。<br>
      * これは、{@link #makePairs(Set, Set)} を関数メソッドに持つ関数型インタフェースです。<br>
      *
-     * @param <T> セルデータの型
      * @author nmby
      */
     @FunctionalInterface
@@ -81,7 +79,6 @@ public class SComparatorImpl<T> implements SComparator<T> {
     /**
      * 縦方向の余剰／欠損を考慮する場合のマッパーを返します。<br>
      * 
-     * @param <T> セルデータの型
      * @param <U> 横方向のソートキーの型
      * @param verticality 縦方向の座標を抽出する関数
      * @param extractor 横方向のソートキーを抽出する関数
@@ -176,7 +173,6 @@ public class SComparatorImpl<T> implements SComparator<T> {
      * 二次元目のリストは同一 verticality 値のものを
      * extractor と comparator でソートしたものです。<br>
      * 
-     * @param <T> セルデータの型
      * @param <U> 横方向のソートキーの型
      * @param cells セルセット
      * @param start セルセットのリスト化を始める最小インデックス値
@@ -253,12 +249,11 @@ public class SComparatorImpl<T> implements SComparator<T> {
     /**
      * 新しいコンパレータを返します。<br>
      * 
-     * @param <T> セルデータの型
      * @param considerRowGaps 比較において行の余剰／欠損を考慮する場合は {@code true}
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
      * @return 新しいコンパレータ
      */
-    public static <T extends Comparable<? super T>> SComparator<T> of(
+    public static SComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps) {
         
@@ -271,21 +266,20 @@ public class SComparatorImpl<T> implements SComparator<T> {
     /**
      * 新しいコンパレータを返します。<br>
      * 
-     * @param <T> セルデータの型
      * @param considerRowGaps 比較において行の余剰／欠損を考慮する場合は {@code true}
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
      * @param dataComparator {@code T} 型オブジェクトの比較関数
      * @return 新しいコンパレータ
      * @throws NullPointerException {@code dataComparator} が {@code null} の場合
      */
-    public static <T> SComparator<T> of(
+    public static SComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             Comparator<String> dataComparator) {
         
         Objects.requireNonNull(dataComparator, "dataComparator");
         
-        return new SComparatorImpl<>(
+        return new SComparatorImpl(
                 considerRowGaps,
                 considerColumnGaps,
                 dataComparator);
@@ -332,7 +326,7 @@ public class SComparatorImpl<T> implements SComparator<T> {
      *              {@code cells1}, {@code cells2} が同一インスタンスの場合
      */
     @Override
-    public SResult<T> compare(
+    public SResult compare(
             Set<CellReplica> cells1,
             Set<CellReplica> cells2) {
         

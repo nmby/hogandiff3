@@ -30,10 +30,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * このタスクは、いわゆるワンショットです。
  * 同一インスタンスのタスクを複数回実行しないでください。<br>
  * 
- * @param <T> 利用するファクトリの型
  * @author nmby
  */
-public class AppTask<T> extends Task<Void> {
+public class AppTask extends Task<Void> {
     
     // [static members] ********************************************************
     
@@ -55,26 +54,26 @@ public class AppTask<T> extends Task<Void> {
      * @return 新しいタスク
      * 
      */
-    public static <T> Task<Void> of(
+    public static Task<Void> of(
             Settings settings,
-            Factory<T> factory) {
+            Factory factory) {
         
         Objects.requireNonNull(settings, "settings");
         Objects.requireNonNull(factory, "factory");
         
-        return new AppTask<>(settings, factory);
+        return new AppTask(settings, factory);
     }
     
     // [instance members] ******************************************************
     
     private final Settings settings;
-    private final Factory<T> factory;
+    private final Factory factory;
     private final AppMenu menu;
     private final StringBuilder str = new StringBuilder();
     
     private AppTask(
             Settings settings,
-            Factory<T> factory) {
+            Factory factory) {
         
         assert settings != null;
         assert factory != null;
@@ -97,7 +96,7 @@ public class AppTask<T> extends Task<Void> {
         List<Pair<String>> pairs = pairingSheets(2, 5);
         
         // 3. シート同士の比較
-        BResult<T> results = compareSheets(pairs, 5, 75);
+        BResult results = compareSheets(pairs, 5, 75);
         
         // 4. 比較結果の表示（テキスト）
         if (settings.get(AppSettingKeys.SHOW_RESULT_TEXT)) {
@@ -207,7 +206,7 @@ public class AppTask<T> extends Task<Void> {
     }
     
     // 3. シート同士の比較
-    private BResult<T> compareSheets(
+    private BResult compareSheets(
             List<Pair<String>> pairs,
             int progressBefore, int progressAfter)
             throws ApplicationException {
@@ -217,13 +216,13 @@ public class AppTask<T> extends Task<Void> {
             
             Path bookPath1 = settings.get(AppSettingKeys.CURR_BOOK_PATH1);
             Path bookPath2 = settings.get(AppSettingKeys.CURR_BOOK_PATH2);
-            SheetLoader<T> loader1 = factory.sheetLoader(settings, bookPath1);
-            SheetLoader<T> loader2 = bookPath1.equals(bookPath2)
+            SheetLoader loader1 = factory.sheetLoader(settings, bookPath1);
+            SheetLoader loader2 = bookPath1.equals(bookPath2)
                     ? loader1
                     : factory.sheetLoader(settings, bookPath2);
-            SComparator<T> comparator = factory.comparator(settings);
+            SComparator comparator = factory.comparator(settings);
             
-            Map<Pair<String>, SResult<T>> results = new HashMap<>();
+            Map<Pair<String>, SResult> results = new HashMap<>();
             List<Pair<String>> pairedPairs = pairs.stream()
                     .filter(Pair::isPaired)
                     .collect(Collectors.toList());
@@ -240,7 +239,7 @@ public class AppTask<T> extends Task<Void> {
                 
                 Set<CellReplica> cells1 = loader1.loadCells(bookPath1, pair.a());
                 Set<CellReplica> cells2 = loader2.loadCells(bookPath2, pair.b());
-                SResult<T> result = comparator.compare(cells1, cells2);
+                SResult result = comparator.compare(cells1, cells2);
                 results.put(pair, result);
                 
                 str.append(result.getSummary().indent(8)).append(BR);
@@ -262,7 +261,7 @@ public class AppTask<T> extends Task<Void> {
     // 4. 比較結果の表示（テキスト）
     private void showResultText(
             Path workDir,
-            BResult<T> results,
+            BResult results,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
@@ -295,7 +294,7 @@ public class AppTask<T> extends Task<Void> {
     // 5. 比較結果の表示（Excelブック）
     private void showPaintedSheets(
             Path workDir,
-            BResult<T> results,
+            BResult results,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
@@ -312,7 +311,7 @@ public class AppTask<T> extends Task<Void> {
     
     private void showPaintedSheets1(
             Path workDir,
-            BResult<T> results,
+            BResult results,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
@@ -328,7 +327,7 @@ public class AppTask<T> extends Task<Void> {
             str.append(String.format("  - %s\n\n", dst));
             updateMessage(str.toString());
             
-            Map<String, SResult.Piece<T>> result = new HashMap<>(results.getPiece(Side.A));
+            Map<String, SResult.Piece> result = new HashMap<>(results.getPiece(Side.A));
             result.putAll(results.getPiece(Side.B));
             painter.paintAndSave(src, dst, result);
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
@@ -349,7 +348,7 @@ public class AppTask<T> extends Task<Void> {
     
     private void showPaintedSheets2(
             Path workDir,
-            BResult<T> results,
+            BResult results,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         

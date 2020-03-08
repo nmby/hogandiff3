@@ -74,7 +74,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_例外系_非チェック例外() throws ExcelHandlingException {
-        SheetLoader<String> testee = XSSFSheetLoaderWithSax.of(true, test1_xlsm);
+        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, test1_xlsm);
         
         // 対照
         assertDoesNotThrow(
@@ -99,7 +99,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_例外系_チェック例外() throws ExcelHandlingException {
-        SheetLoader<String> testee = XSSFSheetLoaderWithSax.of(true, test1_xlsm);
+        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, test1_xlsm);
         
         // 存在しないシート
         assertThrows(
@@ -120,7 +120,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系1() throws ExcelHandlingException {
-        SheetLoader<String> testee = XSSFSheetLoaderWithSax.of(true, test1_xlsx);
+        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, test1_xlsx);
         
         assertEquals(
                 Set.of(
@@ -136,7 +136,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-        SheetLoader<String> testee = XSSFSheetLoaderWithSax.of(true, test3_xlsx);
+        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, test3_xlsx);
         
         List<CellReplica> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
@@ -246,7 +246,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系3_数式抽出() throws ExcelHandlingException {
-        SheetLoader<String> testee = XSSFSheetLoaderWithSax.of(false, test3_xlsx);
+        SheetLoader testee = XSSFSheetLoaderWithSax.of(false, test3_xlsx);
         
         List<CellReplica> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));

@@ -80,10 +80,10 @@ public class CombinedBookPainter implements BookPainter {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public <T> void paintAndSave(
+    public void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            Map<String, Piece<T>> diffs)
+            Map<String, Piece> diffs)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(srcBookPath, "srcBookPath");

@@ -171,7 +171,7 @@ public class GuiController {
     // その他メンバ --------------------------
     
     private Path prevSelectedBookPath;
-    private Factory<?> factory;
+    private Factory factory;
     
     /**
      * 実行の準備が整っているかを返します。<br>

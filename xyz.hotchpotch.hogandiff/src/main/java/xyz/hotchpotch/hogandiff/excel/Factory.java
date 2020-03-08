@@ -8,10 +8,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
 /**
  * 比較処理に必要な一連の機能を提供するファクトリです。<br>
  *
- * @param <T> セルデータの型
  * @author nmby
  */
-public interface Factory<T> {
+public interface Factory {
     
     // [static members] ********************************************************
     
@@ -20,7 +19,7 @@ public interface Factory<T> {
      * 
      * @return セルの内容を文字列として比較するためのファクトリ
      */
-    public static Factory<String> basicFactoryOf() {
+    public static Factory basicFactoryOf() {
         return BasicFactory.of();
     }
     
@@ -49,7 +48,7 @@ public interface Factory<T> {
      * @return Excelシートからセルデータを抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    SheetLoader<T> sheetLoader(Settings settings, Path bookPath)
+    SheetLoader sheetLoader(Settings settings, Path bookPath)
             throws ExcelHandlingException;
     
     /**
@@ -58,7 +57,7 @@ public interface Factory<T> {
      * @param settings 設定
      * @return セルセット同士を比較するコンパレータ
      */
-    SComparator<T> comparator(Settings settings);
+    SComparator comparator(Settings settings);
     
     /**
      * Excelブックの差分個所に色を付けて新しいファイルとして保存する
