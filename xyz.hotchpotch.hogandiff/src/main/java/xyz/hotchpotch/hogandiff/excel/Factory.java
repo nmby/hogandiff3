@@ -9,18 +9,18 @@ import java.util.function.Function;
 
 import org.apache.poi.ss.usermodel.Cell;
 
-import xyz.hotchpotch.hogandiff.excel.feature.basic.eventmodel.HSSFSheetLoaderWithPoiEventApi;
-import xyz.hotchpotch.hogandiff.excel.feature.basic.sax.XSSFSheetLoaderWithSax;
-import xyz.hotchpotch.hogandiff.excel.feature.basic.stax.XSSFBookPainterWithStax;
-import xyz.hotchpotch.hogandiff.excel.feature.basic.usermodel.BookPainterWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.feature.common.CombinedBookLoader;
-import xyz.hotchpotch.hogandiff.excel.feature.common.CombinedBookPainter;
-import xyz.hotchpotch.hogandiff.excel.feature.common.CombinedSheetLoader;
-import xyz.hotchpotch.hogandiff.excel.feature.common.SComparatorImpl;
-import xyz.hotchpotch.hogandiff.excel.feature.common.eventmodel.HSSFBookLoaderWithPoiEventApi;
-import xyz.hotchpotch.hogandiff.excel.feature.common.sax.XSSFBookLoaderWithSax;
-import xyz.hotchpotch.hogandiff.excel.feature.common.usermodel.BookLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.feature.common.usermodel.SheetLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
+import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
+import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetLoader;
+import xyz.hotchpotch.hogandiff.excel.common.SComparatorImpl;
+import xyz.hotchpotch.hogandiff.excel.eventmodel.HSSFBookLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.eventmodel.HSSFSheetLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.sax.XSSFBookLoaderWithSax;
+import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetLoaderWithSax;
+import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
+import xyz.hotchpotch.hogandiff.excel.usermodel.BookLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.usermodel.BookPainterWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.usermodel.SheetLoaderWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.util.PoiUtil;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
