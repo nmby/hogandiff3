@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.excel.eventmodel;
+package xyz.hotchpotch.hogandiff.excel.poi.eventmodel;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
-import xyz.hotchpotch.hogandiff.excel.eventmodel.HSSFBookLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFBookLoaderWithPoiEventApi;
 
 class HSSFBookLoaderWithPoiEventApiTest {
     

@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.excel.usermodel;
+package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.SheetType;
-import xyz.hotchpotch.hogandiff.excel.usermodel.PoiUtil;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PoiUtil;
 
 class PoiUtilTest1_possibleTypes {
     

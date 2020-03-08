@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.excel.usermodel;
+package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +14,8 @@ import org.junit.jupiter.api.Test;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
-import xyz.hotchpotch.hogandiff.excel.usermodel.SheetLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PoiUtil;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.SheetLoaderWithPoiUserApi;
 
 class SheetLoaderWithPoiUserApiTest {
     

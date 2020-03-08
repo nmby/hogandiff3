@@ -13,15 +13,15 @@ import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetLoader;
 import xyz.hotchpotch.hogandiff.excel.common.SComparatorImpl;
-import xyz.hotchpotch.hogandiff.excel.eventmodel.HSSFBookLoaderWithPoiEventApi;
-import xyz.hotchpotch.hogandiff.excel.eventmodel.HSSFSheetLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFBookLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookPainterWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PoiUtil;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.SheetLoaderWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.sax.XSSFBookLoaderWithSax;
 import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetLoaderWithSax;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
-import xyz.hotchpotch.hogandiff.excel.usermodel.BookLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.usermodel.BookPainterWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.usermodel.PoiUtil;
-import xyz.hotchpotch.hogandiff.excel.usermodel.SheetLoaderWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**

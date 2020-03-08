@@ -197,6 +197,7 @@ public class AppTask extends Task<Void> {
             return pairs;
             
         } catch (Exception e) {
+            // TODO: サポート対象外の .xlsb やパスワード付きファイルの場合の考慮が必要
             str.append("シートの組み合わせ決定に失敗しました。\n\n");
             updateMessage(str.toString());
             e.printStackTrace();

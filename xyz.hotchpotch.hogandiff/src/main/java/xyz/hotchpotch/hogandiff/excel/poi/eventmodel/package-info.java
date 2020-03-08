@@ -4,4 +4,4 @@
  *
  * @author nmby
  */
-package xyz.hotchpotch.hogandiff.excel.eventmodel;
+package xyz.hotchpotch.hogandiff.excel.poi.eventmodel;

@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.excel.usermodel;
+package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
-import xyz.hotchpotch.hogandiff.excel.usermodel.BookLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookLoaderWithPoiUserApi;
 
 class BookLoaderWithPoiUserApiTest {
     

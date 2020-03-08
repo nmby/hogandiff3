@@ -4,4 +4,4 @@
  *
  * @author nmby
  */
-package xyz.hotchpotch.hogandiff.excel.usermodel;
+package xyz.hotchpotch.hogandiff.excel.poi.usermodel;

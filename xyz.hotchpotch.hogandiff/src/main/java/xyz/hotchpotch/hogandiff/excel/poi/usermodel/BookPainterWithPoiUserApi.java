@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.excel.usermodel;
+package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import java.io.IOException;
 import java.io.InputStream;

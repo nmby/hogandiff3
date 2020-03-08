@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.excel.eventmodel;
+package xyz.hotchpotch.hogandiff.excel.poi.eventmodel;
 
 import java.io.FileInputStream;
 import java.nio.file.Path;
