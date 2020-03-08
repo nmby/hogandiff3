@@ -30,7 +30,6 @@ import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
-import xyz.hotchpotch.hogandiff.excel.feature.common.CellReplicaImpl;
 import xyz.hotchpotch.hogandiff.excel.util.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.util.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.util.SaxUtil;
@@ -180,7 +179,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader<String> {
                     }
                 }
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellReplicaImpl.of(address, value));
+                    cells.add(CellReplica.of(address, value));
                 }
                 
                 qNames.removeFirst();

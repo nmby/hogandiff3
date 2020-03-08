@@ -405,8 +405,8 @@ public class SComparatorImpl<T> implements SComparator<T> {
                 return Objects.equals(value1, value2)
                         ? null
                         : Pair.<CellReplica<T>> of(
-                                cell1 != null ? cell1 : CellReplicaImpl.empty(row1, column1),
-                                cell2 != null ? cell2 : CellReplicaImpl.empty(row2, column2));
+                                cell1 != null ? cell1 : CellReplica.empty(row1, column1),
+                                cell2 != null ? cell2 : CellReplica.empty(row2, column2));
             });
         }).filter(p -> p != null).collect(Collectors.toList());
     }
