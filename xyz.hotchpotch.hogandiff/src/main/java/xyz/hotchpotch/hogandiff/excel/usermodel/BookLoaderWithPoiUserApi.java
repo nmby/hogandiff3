@@ -16,9 +16,8 @@ import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
-import xyz.hotchpotch.hogandiff.excel.util.BookHandler;
-import xyz.hotchpotch.hogandiff.excel.util.CommonUtil;
-import xyz.hotchpotch.hogandiff.excel.util.PoiUtil;
+import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
+import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 
 /**
  * Apache POI のユーザーモデル API を利用して

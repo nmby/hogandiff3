@@ -17,10 +17,10 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil;
+import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.NONS_QNAME;
+import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax.StylesManager;
-import xyz.hotchpotch.hogandiff.excel.util.StaxUtil;
-import xyz.hotchpotch.hogandiff.excel.util.StaxUtil.NONS_QNAME;
-import xyz.hotchpotch.hogandiff.excel.util.StaxUtil.QNAME;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**

@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.excel.util;
+package xyz.hotchpotch.hogandiff.excel.sax;
 
 import java.io.InputStream;
 import java.nio.file.FileSystem;
@@ -23,6 +23,8 @@ import org.xml.sax.helpers.DefaultHandler;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
+import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
+import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 
 /**
  * SAX (Simple API for XML) と組み合わせて利用すると便利な機能を集めた

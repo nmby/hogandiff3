@@ -15,7 +15,6 @@ import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.excel.usermodel.SheetLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.util.PoiUtil;
 
 class SheetLoaderWithPoiUserApiTest {
     

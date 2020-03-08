@@ -30,11 +30,10 @@ import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
-import xyz.hotchpotch.hogandiff.excel.util.BookHandler;
-import xyz.hotchpotch.hogandiff.excel.util.CommonUtil;
-import xyz.hotchpotch.hogandiff.excel.util.SaxUtil;
-import xyz.hotchpotch.hogandiff.excel.util.SaxUtil.SheetInfo;
-import xyz.hotchpotch.hogandiff.excel.util.SheetHandler;
+import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
+import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
+import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
+import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
 
 /**
  * SAX (Simple API for XML) を利用して、

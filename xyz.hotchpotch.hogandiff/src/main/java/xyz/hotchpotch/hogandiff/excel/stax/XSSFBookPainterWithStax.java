@@ -34,19 +34,19 @@ import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
+import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
+import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
+import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
+import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil;
+import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
+import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.NONS_QNAME;
+import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.FilteringReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintColumnsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintDiffCellsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRedundantCellsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRowsReader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
-import xyz.hotchpotch.hogandiff.excel.util.BookHandler;
-import xyz.hotchpotch.hogandiff.excel.util.CommonUtil;
-import xyz.hotchpotch.hogandiff.excel.util.SaxUtil;
-import xyz.hotchpotch.hogandiff.excel.util.SaxUtil.SheetInfo;
-import xyz.hotchpotch.hogandiff.excel.util.SheetHandler;
-import xyz.hotchpotch.hogandiff.excel.util.StaxUtil.NONS_QNAME;
-import xyz.hotchpotch.hogandiff.excel.util.StaxUtil.QNAME;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**

@@ -20,8 +20,8 @@ import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetLoaderWithSax;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
 import xyz.hotchpotch.hogandiff.excel.usermodel.BookLoaderWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.usermodel.BookPainterWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.usermodel.PoiUtil;
 import xyz.hotchpotch.hogandiff.excel.usermodel.SheetLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.util.PoiUtil;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**

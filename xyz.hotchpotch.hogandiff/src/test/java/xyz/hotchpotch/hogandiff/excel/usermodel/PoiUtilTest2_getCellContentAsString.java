@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.excel.util;
+package xyz.hotchpotch.hogandiff.excel.usermodel;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,6 +12,8 @@ import org.apache.poi.ss.util.SheetUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import xyz.hotchpotch.hogandiff.excel.usermodel.PoiUtil;
 
 class PoiUtilTest2_getCellContentAsString {
     

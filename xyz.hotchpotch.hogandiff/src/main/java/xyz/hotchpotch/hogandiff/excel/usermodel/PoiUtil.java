@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.excel.util;
+package xyz.hotchpotch.hogandiff.excel.usermodel;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

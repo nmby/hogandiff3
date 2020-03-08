@@ -19,10 +19,10 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil;
+import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.NONS_QNAME;
+import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax.StylesManager;
-import xyz.hotchpotch.hogandiff.excel.util.StaxUtil;
-import xyz.hotchpotch.hogandiff.excel.util.StaxUtil.NONS_QNAME;
-import xyz.hotchpotch.hogandiff.excel.util.StaxUtil.QNAME;
 
 /**
  * 余剰行に色を付ける {@link XMLEventReader} の実装です。<br>

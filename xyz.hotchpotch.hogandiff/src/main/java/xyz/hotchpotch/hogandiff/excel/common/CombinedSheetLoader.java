@@ -10,9 +10,6 @@ import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
-import xyz.hotchpotch.hogandiff.excel.util.BookHandler;
-import xyz.hotchpotch.hogandiff.excel.util.CommonUtil;
-import xyz.hotchpotch.hogandiff.excel.util.SheetHandler;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
