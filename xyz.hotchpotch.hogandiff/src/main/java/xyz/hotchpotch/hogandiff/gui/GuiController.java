@@ -186,7 +186,7 @@ public class GuiController {
      * このコントローラオブジェクトを初期化します。<br>
      */
     public void initialize() {
-        factory = Factory.basicFactoryOf();
+        factory = Factory.of();
         
         initProperties();
         initTargetSelectionArea();
@@ -516,7 +516,7 @@ public class GuiController {
         
         isRunning.set(true);
         
-        Task<Void> task = AppTask.of(settings, Factory.basicFactoryOf());
+        Task<Void> task = AppTask.of(settings, Factory.of());
         progressReport.progressProperty().bind(task.progressProperty());
         textReport.textProperty().bind(task.messageProperty());
         ExecutorService executor = Executors.newSingleThreadExecutor();
