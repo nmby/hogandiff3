@@ -9,7 +9,6 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 /**
  * Excelシート上のセルを表します。<br>
  *
- * @param <T> セルデータの型
  * @author nmby
  */
 // 設計メモ：
@@ -18,7 +17,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 // 将来的には、図形オブジェクト等も扱えるようにしたい。
 // この場合は行・列以外の識別子が必要だからもう一段の抽象化が必要となるが、
 // それは将来のバージョンに譲ることとする。
-public class CellReplica<T> {
+public class CellReplica {
     
     // [static members] ********************************************************
     
@@ -86,7 +85,6 @@ public class CellReplica<T> {
     /**
      * 新たなセルレプリカを生成します。<br>
      * 
-     * @param <T> セルデータの型
      * @param row 行インデックス（0開始）
      * @param column 列インデックス（0開始）
      * @param data セルデータ
@@ -94,71 +92,68 @@ public class CellReplica<T> {
      * @throws NullPointerException {@code data} が {@code null} の場合
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
-    public static <T> CellReplica<T> of(int row, int column, T data) {
+    public static CellReplica of(int row, int column, String data) {
         Objects.requireNonNull(data, "data");
         if (row < 0 || column < 0) {
             throw new IndexOutOfBoundsException(String.format("(%d, %d)", row, column));
         }
         
-        return new CellReplica<>(row, column, data);
+        return new CellReplica(row, column, data);
     }
     
     /**
      * 新たな空のセルレプリカを生成します。<br>
      * 
-     * @param <T> セルデータの型
      * @param row 行インデックス（0開始）
      * @param column 列インデックス（0開始）
      * @return 新たな空のセルレプリカ
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
-    public static <T> CellReplica<T> empty(int row, int column) {
+    public static CellReplica empty(int row, int column) {
         if (row < 0 || column < 0) {
             throw new IndexOutOfBoundsException(String.format("(%d, %d)", row, column));
         }
         
-        return new CellReplica<>(row, column, null);
+        return new CellReplica(row, column, null);
     }
     
     /**
      * 新たなセルレプリカを生成します。<br>
      * 
-     * @param <T> セルデータの型
      * @param address セルアドレス（{@code "A1"} 形式）
      * @param data セルデータ
      * @return 新たなセルレプリカ
      * @throws NullPointerException {@code address}, {@code data} のいずれかが {@code null} の場合
      */
-    public static <T> CellReplica<T> of(String address, T data) {
+    public static CellReplica of(String address, String data) {
         Objects.requireNonNull(address, "address");
         Objects.requireNonNull(data, "data");
         
         Pair<Integer> idx = CellReplica.addressToIdx(address);
-        return new CellReplica<>(idx.a(), idx.b(), data);
+        return new CellReplica(idx.a(), idx.b(), data);
     }
     
     /**
      * 新たな空のセルレプリカを生成します。<br>
      * 
-     * @param <T> セルデータの型
      * @param address セルアドレス（{@code "A1"} 形式）
      * @return 新たな空のセルレプリカ
      * @throws NullPointerException {@code address} が {@code null} の場合
      */
-    public static <T> CellReplica<T> empty(String address) {
+    public static CellReplica empty(String address) {
         Objects.requireNonNull(address, "address");
         
         Pair<Integer> idx = CellReplica.addressToIdx(address);
-        return new CellReplica<>(idx.a(), idx.b(), null);
+        return new CellReplica(idx.a(), idx.b(), null);
     }
     
     // [instance members] ******************************************************
     
     private final int row;
     private final int column;
-    private final T data;
+    private final String data;
     
-    private CellReplica(int row, int column, T data) {
+    private CellReplica(int row, int column, String data) {
         assert 0 <= row;
         assert 0 <= column;
         
@@ -199,7 +194,7 @@ public class CellReplica<T> {
      * 
      * @return セルデータ
      */
-    public T data() {
+    public String data() {
         return data;
     }
     
@@ -212,7 +207,7 @@ public class CellReplica<T> {
     @Override
     public boolean equals(Object o) {
         if (o instanceof CellReplica) {
-            CellReplica<?> other = (CellReplica<?>) o;
+            CellReplica other = (CellReplica) o;
             return row == other.row()
                     && column == other.column()
                     && Objects.equals(data, other.data());

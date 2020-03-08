@@ -92,7 +92,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader<String> {
         
         private final String sheetName;
         private final boolean extractCachedValue;
-        private final Set<CellReplica<String>> cells = new HashSet<>();
+        private final Set<CellReplica> cells = new HashSet<>();
         
         private ProcessingStep step = ProcessingStep.SEARCHING_SHEET_DEFINITION;
         private int sheetIdx = 0;
@@ -420,7 +420,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader<String> {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellReplica<String>> loadCells(Path bookPath, String sheetName)
+    public Set<CellReplica> loadCells(Path bookPath, String sheetName)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(bookPath, "bookPath");

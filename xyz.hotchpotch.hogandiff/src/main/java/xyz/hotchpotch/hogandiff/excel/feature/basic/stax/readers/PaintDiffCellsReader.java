@@ -42,7 +42,7 @@ public class PaintDiffCellsReader<T> extends BufferingReader {
     
     private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
     
-    private static final Comparator<CellReplica<?>> cellSorter = (c1, c2) -> {
+    private static final Comparator<CellReplica> cellSorter = (c1, c2) -> {
         if (c1.row() != c2.row()) {
             return c1.row() < c2.row() ? -1 : 1;
         }
@@ -65,7 +65,7 @@ public class PaintDiffCellsReader<T> extends BufferingReader {
     public static <T> XMLEventReader of(
             XMLEventReader source,
             StylesManager stylesManager,
-            List<CellReplica<T>> diffCells,
+            List<CellReplica> diffCells,
             short colorIdx) {
         
         Objects.requireNonNull(source, "source");
@@ -90,7 +90,7 @@ public class PaintDiffCellsReader<T> extends BufferingReader {
     private PaintDiffCellsReader(
             XMLEventReader source,
             StylesManager stylesManager,
-            List<CellReplica<T>> diffCells,
+            List<CellReplica> diffCells,
             short colorIdx) {
         
         super(source);

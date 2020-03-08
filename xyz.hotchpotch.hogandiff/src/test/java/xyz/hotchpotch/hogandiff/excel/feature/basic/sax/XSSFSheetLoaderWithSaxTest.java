@@ -138,7 +138,7 @@ class XSSFSheetLoaderWithSaxTest {
     void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
         SheetLoader<String> testee = XSSFSheetLoaderWithSax.of(true, test3_xlsx);
         
-        List<CellReplica<? extends String>> actual = new ArrayList<>(
+        List<CellReplica> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
         actual.sort((c1, c2) -> {
             if (c1.row() != c2.row()) {
@@ -248,7 +248,7 @@ class XSSFSheetLoaderWithSaxTest {
     void testLoadCells_正常系3_数式抽出() throws ExcelHandlingException {
         SheetLoader<String> testee = XSSFSheetLoaderWithSax.of(false, test3_xlsx);
         
-        List<CellReplica<? extends String>> actual = new ArrayList<>(
+        List<CellReplica> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
         actual.sort((c1, c2) -> {
             if (c1.row() != c2.row()) {

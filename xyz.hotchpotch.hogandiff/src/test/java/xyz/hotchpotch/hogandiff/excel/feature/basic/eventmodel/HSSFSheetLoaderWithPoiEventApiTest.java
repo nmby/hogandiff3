@@ -152,7 +152,7 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
         SheetLoader<String> testee = HSSFSheetLoaderWithPoiEventApi.of(true);
         
-        List<CellReplica<? extends String>> actual = new ArrayList<>(
+        List<CellReplica> actual = new ArrayList<>(
                 testee.loadCells(test3_xls, "A_バリエーション"));
         actual.sort((c1, c2) -> {
             if (c1.row() != c2.row()) {

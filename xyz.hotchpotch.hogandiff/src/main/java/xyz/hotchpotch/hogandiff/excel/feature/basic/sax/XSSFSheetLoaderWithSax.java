@@ -99,7 +99,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader<String> {
         
         private final Deque<String> qNames = new ArrayDeque<>();
         private final Map<String, StringBuilder> texts = new HashMap<>();
-        private final Set<CellReplica<String>> cells = new HashSet<>();
+        private final Set<CellReplica> cells = new HashSet<>();
         
         private XSSFCellType type;
         private String address;
@@ -261,7 +261,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader<String> {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellReplica<String>> loadCells(Path bookPath, String sheetName)
+    public Set<CellReplica> loadCells(Path bookPath, String sheetName)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(bookPath, "bookPath");

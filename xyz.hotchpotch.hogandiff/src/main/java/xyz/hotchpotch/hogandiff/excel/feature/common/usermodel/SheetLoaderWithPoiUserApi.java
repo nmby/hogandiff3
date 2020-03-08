@@ -46,7 +46,7 @@ public class SheetLoaderWithPoiUserApi<T> implements SheetLoader<T> {
      * @throws NullPointerException {@code converter} が {@code null} の場合
      */
     public static <T> SheetLoader<T> of(
-            Function<Cell, CellReplica<T>> converter) {
+            Function<Cell, CellReplica> converter) {
         
         Objects.requireNonNull(converter, "converter");
         
@@ -55,10 +55,10 @@ public class SheetLoaderWithPoiUserApi<T> implements SheetLoader<T> {
     
     // [instance members] ******************************************************
     
-    private final Function<Cell, CellReplica<T>> converter;
+    private final Function<Cell, CellReplica> converter;
     
     private SheetLoaderWithPoiUserApi(
-            Function<Cell, CellReplica<T>> converter) {
+            Function<Cell, CellReplica> converter) {
         
         assert converter != null;
         
@@ -81,7 +81,7 @@ public class SheetLoaderWithPoiUserApi<T> implements SheetLoader<T> {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellReplica<T>> loadCells(Path bookPath, String sheetName)
+    public Set<CellReplica> loadCells(Path bookPath, String sheetName)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(bookPath, "bookPath");

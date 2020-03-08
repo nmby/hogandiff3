@@ -17,7 +17,7 @@ class CombinedSheetLoaderTest {
     
     // [static members] ********************************************************
     
-    private static final CellReplica<String> cell1 = CellReplica.of(1, 2, "success");
+    private static final CellReplica cell1 = CellReplica.of(1, 2, "success");
     
     private static final SheetLoader<String> successLoader = (bookPath, sheetName) -> Set.of(cell1);
     

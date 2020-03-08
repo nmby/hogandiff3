@@ -117,7 +117,7 @@ public class BasicFactory implements Factory<String> {
         // Settings 丸ごとではなく、必要な個別のパラメータを渡すこととする。
         
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
-        Function<Cell, CellReplica<String>> converter = cell -> {
+        Function<Cell, CellReplica> converter = cell -> {
             String data = PoiUtil.getCellContentAsString(cell, useCachedValue);
             return data != null && !"".equals(data)
                     ? CellReplica.of(

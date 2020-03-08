@@ -238,8 +238,8 @@ public class AppTask<T> extends Task<Void> {
                         i, pairedPairs.size(), sheetNamePair(pair)));
                 updateMessage(str.toString());
                 
-                Set<CellReplica<T>> cells1 = loader1.loadCells(bookPath1, pair.a());
-                Set<CellReplica<T>> cells2 = loader2.loadCells(bookPath2, pair.b());
+                Set<CellReplica> cells1 = loader1.loadCells(bookPath1, pair.a());
+                Set<CellReplica> cells2 = loader2.loadCells(bookPath2, pair.b());
                 SResult<T> result = comparator.compare(cells1, cells2);
                 results.put(pair, result);
                 

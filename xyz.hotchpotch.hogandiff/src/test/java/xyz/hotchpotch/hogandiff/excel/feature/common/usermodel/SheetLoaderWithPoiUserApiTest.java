@@ -20,7 +20,7 @@ class SheetLoaderWithPoiUserApiTest {
     
     // [static members] ********************************************************
     
-    private static final Function<Cell, CellReplica<String>> converter = cell -> CellReplica.of(
+    private static final Function<Cell, CellReplica> converter = cell -> CellReplica.of(
             cell.getRowIndex(),
             cell.getColumnIndex(),
             PoiUtil.getCellContentAsString(cell, false));

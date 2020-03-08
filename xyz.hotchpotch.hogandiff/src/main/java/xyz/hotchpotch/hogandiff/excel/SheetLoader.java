@@ -25,6 +25,6 @@ public interface SheetLoader<T> {
      * @return 指定されたExcelシートに含まれるセルのセット
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    Set<CellReplica<T>> loadCells(Path bookPath, String sheetName)
+    Set<CellReplica> loadCells(Path bookPath, String sheetName)
             throws ExcelHandlingException;
 }
