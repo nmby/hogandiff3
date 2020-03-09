@@ -12,10 +12,9 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 /**
  * Excelシート同士の比較結果を表す不変クラスです。<br>
  * 
- * @param <T> セルデータの型
  * @author nmby
  */
-public class SResult<T> {
+public class SResult {
     
     // [static members] ********************************************************
     
@@ -24,10 +23,9 @@ public class SResult<T> {
     /**
      * 片側のシートに関する差分内容を表す不変クラスです。<br>
      *
-     * @param <T> セルデータの型
      * @author nmby
      */
-    public static class Piece<T> {
+    public static class Piece {
         
         // [static members] ----------------------------------------------------
         
@@ -35,12 +33,12 @@ public class SResult<T> {
         
         private final List<Integer> redundantRows;
         private final List<Integer> redundantColumns;
-        private final List<CellReplica<T>> diffCells;
+        private final List<CellReplica> diffCells;
         
         private Piece(
                 List<Integer> redundantRows,
                 List<Integer> redundantColumns,
-                List<CellReplica<T>> diffCells) {
+                List<CellReplica> diffCells) {
             
             assert redundantRows != null;
             assert redundantColumns != null;
@@ -75,7 +73,7 @@ public class SResult<T> {
          * 
          * @return 差分セル
          */
-        public List<CellReplica<T>> diffCells() {
+        public List<CellReplica> diffCells() {
             return diffCells;
         }
     }
@@ -83,7 +81,6 @@ public class SResult<T> {
     /**
      * Excelシート同士の比較結果を生成します。<br>
      * 
-     * @param <T> セルデータの型
      * @param considerRowGaps 比較において行の余剰／欠損を考慮したか
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮したか
      * @param redundantRows1 シート1における余剰行
@@ -99,14 +96,14 @@ public class SResult<T> {
      * @throws IllegalArgumentException
      *              余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
      */
-    public static <T> SResult<T> of(
+    public static SResult of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             List<Integer> redundantRows1,
             List<Integer> redundantRows2,
             List<Integer> redundantColumns1,
             List<Integer> redundantColumns2,
-            List<Pair<CellReplica<T>>> diffCells) {
+            List<Pair<CellReplica>> diffCells) {
         
         Objects.requireNonNull(redundantRows1, "redundantRows1");
         Objects.requireNonNull(redundantRows2, "redundantRows2");
@@ -120,7 +117,7 @@ public class SResult<T> {
             throw new IllegalArgumentException("illegal column result");
         }
         
-        return new SResult<>(
+        return new SResult(
                 considerRowGaps,
                 considerColumnGaps,
                 redundantRows1,
@@ -136,7 +133,7 @@ public class SResult<T> {
     private final boolean considerColumnGaps;
     private final Pair<List<Integer>> redundantRows;
     private final Pair<List<Integer>> redundantColumns;
-    private final List<Pair<CellReplica<T>>> diffCells;
+    private final List<Pair<CellReplica>> diffCells;
     
     private SResult(
             boolean considerRowGaps,
@@ -145,7 +142,7 @@ public class SResult<T> {
             List<Integer> redundantRows2,
             List<Integer> redundantColumns1,
             List<Integer> redundantColumns2,
-            List<Pair<CellReplica<T>>> diffCells) {
+            List<Pair<CellReplica>> diffCells) {
         
         assert redundantRows1 != null;
         assert redundantRows2 != null;
@@ -214,7 +211,7 @@ public class SResult<T> {
      * 
      * @return 差分セル
      */
-    public List<Pair<CellReplica<T>>> diffCells() {
+    public List<Pair<CellReplica>> diffCells() {
         // 不変なのでこのまま返しちゃって問題ない。
         return diffCells;
     }
@@ -226,10 +223,10 @@ public class SResult<T> {
      * @return 指定された側のシートに関する差分内容
      * @throws NullPointerException {@code side} が {@code null} の場合
      */
-    public Piece<T> getPiece(Side side) {
+    public Piece getPiece(Side side) {
         Objects.requireNonNull(side, "side");
         
-        return new Piece<>(
+        return new Piece(
                 redundantRows.get(side),
                 redundantColumns.get(side),
                 diffCells.stream().map(p -> p.get(side)).collect(Collectors.toList()));
@@ -303,11 +300,11 @@ public class SResult<T> {
         if (diffCells.isEmpty()) {
             str.append(BR).append("    (なし)").append(BR);
         } else {
-            Iterator<Pair<CellReplica<T>>> itr = diffCells.iterator();
+            Iterator<Pair<CellReplica>> itr = diffCells.iterator();
             while (itr.hasNext()) {
-                Pair<CellReplica<T>> pair = itr.next();
-                CellReplica<T> cell1 = pair.a();
-                CellReplica<T> cell2 = pair.b();
+                Pair<CellReplica> pair = itr.next();
+                CellReplica cell1 = pair.a();
+                CellReplica cell2 = pair.b();
                 str.append(BR);
                 str.append("    ").append(cell1).append(BR);
                 str.append("    ").append(cell2).append(BR);

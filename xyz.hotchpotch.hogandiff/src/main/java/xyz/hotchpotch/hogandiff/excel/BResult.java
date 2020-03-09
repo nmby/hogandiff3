@@ -14,10 +14,9 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 /**
  * Excepブック同士の比較結果を表す不変クラスです。<br>
  * 
- * @param <T> セルデータの型
  * @author nmby
  */
-public class BResult<T> {
+public class BResult {
     
     // [static members] ********************************************************
     
@@ -26,7 +25,6 @@ public class BResult<T> {
     /**
      * Excelブック同士の比較結果を生成して返します。<br>
      * 
-     * @param <T> セルデータの型
      * @param bookPath1 比較対象Excelブックのパス1
      * @param bookPath2 比較対象Excelブックのパス2
      * @param sheetPairs 比較したシート名のペア（片側だけの欠損ペアも含む）
@@ -36,31 +34,31 @@ public class BResult<T> {
      *          {@code bookPath1}, {@code bookPath2}, {@code sheetPairs}, {@code results}
      *          のいずれかが {@code null} の場合
      */
-    public static <T> BResult<T> of(
+    public static BResult of(
             Path bookPath1,
             Path bookPath2,
             List<Pair<String>> sheetPairs,
-            Map<Pair<String>, SResult<T>> results) {
+            Map<Pair<String>, SResult> results) {
         
         Objects.requireNonNull(bookPath1, "bookPath1");
         Objects.requireNonNull(bookPath2, "bookPath2");
         Objects.requireNonNull(sheetPairs, "sheetPairs");
         Objects.requireNonNull(results, "results");
         
-        return new BResult<>(bookPath1, bookPath2, sheetPairs, results);
+        return new BResult(bookPath1, bookPath2, sheetPairs, results);
     }
     
     // [instance members] ******************************************************
     
     private final Pair<Path> bookPath;
     private final List<Pair<String>> sheetPairs;
-    private final Map<Pair<String>, SResult<T>> results;
+    private final Map<Pair<String>, SResult> results;
     
     private BResult(
             Path bookPath1,
             Path bookPath2,
             List<Pair<String>> sheetPairs,
-            Map<Pair<String>, SResult<T>> results) {
+            Map<Pair<String>, SResult> results) {
         
         assert bookPath1 != null;
         assert bookPath2 != null;
@@ -78,7 +76,7 @@ public class BResult<T> {
      * @param side Excelブックの側
      * @return 片側のExcelブックについての差分内容（シート名とそのシート上の差分個所のマップ）
      */
-    public Map<String, Piece<T>> getPiece(Side side) {
+    public Map<String, Piece> getPiece(Side side) {
         Objects.requireNonNull(side, "side");
         
         return results.entrySet().stream()
@@ -87,7 +85,7 @@ public class BResult<T> {
                         entry -> entry.getValue().getPiece(side)));
     }
     
-    private String getText(Function<SResult<T>, String> func) {
+    private String getText(Function<SResult, String> func) {
         
         return sheetPairs.stream().map(pair -> {
             
