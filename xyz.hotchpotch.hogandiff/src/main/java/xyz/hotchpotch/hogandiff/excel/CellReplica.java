@@ -173,7 +173,7 @@ public class CellReplica {
     
     private final int row;
     private final int column;
-    private final String content;
+    private String content;
     
     private CellReplica(int row, int column, String content) {
         assert 0 <= row;
@@ -209,6 +209,24 @@ public class CellReplica {
      */
     public String address() {
         return idxToAddress(row(), column());
+    }
+    
+    /**
+     * セル内容を返します。<br>
+     * 
+     * @return セル内容
+     */
+    public String getContent() {
+        return content;
+    }
+    
+    /**
+     * セル内容を設定します。<br>
+     * 
+     * @param content セル内容
+     */
+    public void setContent(String content) {
+        this.content = content;
     }
     
     /**
