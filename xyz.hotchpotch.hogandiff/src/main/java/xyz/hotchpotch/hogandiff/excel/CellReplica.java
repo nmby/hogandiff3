@@ -174,6 +174,7 @@ public class CellReplica {
     private final int row;
     private final int column;
     private String content;
+    private String comment;
     
     private CellReplica(int row, int column, String content) {
         assert 0 <= row;
@@ -230,6 +231,24 @@ public class CellReplica {
     }
     
     /**
+     * セルコメントを返します。<br>
+     * 
+     * @return セルコメント
+     */
+    public String getComment() {
+        return comment;
+    }
+    
+    /**
+     * セルコメントを設定します。<br>
+     * 
+     * @param comment セルコメント
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+    
+    /**
      * {@code #row()}, {@code #column()} を除く属性について、
      * このセルと指定されたセルの属性値が等しいかを返します。<br>
      * 
@@ -238,7 +257,8 @@ public class CellReplica {
      */
     public boolean attrEquals(CellReplica cell) {
         return cell != null
-                && Objects.equals(content, cell.content);
+                && Objects.equals(content, cell.content)
+                && Objects.equals(comment, cell.comment);
     }
     
     /**
@@ -253,9 +273,17 @@ public class CellReplica {
     public int attrCompareTo(CellReplica cell) {
         Objects.requireNonNull(cell, "cell");
         
-        return Objects.compare(
+        int compare1 = Objects.compare(
                 Optional.ofNullable(content).orElse(""),
                 Optional.ofNullable(cell.content).orElse(""),
+                Comparator.naturalOrder());
+        if (compare1 != 0) {
+            return compare1;
+        }
+        
+        return Objects.compare(
+                Optional.ofNullable(comment).orElse(""),
+                Optional.ofNullable(cell.comment).orElse(""),
                 Comparator.naturalOrder());
     }
     
@@ -283,6 +311,11 @@ public class CellReplica {
     
     @Override
     public String toString() {
-        return String.format("%s: %s", address(), content == null ? "" : content);
+        return String.format(
+                "%s: %s%s%s",
+                address(),
+                content == null ? "" : content,
+                (content != null && comment != null) ? " " : "",
+                (comment == null || "".equals(comment)) ? "" : "[comment: " + comment + "]");
     }
 }
