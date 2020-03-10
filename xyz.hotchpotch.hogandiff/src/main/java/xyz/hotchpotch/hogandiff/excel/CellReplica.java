@@ -1,6 +1,8 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.util.Comparator;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.poi.ss.util.CellAddress;
 
@@ -74,6 +76,32 @@ public class CellReplica {
         
         CellAddress ca = new CellAddress(columnStr + "1");
         return ca.getColumn();
+    }
+    
+    /**
+     * 指定された2つのセルの {@code #row()}, {@code #column()} を除く属性値が等しいかを返します。<br>
+     * 
+     * @param cell1 比較対象のセル1（{@code null} 許容）
+     * @param cell2 比較対象のセル2（{@code null} 許容）
+     * @return {@code cell1}, {@code cell2} が {@code null} でなく属性値が等しい場合は {@code true}
+     */
+    public static boolean attrEquals(CellReplica cell1, CellReplica cell2) {
+        return cell1 != null && cell2 != null && cell1.attrEquals(cell2);
+    }
+    
+    /**
+     * 指定された2つのセルの {@code #row()}, {@code #column()} を除く属性値の大小関係を返します。<br>
+     * 
+     * @param cell1 比較対象のセル1
+     * @param cell2 比較対象のセル2
+     * @return セル1の属性値がセル2の属性値より小さい場合は負の整数、等しい場合は0、大きい場合は正の整数
+     * @throws NullPointerException {@code cell1}, {@code cell2} のいずれかが {@code null} の場合
+     */
+    public static int attrCompare(CellReplica cell1, CellReplica cell2) {
+        Objects.requireNonNull(cell1, "cell1");
+        Objects.requireNonNull(cell2, "cell2");
+        
+        return cell1.attrCompareTo(cell2);
     }
     
     /**
@@ -188,8 +216,39 @@ public class CellReplica {
      * 
      * @return セル内容
      */
+    @Deprecated
     public String content() {
         return content;
+    }
+    
+    /**
+     * {@code #row()}, {@code #column()} を除く属性について、
+     * このセルと指定されたセルの属性値が等しいかを返します。<br>
+     * 
+     * @param cell 比較対象のセル（{@code null} 許容）
+     * @return {@code cell} が {@code null} でなく属性値が等しい場合は {@code true}
+     */
+    public boolean attrEquals(CellReplica cell) {
+        return cell != null
+                && Objects.equals(content, cell.content);
+    }
+    
+    /**
+     * {@code #row()}, {@code #column()} を除く属性について、
+     * このセルと指定されたセルの属性値の大小関係を返します。<br>
+     * 
+     * @param cell 比較対象のセル
+     * @return このセルの属性値が指定されたセルの属性値より
+     *          小さい場合は負の整数、等しい場合はゼロ、大きい場合は正の整数
+     * @throws NullPointerException {@code cell} が {@code null} の場合
+     */
+    public int attrCompareTo(CellReplica cell) {
+        Objects.requireNonNull(cell, "cell");
+        
+        return Objects.compare(
+                Optional.ofNullable(content).orElse(""),
+                Optional.ofNullable(cell.content).orElse(""),
+                Comparator.naturalOrder());
     }
     
     /**
