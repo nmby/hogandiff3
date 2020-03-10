@@ -81,18 +81,18 @@ public class CellReplica {
      * 
      * @param row 行インデックス（0開始）
      * @param column 列インデックス（0開始）
-     * @param data セルデータ
+     * @param content セル内容
      * @return 新たなセルレプリカ
-     * @throws NullPointerException {@code data} が {@code null} の場合
+     * @throws NullPointerException {@code content} が {@code null} の場合
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
-    public static CellReplica of(int row, int column, String data) {
-        Objects.requireNonNull(data, "data");
+    public static CellReplica of(int row, int column, String content) {
+        Objects.requireNonNull(content, "content");
         if (row < 0 || column < 0) {
             throw new IndexOutOfBoundsException(String.format("(%d, %d)", row, column));
         }
         
-        return new CellReplica(row, column, data);
+        return new CellReplica(row, column, content);
     }
     
     /**
@@ -115,16 +115,16 @@ public class CellReplica {
      * 新たなセルレプリカを生成します。<br>
      * 
      * @param address セルアドレス（{@code "A1"} 形式）
-     * @param data セルデータ
+     * @param content セル内容
      * @return 新たなセルレプリカ
-     * @throws NullPointerException {@code address}, {@code data} のいずれかが {@code null} の場合
+     * @throws NullPointerException {@code address}, {@code content} のいずれかが {@code null} の場合
      */
-    public static CellReplica of(String address, String data) {
+    public static CellReplica of(String address, String content) {
         Objects.requireNonNull(address, "address");
-        Objects.requireNonNull(data, "data");
+        Objects.requireNonNull(content, "content");
         
         Pair<Integer> idx = CellReplica.addressToIdx(address);
-        return new CellReplica(idx.a(), idx.b(), data);
+        return new CellReplica(idx.a(), idx.b(), content);
     }
     
     /**
@@ -145,15 +145,15 @@ public class CellReplica {
     
     private final int row;
     private final int column;
-    private final String data;
+    private final String content;
     
-    private CellReplica(int row, int column, String data) {
+    private CellReplica(int row, int column, String content) {
         assert 0 <= row;
         assert 0 <= column;
         
         this.row = row;
         this.column = column;
-        this.data = data;
+        this.content = content;
     }
     
     /**
@@ -184,18 +184,18 @@ public class CellReplica {
     }
     
     /**
-     * セルデータを返します。<br>
+     * セル内容を返します。<br>
      * 
-     * @return セルデータ
+     * @return セル内容
      */
-    public String data() {
-        return data;
+    public String content() {
+        return content;
     }
     
     /**
      * {@code o} も {@link CellReplica} であり、
      * {@link CellReplica#row()}, {@link CellReplica#column()} の値がそれぞれ等しく、
-     * {@link CellReplica#data()} が同値と判定される場合に
+     * {@link CellReplica#content()} が同値と判定される場合に
      * {@code true} を返します。<br>
      */
     @Override
@@ -204,18 +204,18 @@ public class CellReplica {
             CellReplica other = (CellReplica) o;
             return row == other.row()
                     && column == other.column()
-                    && Objects.equals(data, other.data());
+                    && Objects.equals(content, other.content());
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(row, column, data);
+        return Objects.hash(row, column, content);
     }
     
     @Override
     public String toString() {
-        return String.format("%s: %s", address(), data == null ? "" : data);
+        return String.format("%s: %s", address(), content == null ? "" : content);
     }
 }

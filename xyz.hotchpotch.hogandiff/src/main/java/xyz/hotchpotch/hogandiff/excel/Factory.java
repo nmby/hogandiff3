@@ -111,11 +111,11 @@ public class Factory {
         
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
         Function<Cell, CellReplica> converter = cell -> {
-            String data = PoiUtil.getCellContentAsString(cell, useCachedValue);
-            return data != null && !"".equals(data)
+            String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
+            return content != null && !"".equals(content)
                     ? CellReplica.of(
                             cell.getRowIndex(),
-                            cell.getColumnIndex(), data)
+                            cell.getColumnIndex(), content)
                     : null;
         };
         
