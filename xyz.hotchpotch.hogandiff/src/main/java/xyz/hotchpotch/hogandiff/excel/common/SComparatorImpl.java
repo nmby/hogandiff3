@@ -137,7 +137,7 @@ public class SComparatorImpl implements SComparator {
                 cell2 = itr2.next();
             }
             comp = comparator.compare(cell1, cell2);
-            if (comp == 0 && !Objects.equals(cell1.content(), cell2.content())) {
+            if (comp == 0 && !CellReplica.attrEquals(cell1, cell2)) {
                 diff += 2;
             } else if (comp != 0) {
                 diff++;
@@ -262,8 +262,8 @@ public class SComparatorImpl implements SComparator {
         this.considerColumnGaps = considerColumnGaps;
         
         if (considerRowGaps && considerColumnGaps) {
-            rowsMapper = mapper(CellReplica::row, Comparator.comparing(CellReplica::content));
-            columnsMapper = mapper(CellReplica::column, Comparator.comparing(CellReplica::content));
+            rowsMapper = mapper(CellReplica::row, CellReplica::attrCompare);
+            columnsMapper = mapper(CellReplica::column, CellReplica::attrCompare);
         } else if (considerRowGaps) {
             rowsMapper = mapper(CellReplica::row, Comparator.comparing(CellReplica::column));
             columnsMapper = mapper(CellReplica::column);
@@ -352,10 +352,8 @@ public class SComparatorImpl implements SComparator {
                 String address2 = CellReplica.idxToAddress(row2, column2);
                 CellReplica cell1 = map1.get(address1);
                 CellReplica cell2 = map2.get(address2);
-                String value1 = (cell1 == null ? null : cell1.content());
-                String value2 = (cell2 == null ? null : cell2.content());
                 
-                return Objects.equals(value1, value2)
+                return CellReplica.attrEquals(cell1, cell2)
                         ? null
                         : Pair.<CellReplica> of(
                                 cell1 != null ? cell1 : CellReplica.empty(row1, column1),

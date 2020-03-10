@@ -86,7 +86,7 @@ public class CellReplica {
      * @return {@code cell1}, {@code cell2} が {@code null} でなく属性値が等しい場合は {@code true}
      */
     public static boolean attrEquals(CellReplica cell1, CellReplica cell2) {
-        return cell1 != null && cell2 != null && cell1.attrEquals(cell2);
+        return cell1 == cell2 || (cell1 != null && cell1.attrEquals(cell2));
     }
     
     /**
@@ -212,16 +212,6 @@ public class CellReplica {
     }
     
     /**
-     * セル内容を返します。<br>
-     * 
-     * @return セル内容
-     */
-    @Deprecated
-    public String content() {
-        return content;
-    }
-    
-    /**
      * {@code #row()}, {@code #column()} を除く属性について、
      * このセルと指定されたセルの属性値が等しいかを返します。<br>
      * 
@@ -263,7 +253,7 @@ public class CellReplica {
             CellReplica other = (CellReplica) o;
             return row == other.row()
                     && column == other.column()
-                    && Objects.equals(content, other.content());
+                    && attrEquals(other);
         }
         return false;
     }
