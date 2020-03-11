@@ -1,8 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-import java.util.Comparator;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.apache.poi.ss.util.CellAddress;
 
@@ -124,22 +122,6 @@ public class CellReplica {
     }
     
     /**
-     * 新たな空のセルレプリカを生成します。<br>
-     * 
-     * @param row 行インデックス（0開始）
-     * @param column 列インデックス（0開始）
-     * @return 新たな空のセルレプリカ
-     * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
-     */
-    public static CellReplica empty(int row, int column) {
-        if (row < 0 || column < 0) {
-            throw new IndexOutOfBoundsException(String.format("(%d, %d)", row, column));
-        }
-        
-        return new CellReplica(row, column, null);
-    }
-    
-    /**
      * 新たなセルレプリカを生成します。<br>
      * 
      * @param address セルアドレス（{@code "A1"} 形式）
@@ -149,10 +131,21 @@ public class CellReplica {
      */
     public static CellReplica of(String address, String content) {
         Objects.requireNonNull(address, "address");
-        Objects.requireNonNull(content, "content");
         
         Pair<Integer> idx = CellReplica.addressToIdx(address);
-        return new CellReplica(idx.a(), idx.b(), content);
+        return CellReplica.of(idx.a(), idx.b(), content);
+    }
+    
+    /**
+     * 新たな空のセルレプリカを生成します。<br>
+     * 
+     * @param row 行インデックス（0開始）
+     * @param column 列インデックス（0開始）
+     * @return 新たな空のセルレプリカ
+     * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
+     */
+    public static CellReplica empty(int row, int column) {
+        return CellReplica.of(row, column, "");
     }
     
     /**
@@ -163,10 +156,7 @@ public class CellReplica {
      * @throws NullPointerException {@code address} が {@code null} の場合
      */
     public static CellReplica empty(String address) {
-        Objects.requireNonNull(address, "address");
-        
-        Pair<Integer> idx = CellReplica.addressToIdx(address);
-        return new CellReplica(idx.a(), idx.b(), null);
+        return CellReplica.of(address, "");
     }
     
     // [instance members] ******************************************************
@@ -179,6 +169,7 @@ public class CellReplica {
     private CellReplica(int row, int column, String content) {
         assert 0 <= row;
         assert 0 <= column;
+        assert content != null;
         
         this.row = row;
         this.column = column;
@@ -214,6 +205,8 @@ public class CellReplica {
     
     /**
      * セル内容を返します。<br>
+     * セル内容が無い場合は {@code ""} を返します。
+     * このメソッドが {@code null} を返すことはありません。<br>
      * 
      * @return セル内容
      */
@@ -225,13 +218,18 @@ public class CellReplica {
      * セル内容を設定します。<br>
      * 
      * @param content セル内容
+     * @throws NullPointerException {@code content} が {@code null} の場合
      */
     public void setContent(String content) {
+        Objects.requireNonNull(content, "content");
+        
         this.content = content;
     }
     
     /**
      * セルコメントを返します。<br>
+     * セルコメントが無い場合は {@code null} を、
+     * セルコメントの内容が空の場合は {@code ""} を返します。<br>
      * 
      * @return セルコメント
      */
@@ -257,7 +255,7 @@ public class CellReplica {
      */
     public boolean attrEquals(CellReplica cell) {
         return cell != null
-                && Objects.equals(content, cell.content)
+                && content.equals(cell.content)
                 && Objects.equals(comment, cell.comment);
     }
     
@@ -273,18 +271,11 @@ public class CellReplica {
     public int attrCompareTo(CellReplica cell) {
         Objects.requireNonNull(cell, "cell");
         
-        int compare1 = Objects.compare(
-                Optional.ofNullable(content).orElse(""),
-                Optional.ofNullable(cell.content).orElse(""),
-                Comparator.naturalOrder());
-        if (compare1 != 0) {
-            return compare1;
-        }
-        
-        return Objects.compare(
-                Optional.ofNullable(comment).orElse(""),
-                Optional.ofNullable(cell.comment).orElse(""),
-                Comparator.naturalOrder());
+        return !content.equals(cell.content)
+                ? content.compareTo(cell.content)
+                : comment != null
+                        ? comment.compareTo(cell.comment)
+                        : 0;
     }
     
     /**
@@ -312,10 +303,9 @@ public class CellReplica {
     @Override
     public String toString() {
         return String.format(
-                "%s: %s%s%s",
+                "%s: %s%s",
                 address(),
-                content == null ? "" : content,
-                (content != null && comment != null) ? " " : "",
-                (comment == null || "".equals(comment)) ? "" : "[comment: " + comment + "]");
+                content,
+                comment == null ? "" : " [comment: " + comment + "]");
     }
 }
