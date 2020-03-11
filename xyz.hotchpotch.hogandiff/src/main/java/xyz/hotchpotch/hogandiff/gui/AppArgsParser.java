@@ -25,6 +25,7 @@ public class AppArgsParser {
     private static final String BR = System.lineSeparator();
     
     /** このアプリケーションのコマンドライン起動時の使い方 */
+    // TODO: compare-cell-contents と compare-cell-comments を追加する
     public static final String USAGE = ""
             + "方眼Diff.exe bookPath1 bookPath2 <OPTIONS>" + BR
             + BR
