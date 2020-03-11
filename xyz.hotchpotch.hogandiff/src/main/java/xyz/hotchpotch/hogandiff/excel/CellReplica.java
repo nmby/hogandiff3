@@ -300,7 +300,7 @@ public class CellReplica {
     
     @Override
     public int hashCode() {
-        return Objects.hash(row, column, content);
+        return Objects.hash(row, column, content, comment);
     }
     
     @Override
