@@ -178,7 +178,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                     }
                 }
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellReplica.of(address, value));
+                    cells.add(CellReplica.of(address, value, null));
                 }
                 
                 qNames.removeFirst();

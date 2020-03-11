@@ -305,7 +305,8 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     cells.add(CellReplica.of(
                             cellRec.getRow(),
                             cellRec.getColumn(),
-                            value));
+                            value,
+                            null));
                 }
                 
             } else if (record.getSid() == StringRecord.sid) {
@@ -319,7 +320,8 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     cells.add(CellReplica.of(
                             prevFormulaRec.getRow(),
                             prevFormulaRec.getColumn(),
-                            sRec.getString()));
+                            sRec.getString(),
+                            null));
                 }
                 prevFormulaRec = null;
                 

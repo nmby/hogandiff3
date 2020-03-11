@@ -108,17 +108,18 @@ public class CellReplica {
      * @param row 行インデックス（0開始）
      * @param column 列インデックス（0開始）
      * @param content セル内容
+     * @param comment セルコメント（{@code null} 許容）
      * @return 新たなセルレプリカ
      * @throws NullPointerException {@code content} が {@code null} の場合
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
-    public static CellReplica of(int row, int column, String content) {
+    public static CellReplica of(int row, int column, String content, String comment) {
         Objects.requireNonNull(content, "content");
         if (row < 0 || column < 0) {
             throw new IndexOutOfBoundsException(String.format("(%d, %d)", row, column));
         }
         
-        return new CellReplica(row, column, content);
+        return new CellReplica(row, column, content, comment);
     }
     
     /**
@@ -126,14 +127,15 @@ public class CellReplica {
      * 
      * @param address セルアドレス（{@code "A1"} 形式）
      * @param content セル内容
+     * @param comment セルコメント（{@code null} 許容）
      * @return 新たなセルレプリカ
      * @throws NullPointerException {@code address}, {@code content} のいずれかが {@code null} の場合
      */
-    public static CellReplica of(String address, String content) {
+    public static CellReplica of(String address, String content, String comment) {
         Objects.requireNonNull(address, "address");
         
         Pair<Integer> idx = CellReplica.addressToIdx(address);
-        return CellReplica.of(idx.a(), idx.b(), content);
+        return CellReplica.of(idx.a(), idx.b(), content, comment);
     }
     
     /**
@@ -145,7 +147,7 @@ public class CellReplica {
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
     public static CellReplica empty(int row, int column) {
-        return CellReplica.of(row, column, "");
+        return CellReplica.of(row, column, "", null);
     }
     
     /**
@@ -156,7 +158,7 @@ public class CellReplica {
      * @throws NullPointerException {@code address} が {@code null} の場合
      */
     public static CellReplica empty(String address) {
-        return CellReplica.of(address, "");
+        return CellReplica.of(address, "", null);
     }
     
     // [instance members] ******************************************************
@@ -166,7 +168,7 @@ public class CellReplica {
     private String content;
     private String comment;
     
-    private CellReplica(int row, int column, String content) {
+    private CellReplica(int row, int column, String content, String comment) {
         assert 0 <= row;
         assert 0 <= column;
         assert content != null;
@@ -174,6 +176,7 @@ public class CellReplica {
         this.row = row;
         this.column = column;
         this.content = content;
+        this.comment = comment;
     }
     
     /**

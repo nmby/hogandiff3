@@ -115,7 +115,9 @@ public class Factory {
             return content != null && !"".equals(content)
                     ? CellReplica.of(
                             cell.getRowIndex(),
-                            cell.getColumnIndex(), content)
+                            cell.getColumnIndex(),
+                            content,
+                            null)
                     : null;
         };
         
