@@ -109,7 +109,17 @@ public class Factory {
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
         // Settings 丸ごとではなく、必要な個別のパラメータを渡すこととする。
         
+        // COMPARE_CELL_CONTENTS == true の場合だけでなく、
+        // CONSIDER_ROW_GAPS == true, CONSIDER_COLUMN_GAPS == true の場合も
+        // 行同士・列同士の対応関係決定のためにセル内容を抽出することにする。
+        // 
+        // TODO: 上記方針でよいかどこかで見直す。上記撤回した方が処理としては早くなるので。
+        boolean extractContents = settings.get(SettingKeys.COMPARE_CELL_CONTENTS)
+                || settings.get(SettingKeys.CONSIDER_ROW_GAPS)
+                || settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
+        boolean extractComments = settings.get(SettingKeys.COMPARE_CELL_COMMENTS);
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
+        
         Function<Cell, CellReplica> converter = cell -> {
             String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
             return content != null && !"".equals(content)
@@ -126,13 +136,13 @@ public class Factory {
         case XLS:
             return CombinedSheetLoader.of(List.of(
                     () -> HSSFSheetLoaderWithPoiEventApi.of(useCachedValue),
-                    () -> SheetLoaderWithPoiUserApi.of(converter)));
+                    () -> SheetLoaderWithPoiUserApi.of(extractContents, extractComments, converter)));
         
         case XLSX:
         case XLSM:
             return CombinedSheetLoader.of(List.of(
                     () -> XSSFSheetLoaderWithSax.of(useCachedValue, bookPath),
-                    () -> SheetLoaderWithPoiUserApi.of(converter)));
+                    () -> SheetLoaderWithPoiUserApi.of(extractContents, extractComments, converter)));
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]

@@ -1,8 +1,11 @@
 package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,27 +41,44 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
     /**
      * 新しいローダーを構成します。<br>
      * 
+     * @param extractContents セル内容を抽出する場合は {@code true}
+     * @param extractComments セルコメントを抽出する場合は {@code true}
      * @param converter セル変換関数
      * @return 新しいローダー
-     * @throws NullPointerException {@code converter} が {@code null} の場合
+     * @throws NullPointerException {@code extractContents} が {@code true}
+     *                               かつ {@code converter} が {@code null} の場合
+     * @throw IllegalArgumentException {@code extractContents} が {@code false}
+     *                               かつ {@code converter} が {@code null} 以外の場合
      */
     public static SheetLoader of(
+            boolean extractContents,
+            boolean extractComments,
             Function<Cell, CellReplica> converter) {
         
-        Objects.requireNonNull(converter, "converter");
+        if (extractContents) {
+            Objects.requireNonNull(converter, "converter");
+        } else if (converter != null) {
+            throw new IllegalArgumentException("unnecessary converter.");
+        }
         
-        return new SheetLoaderWithPoiUserApi(converter);
+        return new SheetLoaderWithPoiUserApi(extractContents, extractComments, converter);
     }
     
     // [instance members] ******************************************************
     
+    private final boolean extractContents;
+    private final boolean extractComments;
     private final Function<Cell, CellReplica> converter;
     
     private SheetLoaderWithPoiUserApi(
+            boolean extractContents,
+            boolean extractComments,
             Function<Cell, CellReplica> converter) {
         
-        assert converter != null;
+        assert !extractContents || converter != null;
         
+        this.extractContents = extractContents;
+        this.extractComments = extractComments;
         this.converter = converter;
     }
     
@@ -100,11 +120,32 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
             // 同じく、後続の catch でさらに ExcelHandlingException にラップする。
             CommonUtil.ifNotSupportedSheetTypeThenThrow(getClass(), possibleTypes);
             
-            return StreamSupport.stream(sheet.spliterator(), true)
-                    .flatMap(row -> StreamSupport.stream(row.spliterator(), false))
-                    .map(converter::apply)
-                    .filter(cell -> cell != null)
-                    .collect(Collectors.toSet());
+            Set<CellReplica> cells = extractContents
+                    ? StreamSupport.stream(sheet.spliterator(), true)
+                            .flatMap(row -> StreamSupport.stream(row.spliterator(), false))
+                            .map(converter::apply)
+                            .filter(cell -> cell != null)
+                            .collect(Collectors.toCollection(HashSet::new))
+                    : new HashSet<>();
+            
+            if (extractComments) {
+                Map<String, CellReplica> cellsMap = cells.parallelStream()
+                        .collect(Collectors.toMap(CellReplica::address, Function.identity()));
+                
+                sheet.getCellComments().forEach((addr, comm) -> {
+                    String address = addr.formatAsString();
+                    // xlsx/xlsm 形式の場合、空コメントから null が返されるため、空文字列に標準化する。
+                    String comment = Optional.ofNullable(comm.getString().getString()).orElse("");
+                    
+                    if (cellsMap.containsKey(address)) {
+                        cellsMap.get(address).setComment(comment);
+                    } else {
+                        cells.add(CellReplica.of(address, "", comment));
+                    }
+                });
+            }
+            
+            return cells;
             
         } catch (Exception e) {
             throw new ExcelHandlingException(String.format(
