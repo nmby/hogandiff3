@@ -369,6 +369,12 @@ public class GuiController {
             } else if (key == SettingKeys.CONSIDER_COLUMN_GAPS) {
                 checkConsiderColumnGaps.setSelected((boolean) settings.get(key));
                 
+            } else if (key == SettingKeys.COMPARE_CELL_CONTENTS) {
+                // TODO: coding
+                
+            } else if (key == SettingKeys.COMPARE_CELL_COMMENTS) {
+                // TODO: coding
+                
             } else if (key == SettingKeys.COMPARE_ON_FORMULA_STRING) {
                 radioCompareOnFormula.setSelected((boolean) settings.get(key));
                 
@@ -464,6 +470,14 @@ public class GuiController {
         }
         if (targets == null || targets.contains(SettingKeys.CONSIDER_COLUMN_GAPS)) {
             builder.set(SettingKeys.CONSIDER_COLUMN_GAPS, checkConsiderColumnGaps.isSelected());
+        }
+        if (targets == null || targets.contains(SettingKeys.COMPARE_CELL_CONTENTS)) {
+            // TODO: coding
+            builder.setDefaultValue(SettingKeys.COMPARE_CELL_CONTENTS);
+        }
+        if (targets == null || targets.contains(SettingKeys.COMPARE_CELL_COMMENTS)) {
+            // TODO: coding
+            builder.setDefaultValue(SettingKeys.COMPARE_CELL_COMMENTS);
         }
         if (targets == null || targets.contains(SettingKeys.COMPARE_ON_FORMULA_STRING)) {
             builder.set(SettingKeys.COMPARE_ON_FORMULA_STRING, radioCompareOnFormula.isSelected());
