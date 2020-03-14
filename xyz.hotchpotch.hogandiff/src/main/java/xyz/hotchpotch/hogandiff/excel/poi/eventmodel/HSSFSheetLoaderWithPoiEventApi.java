@@ -75,8 +75,8 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         /** 目的のシートがワークシートなのかダイアログシートなのかを確認します。 */
         CHECK_WORKSHEET_OR_DIALOGSHEET,
         
-        /** 目的のシートのセルデータを読み取ります。 */
-        READING_SHEET_DATA,
+        /** 目的のシートのセル内容物を読み取ります。 */
+        READING_CELL_CONTENTS,
         
         /** 処理完了。 */
         COMPLETED;
@@ -120,6 +120,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
          */
         @Override
         public void processRecord(Record record) {
+            System.out.println(record);
             switch (step) {
             case SEARCHING_SHEET_DEFINITION:
                 searchingSheetDefinition(record);
@@ -137,8 +138,8 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                 checkWorksheetOrDialogsheet(record);
                 break;
             
-            case READING_SHEET_DATA:
-                readingSheetData(record);
+            case READING_CELL_CONTENTS:
+                readingCellContents(record);
                 break;
             
             case COMPLETED:
@@ -248,7 +249,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     throw new UnsupportedOperationException(
                             "ダイアログシートはサポートされません。");
                 }
-                step = ProcessingStep.READING_SHEET_DATA;
+                step = ProcessingStep.READING_CELL_CONTENTS;
                 
             } else if (record.getSid() == EOFRecord.sid) {
                 throw new AssertionError("no WSBool record");
@@ -256,11 +257,11 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         }
         
         /**
-         * 目的のシートのセルデータを読み取ります。<br>
+         * 目的のシートのセル内容物を読み取ります。<br>
          * 
          * @param record レコード
          */
-        private void readingSheetData(Record record) {
+        private void readingCellContents(Record record) {
             if (record instanceof CellRecord) {
                 if (prevFormulaRec != null) {
                     throw new AssertionError("no following string record");
