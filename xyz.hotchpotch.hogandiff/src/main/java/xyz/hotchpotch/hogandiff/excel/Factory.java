@@ -141,7 +141,7 @@ public class Factory {
         case XLSX:
         case XLSM:
             return CombinedSheetLoader.of(List.of(
-                    () -> XSSFSheetLoaderWithSax.of(useCachedValue, bookPath),
+                    () -> XSSFSheetLoaderWithSax.of(extractContents, extractComments, useCachedValue, bookPath),
                     () -> SheetLoaderWithPoiUserApi.of(extractContents, extractComments, converter)));
         
         case XLSB:

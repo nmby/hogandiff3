@@ -58,6 +58,7 @@ public class SaxUtil {
         private final String id;
         private SheetType type;
         private String source;
+        private String commentSource;
         
         private SheetInfo(String name, String id) {
             this.name = name;
@@ -103,6 +104,17 @@ public class SaxUtil {
          */
         public String source() {
             return source;
+        }
+        
+        /**
+         * zipファイルとしてのExcelファイル内における
+         * セルコメントのソースエントリのパス文字列を返します。<br>
+         * 例）{@code "xl/comments1.xml"}
+         * 
+         * @return セルコメントのソースエントリのパス文字列
+         */
+        public String commentSource() {
+            return commentSource;
         }
     }
     
@@ -256,6 +268,45 @@ public class SaxUtil {
     }
     
     /**
+     * zipファイルとしての.xlsx/.xlsmファイルから次のエントリを読み込み、
+     * 指定されたシートに対するセルコメントのソースパスを抽出します。<br>
+     * <pre>
+     * *.xlsx
+     *   +-xl
+     *     +-worksheets
+     *       +-_rels
+     *         +-sheet?.xml.rels
+     * </pre>
+     * 
+     * @author nmby
+     */
+    private static class Handler4 extends DefaultHandler {
+        
+        // [static members] ----------------------------------------------------
+        
+        private static final String commentRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
+        
+        // [instance members] --------------------------------------------------
+        
+        private final SheetInfo info;
+        private final String relEntry;
+        
+        private Handler4(SheetInfo info) {
+            assert info != null;
+            
+            this.info = info;
+            this.relEntry = info.source.replace("xl/worksheets/", "xl/worksheets/_rels/") + ".rels";
+        }
+        
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes) {
+            if ("Relationship".equals(qName) && commentRelType.equals(attributes.getValue("Type"))) {
+                info.commentSource = attributes.getValue("Target").replace("../", "xl/");
+            }
+        }
+    }
+    
+    /**
      * .xlsx/.xlsm 形式のExcelブックからシート情報の一覧を読み取ります。<br>
      * 
      * @param bookPath Excelブックのパス
@@ -280,6 +331,15 @@ public class SaxUtil {
             Handler2 handler2 = new Handler2(handler1.sheets);
             try (InputStream is = Files.newInputStream(fs.getPath(Handler2.targetEntry))) {
                 parser.parse(is, handler2);
+            }
+            
+            for (SheetInfo info : handler1.sheets) {
+                Handler4 handler4 = new Handler4(info);
+                if (Files.exists(fs.getPath(handler4.relEntry))) {
+                    try (InputStream is = Files.newInputStream(fs.getPath(handler4.relEntry))) {
+                        parser.parse(is, handler4);
+                    }
+                }
             }
             
             return List.copyOf(handler1.sheets);
