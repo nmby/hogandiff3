@@ -135,7 +135,7 @@ public class Factory {
         switch (bookType) {
         case XLS:
             return CombinedSheetLoader.of(List.of(
-                    () -> HSSFSheetLoaderWithPoiEventApi.of(useCachedValue),
+                    () -> HSSFSheetLoaderWithPoiEventApi.of(extractContents, extractComments, useCachedValue),
                     () -> SheetLoaderWithPoiUserApi.of(extractContents, extractComments, converter)));
         
         case XLSX:
