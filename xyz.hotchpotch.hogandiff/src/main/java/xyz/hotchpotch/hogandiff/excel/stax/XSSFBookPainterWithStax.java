@@ -34,6 +34,7 @@ import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
+import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
@@ -46,7 +47,6 @@ import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintColumnsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintDiffCellsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRedundantCellsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRowsReader;
-import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -299,21 +299,23 @@ public class XSSFBookPainterWithStax implements BookPainter {
         
         final String targetEntry = "xl/sharedStrings.xml";
         
-        try (InputStream is = Files.newInputStream(inFs.getPath(targetEntry));
-                OutputStream os = Files.newOutputStream(outFs.getPath(targetEntry),
-                        StandardOpenOption.TRUNCATE_EXISTING)) {
-            
-            XMLEventReader reader = inFactory.createXMLEventReader(is, "UTF-8");
-            XMLEventWriter writer = outFactory.createXMLEventWriter(os, "UTF-8");
-            
-            reader = FilteringReader.builder(reader)
-                    .addFilter(QNAME.COLOR)
-                    .build();
-            
-            writer.add(reader);
-            
-        } catch (Exception e) {
-            throw new ExcelHandlingException(targetEntry + " エントリの処理に失敗しました。", e);
+        if (Files.exists(inFs.getPath(targetEntry))) {
+            try (InputStream is = Files.newInputStream(inFs.getPath(targetEntry));
+                    OutputStream os = Files.newOutputStream(outFs.getPath(targetEntry),
+                            StandardOpenOption.TRUNCATE_EXISTING)) {
+                
+                XMLEventReader reader = inFactory.createXMLEventReader(is, "UTF-8");
+                XMLEventWriter writer = outFactory.createXMLEventWriter(os, "UTF-8");
+                
+                reader = FilteringReader.builder(reader)
+                        .addFilter(QNAME.COLOR)
+                        .build();
+                
+                writer.add(reader);
+                
+            } catch (Exception e) {
+                throw new ExcelHandlingException(targetEntry + " エントリの処理に失敗しました。", e);
+            }
         }
     }
     

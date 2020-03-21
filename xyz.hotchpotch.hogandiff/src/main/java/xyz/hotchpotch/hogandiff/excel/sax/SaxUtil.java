@@ -367,11 +367,16 @@ public class SaxUtil {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             
-            Handler3 handler3 = new Handler3();
-            try (InputStream is = Files.newInputStream(fs.getPath(Handler3.targetEntry))) {
-                parser.parse(is, handler3);
+            if (Files.exists(fs.getPath(Handler3.targetEntry))) {
+                Handler3 handler3 = new Handler3();
+                try (InputStream is = Files.newInputStream(fs.getPath(Handler3.targetEntry))) {
+                    parser.parse(is, handler3);
+                }
+                return List.copyOf(handler3.sst);
+                
+            } else {
+                return List.of();
             }
-            return List.copyOf(handler3.sst);
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
