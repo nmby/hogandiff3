@@ -112,10 +112,16 @@ public class GuiController {
     private CheckBox checkConsiderColumnGaps;
     
     @FXML
+    private CheckBox checkCompareCellContents;
+    
+    @FXML
     private RadioButton radioCompareOnValue;
     
     @FXML
     private RadioButton radioCompareOnFormula;
+    
+    @FXML
+    private CheckBox checkCompareCellComments;
     
     @FXML
     private CheckBox checkShowPaintedSheets;
@@ -261,11 +267,17 @@ public class GuiController {
         // 各種設定を変更した場合は、それをプロパティに反映させる。
         checkConsiderRowGaps.setOnAction(event -> hasSettingsChanged.set(true));
         checkConsiderColumnGaps.setOnAction(event -> hasSettingsChanged.set(true));
+        checkCompareCellContents.setOnAction(event -> hasSettingsChanged.set(true));
         radioCompareOnValue.setOnAction(event -> hasSettingsChanged.set(true));
         radioCompareOnFormula.setOnAction(event -> hasSettingsChanged.set(true));
+        checkCompareCellComments.setOnAction(event -> hasSettingsChanged.set(true));
         checkShowPaintedSheets.setOnAction(event -> hasSettingsChanged.set(true));
         checkShowResultText.setOnAction(event -> hasSettingsChanged.set(true));
         checkExitWhenFinished.setOnAction(event -> hasSettingsChanged.set(true));
+        
+        // 「セル内容を比較する」が選択された場合のみ、「値／数式」の選択を有効にする。
+        radioCompareOnValue.disableProperty().bind(checkCompareCellContents.selectedProperty().not());
+        radioCompareOnFormula.disableProperty().bind(checkCompareCellContents.selectedProperty().not());
         
         // 各種設定の変更有無に応じて「設定の保存」ボタンの有効／無効を切り替える。
         buttonSaveSettings.disableProperty().bind(hasSettingsChanged.not());
@@ -370,10 +382,10 @@ public class GuiController {
                 checkConsiderColumnGaps.setSelected((boolean) settings.get(key));
                 
             } else if (key == SettingKeys.COMPARE_CELL_CONTENTS) {
-                // TODO: coding
+                checkCompareCellContents.setSelected((boolean) settings.get(key));
                 
             } else if (key == SettingKeys.COMPARE_CELL_COMMENTS) {
-                // TODO: coding
+                checkCompareCellComments.setSelected((boolean) settings.get(key));
                 
             } else if (key == SettingKeys.COMPARE_ON_FORMULA_STRING) {
                 radioCompareOnFormula.setSelected((boolean) settings.get(key));
@@ -472,12 +484,10 @@ public class GuiController {
             builder.set(SettingKeys.CONSIDER_COLUMN_GAPS, checkConsiderColumnGaps.isSelected());
         }
         if (targets == null || targets.contains(SettingKeys.COMPARE_CELL_CONTENTS)) {
-            // TODO: coding
-            builder.setDefaultValue(SettingKeys.COMPARE_CELL_CONTENTS);
+            builder.set(SettingKeys.COMPARE_CELL_CONTENTS, checkCompareCellContents.isSelected());
         }
         if (targets == null || targets.contains(SettingKeys.COMPARE_CELL_COMMENTS)) {
-            // TODO: coding
-            builder.setDefaultValue(SettingKeys.COMPARE_CELL_COMMENTS);
+            builder.set(SettingKeys.COMPARE_CELL_COMMENTS, checkCompareCellComments.isSelected());
         }
         if (targets == null || targets.contains(SettingKeys.COMPARE_ON_FORMULA_STRING)) {
             builder.set(SettingKeys.COMPARE_ON_FORMULA_STRING, radioCompareOnFormula.isSelected());
