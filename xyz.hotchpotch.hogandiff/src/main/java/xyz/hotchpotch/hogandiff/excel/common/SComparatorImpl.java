@@ -291,8 +291,20 @@ public class SComparatorImpl implements SComparator {
         
         Objects.requireNonNull(cells1, "cells1");
         Objects.requireNonNull(cells2, "cells2");
+        
         if (cells1 == cells2) {
-            throw new IllegalArgumentException("cells1 == cells2");
+            if (cells1.isEmpty()) {
+                return SResult.of(
+                        considerRowGaps,
+                        considerColumnGaps,
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        List.of());
+            } else {
+                throw new IllegalArgumentException("cells1 == cells2");
+            }
         }
         
         List<Pair<Integer>> rowPairs = rowsMapper.makePairs(cells1, cells2);
