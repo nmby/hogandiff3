@@ -507,6 +507,12 @@ public class GuiController {
         if (targets == null || targets.contains(SettingKeys.DIFF_COLOR)) {
             builder.setDefaultValue(SettingKeys.DIFF_COLOR);
         }
+        if (targets == null || targets.contains(SettingKeys.REDUNDANT_COMMENT_COLOR)) {
+            builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        }
+        if (targets == null || targets.contains(SettingKeys.DIFF_COMMENT_COLOR)) {
+            builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
+        }
         if (targets == null || targets.contains(AppSettingKeys.WORK_DIR_BASE)) {
             builder.setDefaultValue(AppSettingKeys.WORK_DIR_BASE);
         }

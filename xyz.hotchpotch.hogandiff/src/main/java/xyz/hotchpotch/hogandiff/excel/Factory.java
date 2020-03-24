@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.awt.Color;
 import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
@@ -173,10 +174,10 @@ public class Factory {
         boolean compareCellComments = settings.get(SettingKeys.COMPARE_CELL_COMMENTS);
         
         return SComparatorImpl.of(
-                compareCellContents,
-                compareCellComments,
                 considerRowGaps,
-                considerColumnGaps);
+                considerColumnGaps,
+                compareCellContents,
+                compareCellComments);
     }
     
     /**
@@ -194,19 +195,23 @@ public class Factory {
         
         short redundantColor = settings.get(SettingKeys.REDUNDANT_COLOR);
         short diffColor = settings.get(SettingKeys.DIFF_COLOR);
+        Color redundantCommentColor = settings.get(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        Color diffCommentColor = settings.get(SettingKeys.DIFF_COMMENT_COLOR);
         
         BookType bookType = BookType.of(bookPath);
         switch (bookType) {
         case XLS:
             return CombinedBookPainter.of(List.of(
                     // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
-                    () -> BookPainterWithPoiUserApi.of(redundantColor, diffColor)));
+                    () -> BookPainterWithPoiUserApi.of(
+                            redundantColor, diffColor, redundantCommentColor, diffCommentColor)));
         
         case XLSX:
         case XLSM:
             return CombinedBookPainter.of(List.of(
                     () -> XSSFBookPainterWithStax.of(redundantColor, diffColor),
-                    () -> BookPainterWithPoiUserApi.of(redundantColor, diffColor)));
+                    () -> BookPainterWithPoiUserApi.of(
+                            redundantColor, diffColor, redundantCommentColor, diffCommentColor)));
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]

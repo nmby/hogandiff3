@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
+import java.awt.Color;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
+import org.apache.poi.hssf.usermodel.HSSFComment;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFSheetConditionalFormatting;
@@ -25,6 +27,7 @@ import org.apache.poi.ss.formula.eval.ErrorEval;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -36,6 +39,7 @@ import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFChartSheet;
 import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFComment;
 import org.apache.poi.xssf.usermodel.XSSFDialogsheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFSheetConditionalFormatting;
@@ -178,7 +182,8 @@ public class PoiUtil {
     }
     
     /**
-     * 指定されたExcelブックに設定されているあらゆる色をクリアします。<br>
+     * 指定されたExcelブックに設定されているあらゆる色をクリアし、
+     * セルコメントを非表示にします。<br>
      * 
      * @param book Excelブック
      * @throws NullPointerException {@code book} が {@code null} の場合
@@ -243,6 +248,13 @@ public class PoiUtil {
         // が事実としてシート見出し色が消えるのできっと良いのだろう・・
         book.forEach(sheet -> ((XSSFSheet) sheet).setTabColor(
                 new XSSFColor(new DefaultIndexedColorMap())));
+        
+        // セルコメントに対する処理
+        book.forEach(sheet -> ((XSSFSheet) sheet).getCellComments().values().forEach(comment -> {
+            // FIXME: [No.7 POI関連] XSSFComment#setVisible(boolean)が機能しない
+            comment.setVisible(false);
+            // FIXME: [No.3 着色関連] セルコメントのスタイル変更方法が分からない
+        }));
     }
     
     private static void clearAllColors(HSSFWorkbook book) {
@@ -289,6 +301,15 @@ public class PoiUtil {
         });
         
         // FIXME: [No.3 着色関連] シート見出しの色の消し方が分からない
+        
+        // セルコメントに対する処理
+        book.forEach(sheet -> ((HSSFSheet) sheet).getCellComments().values().forEach(comment -> {
+            comment.setVisible(false);
+            comment.resetBackgroundImage();
+            comment.setFillColor(HSSFComment.FILL__FILLCOLOR_DEFAULT);
+            comment.setLineStyle(HSSFComment.LINESTYLE_SOLID);
+            comment.setLineStyleColor(HSSFComment.LINESTYLE__COLOR_DEFAULT);
+        }));
     }
     
     /**
@@ -456,6 +477,46 @@ public class PoiUtil {
                 CellUtil.setCellStyleProperties(first, newProperties);
                 CellStyle newStyle = first.getCellStyle();
                 itr.forEachRemaining(cell -> cell.setCellStyle(newStyle));
+            }
+        });
+    }
+    
+    /**
+     * 指定されたExcelシート上の指定された位置のセルに付されているコメントに
+     * 指定された色を付け、表示状態にします。<br>
+     * 
+     * @param sheet Excelシート
+     * @param addresses 色を付けるセルコメントの位置
+     * @param color 着色する色のインデックス値
+     * @throws NullPointerException
+     *              {@code sheet}, {@code addresses} のいずれかが {@code null} の場合
+     */
+    public static void paintComments(
+            Sheet sheet,
+            Set<CellAddress> addresses,
+            Color color) {
+        
+        Objects.requireNonNull(sheet, "sheet");
+        Objects.requireNonNull(addresses, "addresses");
+        
+        Map<CellAddress, ? extends Comment> comments = sheet.getCellComments();
+        
+        addresses.forEach(addr -> {
+            Comment c = comments.get(addr);
+            
+            if (c instanceof XSSFComment) {
+                XSSFComment comment = (XSSFComment) c;
+                // FIXME: [No.7 POI関連] XSSFComment#setVisible(boolean)が機能しない
+                comment.setVisible(true);
+                // FIXME: [No.3 着色関連] セルコメントのスタイル変更方法が分からない
+                
+            } else if (c instanceof HSSFComment) {
+                HSSFComment comment = (HSSFComment) c;
+                comment.setVisible(true);
+                comment.setFillColor(color.getRed(), color.getGreen(), color.getBlue());
+                
+            } else {
+                throw new AssertionError("unknown comment type: " + c.getClass().getName());
             }
         });
     }

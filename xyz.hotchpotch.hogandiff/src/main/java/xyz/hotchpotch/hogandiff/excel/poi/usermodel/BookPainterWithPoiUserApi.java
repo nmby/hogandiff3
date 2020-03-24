@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,10 +20,10 @@ import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
+import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
-import xyz.hotchpotch.hogandiff.excel.SheetType;
 
 /**
  * Apache POI のユーザーモデル API を利用して
@@ -40,30 +41,45 @@ public class BookPainterWithPoiUserApi implements BookPainter {
     /**
      * 新しいペインターを構成します。<br>
      * 
-     * @param redundantColor 余剰個所に着ける色のインデックス値
-     * @param diffColor 差分個所に着ける色のインデックス値
+     * @param redundantColor 余剰行・余剰列に着ける色のインデックス値
+     * @param diffColor 差分セルに着ける色のインデックス値
+     * @param redundantCommentColor 余剰セルコメントに着ける色のインデックス値
+     * @param diffCommentColor 差分セルコメントに着ける色のインデックス値
      * @return 新たなペインター
      */
     public static BookPainter of(
             short redundantColor,
-            short diffColor) {
+            short diffColor,
+            Color redundantCommentColor,
+            Color diffCommentColor) {
         
         return new BookPainterWithPoiUserApi(
                 redundantColor,
-                diffColor);
+                diffColor,
+                redundantCommentColor,
+                diffCommentColor);
     }
     
     // [instance members] ******************************************************
     
     private final short redundantColor;
     private final short diffColor;
+    private final Color redundantCommentColor;
+    private final Color diffCommentColor;
     
     private BookPainterWithPoiUserApi(
             short redundantColor,
-            short diffColor) {
+            short diffColor,
+            Color redundantCommentColor,
+            Color diffCommentColor) {
+        
+        assert redundantCommentColor != null;
+        assert diffCommentColor != null;
         
         this.redundantColor = redundantColor;
         this.diffColor = diffColor;
+        this.redundantCommentColor = redundantCommentColor;
+        this.diffCommentColor = diffCommentColor;
     }
     
     /**
@@ -134,10 +150,20 @@ public class BookPainterWithPoiUserApi implements BookPainter {
                 PoiUtil.paintRows(sheet, piece.redundantRows(), redundantColor);
                 PoiUtil.paintColumns(sheet, piece.redundantColumns(), redundantColor);
                 
-                Set<CellAddress> addresses = piece.diffCells().stream()
+                Set<CellAddress> diffContents = piece.diffCellContents().stream()
                         .map(c -> new CellAddress(c.row(), c.column()))
                         .collect(Collectors.toSet());
-                PoiUtil.paintCells(sheet, addresses, diffColor);
+                PoiUtil.paintCells(sheet, diffContents, diffColor);
+                
+                Set<CellAddress> diffComments = piece.diffCellComments().stream()
+                        .map(c -> new CellAddress(c.row(), c.column()))
+                        .collect(Collectors.toSet());
+                PoiUtil.paintComments(sheet, diffComments, diffCommentColor);
+                
+                Set<CellAddress> redundantComments = piece.redundantCellComments().stream()
+                        .map(c -> new CellAddress(c.row(), c.column()))
+                        .collect(Collectors.toSet());
+                PoiUtil.paintComments(sheet, redundantComments, redundantCommentColor);
             });
             
             // 5. Excelブックを上書き保存する。
