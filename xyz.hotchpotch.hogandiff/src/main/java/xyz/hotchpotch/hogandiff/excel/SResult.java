@@ -34,20 +34,32 @@ public class SResult {
         private final List<Integer> redundantRows;
         private final List<Integer> redundantColumns;
         private final List<CellReplica> diffCells;
+        private final List<CellReplica> diffCellContents;
+        private final List<CellReplica> diffCellComments;
+        private final List<CellReplica> redundantCellComments;
         
         private Piece(
                 List<Integer> redundantRows,
                 List<Integer> redundantColumns,
-                List<CellReplica> diffCells) {
+                List<CellReplica> diffCells,
+                List<CellReplica> diffCellContents,
+                List<CellReplica> diffCellComments,
+                List<CellReplica> redundantCellComments) {
             
             assert redundantRows != null;
             assert redundantColumns != null;
             assert diffCells != null;
+            assert diffCellContents != null;
+            assert diffCellComments != null;
+            assert redundantCellComments != null;
             
             // 一応防御的コピーしておく。
             this.redundantRows = List.copyOf(redundantRows);
             this.redundantColumns = List.copyOf(redundantColumns);
             this.diffCells = List.copyOf(diffCells);
+            this.diffCellContents = List.copyOf(diffCellContents);
+            this.diffCellComments = List.copyOf(diffCellComments);
+            this.redundantCellComments = List.copyOf(redundantCellComments);
         }
         
         /**
@@ -75,6 +87,33 @@ public class SResult {
          */
         public List<CellReplica> diffCells() {
             return diffCells;
+        }
+        
+        /**
+         * セル内容の異なるセルを返します。<br>
+         * 
+         * @return セル内容の異なるセル
+         */
+        public List<CellReplica> diffCellContents() {
+            return diffCellContents;
+        }
+        
+        /**
+         * セルコメントの異なるセルを返します。<br>
+         * 
+         * @return セルコメントの異なるセル
+         */
+        public List<CellReplica> diffCellComments() {
+            return diffCellComments;
+        }
+        
+        /**
+         * 余剰セルコメントのセルを返します。<br>
+         * 
+         * @return 余剰セルコメントのセル
+         */
+        public List<CellReplica> redundantCellComments() {
+            return redundantCellComments;
         }
     }
     
@@ -319,7 +358,10 @@ public class SResult {
         return new Piece(
                 redundantRows.get(side),
                 redundantColumns.get(side),
-                diffCells.stream().map(p -> p.get(side)).collect(Collectors.toList()));
+                diffCells.stream().map(p -> p.get(side)).collect(Collectors.toList()),
+                diffCellContents.stream().map(p -> p.get(side)).collect(Collectors.toList()),
+                diffCellComments.stream().map(p -> p.get(side)).collect(Collectors.toList()),
+                redundantCellComments.get(side));
     }
     
     /**
