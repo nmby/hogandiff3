@@ -236,30 +236,42 @@ public class SComparatorImpl implements SComparator {
      * 
      * @param considerRowGaps 比較において行の余剰／欠損を考慮する場合は {@code true}
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
+     * @param compareCellContents 比較においてセル内容を比較する場合は {@code true}
+     * @param compareCellComments 比較においてセルコメントを比較する場合は {@code true}
      * @return 新しいコンパレータ
      */
     public static SComparator of(
             boolean considerRowGaps,
-            boolean considerColumnGaps) {
+            boolean considerColumnGaps,
+            boolean compareCellContents,
+            boolean compareCellComments) {
         
         return new SComparatorImpl(
                 considerRowGaps,
-                considerColumnGaps);
+                considerColumnGaps,
+                compareCellContents,
+                compareCellComments);
     }
     
     // [instance members] ******************************************************
     
     private final boolean considerRowGaps;
     private final boolean considerColumnGaps;
+    private final boolean compareCellContents;
+    private final boolean compareCellComments;
     private final Mapper rowsMapper;
     private final Mapper columnsMapper;
     
     private SComparatorImpl(
             boolean considerRowGaps,
-            boolean considerColumnGaps) {
+            boolean considerColumnGaps,
+            boolean compareCellContents,
+            boolean compareCellComments) {
         
         this.considerRowGaps = considerRowGaps;
         this.considerColumnGaps = considerColumnGaps;
+        this.compareCellContents = compareCellContents;
+        this.compareCellComments = compareCellComments;
         
         if (considerRowGaps && considerColumnGaps) {
             rowsMapper = mapper(CellReplica::row, CellReplica::attrCompare);
@@ -297,6 +309,8 @@ public class SComparatorImpl implements SComparator {
                 return SResult.of(
                         considerRowGaps,
                         considerColumnGaps,
+                        compareCellContents,
+                        compareCellComments,
                         List.of(),
                         List.of(),
                         List.of(),
@@ -329,6 +343,8 @@ public class SComparatorImpl implements SComparator {
         return SResult.of(
                 considerRowGaps,
                 considerColumnGaps,
+                compareCellContents,
+                compareCellComments,
                 redundantRows1,
                 redundantRows2,
                 redundantColumns1,
@@ -347,6 +363,8 @@ public class SComparatorImpl implements SComparator {
         assert cells1 != cells2;
         assert rowPairs != null;
         assert columnPairs != null;
+        
+        // TODO: 要処理内容見直し
         
         Map<String, CellReplica> map1 = cells1.stream()
                 .collect(Collectors.toMap(CellReplica::address, Function.identity()));

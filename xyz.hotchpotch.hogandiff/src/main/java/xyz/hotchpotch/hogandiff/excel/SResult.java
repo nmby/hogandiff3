@@ -83,6 +83,8 @@ public class SResult {
      * 
      * @param considerRowGaps 比較において行の余剰／欠損を考慮したか
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮したか
+     * @param compareCellContents 比較においてセル内容を比較したか
+     * @param compareCellComments 比較においてセルコメントを比較したか
      * @param redundantRows1 シート1における余剰行
      * @param redundantRows2 シート2における余剰行
      * @param redundantColumns1 シート1における余剰列
@@ -99,6 +101,8 @@ public class SResult {
     public static SResult of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
+            boolean compareCellContents,
+            boolean compareCellComments,
             List<Integer> redundantRows1,
             List<Integer> redundantRows2,
             List<Integer> redundantColumns1,
@@ -120,6 +124,8 @@ public class SResult {
         return new SResult(
                 considerRowGaps,
                 considerColumnGaps,
+                compareCellContents,
+                compareCellComments,
                 redundantRows1,
                 redundantRows2,
                 redundantColumns1,
@@ -131,13 +137,20 @@ public class SResult {
     
     private final boolean considerRowGaps;
     private final boolean considerColumnGaps;
+    private final boolean compareCellContents;
+    private final boolean compareCellComments;
     private final Pair<List<Integer>> redundantRows;
     private final Pair<List<Integer>> redundantColumns;
     private final List<Pair<CellReplica>> diffCells;
+    private final List<Pair<CellReplica>> diffCellContents;
+    private final List<Pair<CellReplica>> diffCellComments;
+    private final Pair<List<CellReplica>> redundantCellComments;
     
     private SResult(
             boolean considerRowGaps,
             boolean considerColumnGaps,
+            boolean compareCellContents,
+            boolean compareCellComments,
             List<Integer> redundantRows1,
             List<Integer> redundantRows2,
             List<Integer> redundantColumns1,
@@ -157,6 +170,8 @@ public class SResult {
         
         this.considerRowGaps = considerRowGaps;
         this.considerColumnGaps = considerColumnGaps;
+        this.compareCellContents = compareCellContents;
+        this.compareCellComments = compareCellComments;
         
         // 一応、防御的コピーしておく。
         this.redundantRows = Pair.of(
@@ -166,6 +181,33 @@ public class SResult {
                 List.copyOf(redundantColumns1),
                 List.copyOf(redundantColumns2));
         this.diffCells = List.copyOf(diffCells);
+        
+        this.diffCellContents = !compareCellContents
+                ? List.of()
+                : !compareCellComments
+                        ? this.diffCells
+                        : List.copyOf(diffCells.stream()
+                                .filter(p -> !Objects.equals(p.a().getContent(), p.b().getContent()))
+                                .collect(Collectors.toList()));
+        this.diffCellComments = !compareCellComments
+                ? List.of()
+                : !compareCellContents
+                        ? this.diffCells
+                        : List.copyOf(diffCells.stream()
+                                .filter(p -> p.a().getComment() != null && p.b().getComment() != null)
+                                .filter(p -> !Objects.equals(p.a().getComment(), p.b().getComment()))
+                                .collect(Collectors.toList()));
+        this.redundantCellComments = !compareCellComments
+                ? Pair.of(List.of(), List.of())
+                : Pair.of(
+                        List.copyOf(diffCells.stream()
+                                .filter(p -> p.a().getComment() != null && p.b().getComment() == null)
+                                .map(Pair::a)
+                                .collect(Collectors.toList())),
+                        List.copyOf(diffCells.stream()
+                                .filter(p -> p.a().getComment() == null && p.b().getComment() != null)
+                                .map(Pair::b)
+                                .collect(Collectors.toList())));
     }
     
     /**
@@ -184,6 +226,24 @@ public class SResult {
      */
     public boolean considerColumnGaps() {
         return considerColumnGaps;
+    }
+    
+    /**
+     * この比較においてセル内容が比較されたかを返します。<br>
+     * 
+     * @return この比較においてセル内容が比較された場合は {@code true}
+     */
+    public boolean compareCellContents() {
+        return compareCellContents;
+    }
+    
+    /**
+     * この比較においてセルコメントが比較されたかを返します。<br>
+     * 
+     * @return この比較においてセルコメントが比較された場合は {@code true}
+     */
+    public boolean compareCellComments() {
+        return compareCellComments;
     }
     
     /**
@@ -214,6 +274,36 @@ public class SResult {
     public List<Pair<CellReplica>> diffCells() {
         // 不変なのでこのまま返しちゃって問題ない。
         return diffCells;
+    }
+    
+    /**
+     * セル内容の異なるセルを返します。<br>
+     * 
+     * @return セル内容の異なるセル
+     */
+    public List<Pair<CellReplica>> diffCellContents() {
+        // 不変なのでこのまま返しちゃって問題ない。
+        return diffCellContents;
+    }
+    
+    /**
+     * セルコメントの異なるセルを返します。<br>
+     * 
+     * @return セルコメントの異なるセル
+     */
+    public List<Pair<CellReplica>> diffCellComments() {
+        // 不変なのでこのまま返しちゃって問題ない。
+        return diffCellComments;
+    }
+    
+    /**
+     * 余剰セルコメントのセルを返します。<br>
+     * 
+     * @return 余剰セルコメントのセル
+     */
+    public Pair<List<CellReplica>> redundantCellComments() {
+        // 不変なのでこのまま返しちゃって問題ない。
+        return redundantCellComments;
     }
     
     /**
