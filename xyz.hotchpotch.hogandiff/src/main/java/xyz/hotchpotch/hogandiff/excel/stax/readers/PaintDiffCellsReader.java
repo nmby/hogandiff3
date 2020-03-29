@@ -33,10 +33,9 @@ import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax.StylesManager
  * xl/worksheets/sheet?.xml エントリを処理対象とし、
  * {@code <c>} 要素に対する操作を行います。<br>
  *
- * @param <T> セルデータの型
  * @author nmby
  */
-public class PaintDiffCellsReader<T> extends BufferingReader {
+public class PaintDiffCellsReader extends BufferingReader {
     
     // [static members] ********************************************************
     
@@ -55,14 +54,13 @@ public class PaintDiffCellsReader<T> extends BufferingReader {
     /**
      * 新しいリーダーを構成します。<br>
      * 
-     * @param <T> セルデータの型
      * @param source ソースリーダー
      * @param stylesManager スタイルマネージャ
      * @param diffCells 差分セル
      * @param colorIdx 着色する色のインデックス
      * @return 新しいリーダー
      */
-    public static <T> XMLEventReader of(
+    public static XMLEventReader of(
             XMLEventReader source,
             StylesManager stylesManager,
             List<CellReplica> diffCells,
@@ -72,7 +70,7 @@ public class PaintDiffCellsReader<T> extends BufferingReader {
         Objects.requireNonNull(stylesManager, "stylesManager");
         Objects.requireNonNull(diffCells, "diffCells");
         
-        return new PaintDiffCellsReader<>(
+        return new PaintDiffCellsReader(
                 source,
                 stylesManager,
                 diffCells,
