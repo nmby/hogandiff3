@@ -210,19 +210,15 @@ public class SResult {
         
         this.diffCellContents = !compareCellContents
                 ? List.of()
-                : !compareCellComments
-                        ? this.diffCells
-                        : List.copyOf(diffCells.stream()
-                                .filter(p -> !Objects.equals(p.a().getContent(), p.b().getContent()))
-                                .collect(Collectors.toList()));
+                : List.copyOf(diffCells.stream()
+                        .filter(p -> !Objects.equals(p.a().getContent(), p.b().getContent()))
+                        .collect(Collectors.toList()));
         this.diffCellComments = !compareCellComments
                 ? List.of()
-                : !compareCellContents
-                        ? this.diffCells
-                        : List.copyOf(diffCells.stream()
-                                .filter(p -> p.a().getComment() != null && p.b().getComment() != null)
-                                .filter(p -> !Objects.equals(p.a().getComment(), p.b().getComment()))
-                                .collect(Collectors.toList()));
+                : List.copyOf(diffCells.stream()
+                        .filter(p -> p.a().getComment() != null && p.b().getComment() != null)
+                        .filter(p -> !Objects.equals(p.a().getComment(), p.b().getComment()))
+                        .collect(Collectors.toList()));
         this.redundantCellComments = !compareCellComments
                 ? Pair.of(List.of(), List.of())
                 : Pair.of(
