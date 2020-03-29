@@ -40,6 +40,8 @@ public class AppMain extends Application {
     public static final Set<Settings.Key<?>> keysToBeSaved = Set.of(
             SettingKeys.CONSIDER_ROW_GAPS,
             SettingKeys.CONSIDER_COLUMN_GAPS,
+            SettingKeys.COMPARE_CELL_CONTENTS,
+            SettingKeys.COMPARE_CELL_COMMENTS,
             SettingKeys.COMPARE_ON_FORMULA_STRING,
             AppSettingKeys.SHOW_PAINTED_SHEETS,
             AppSettingKeys.SHOW_RESULT_TEXT,

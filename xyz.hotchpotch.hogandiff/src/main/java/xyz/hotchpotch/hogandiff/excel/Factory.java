@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.awt.Color;
 import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
@@ -109,13 +110,25 @@ public class Factory {
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
         // Settings 丸ごとではなく、必要な個別のパラメータを渡すこととする。
         
+        // 実装メモ：
+        // COMPARE_CELL_CONTENTS == true の場合だけでなく、
+        // CONSIDER_ROW_GAPS == true, CONSIDER_COLUMN_GAPS == true の場合も
+        // 行同士・列同士の対応関係決定のためにセル内容を抽出することにする。
+        // TODO: 上記方針でよいかどこかで見直す。上記撤回した方が処理としては早くなるので。
+        boolean extractContents = settings.get(SettingKeys.COMPARE_CELL_CONTENTS)
+                || settings.get(SettingKeys.CONSIDER_ROW_GAPS)
+                || settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
+        boolean extractComments = settings.get(SettingKeys.COMPARE_CELL_COMMENTS);
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
+        
         Function<Cell, CellReplica> converter = cell -> {
-            String data = PoiUtil.getCellContentAsString(cell, useCachedValue);
-            return data != null && !"".equals(data)
+            String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
+            return content != null && !"".equals(content)
                     ? CellReplica.of(
                             cell.getRowIndex(),
-                            cell.getColumnIndex(), data)
+                            cell.getColumnIndex(),
+                            content,
+                            null)
                     : null;
         };
         
@@ -123,14 +136,18 @@ public class Factory {
         switch (bookType) {
         case XLS:
             return CombinedSheetLoader.of(List.of(
-                    () -> HSSFSheetLoaderWithPoiEventApi.of(useCachedValue),
-                    () -> SheetLoaderWithPoiUserApi.of(converter)));
+                    () -> HSSFSheetLoaderWithPoiEventApi.of(
+                            extractContents, extractComments, useCachedValue),
+                    () -> SheetLoaderWithPoiUserApi.of(
+                            extractContents, extractComments, converter)));
         
         case XLSX:
         case XLSM:
             return CombinedSheetLoader.of(List.of(
-                    () -> XSSFSheetLoaderWithSax.of(useCachedValue, bookPath),
-                    () -> SheetLoaderWithPoiUserApi.of(converter)));
+                    () -> XSSFSheetLoaderWithSax.of(
+                            extractContents, extractComments, useCachedValue, bookPath),
+                    () -> SheetLoaderWithPoiUserApi.of(
+                            extractContents, extractComments, converter)));
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]
@@ -153,8 +170,14 @@ public class Factory {
         
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
         boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
+        boolean compareCellContents = settings.get(SettingKeys.COMPARE_CELL_CONTENTS);
+        boolean compareCellComments = settings.get(SettingKeys.COMPARE_CELL_COMMENTS);
         
-        return SComparatorImpl.of(considerRowGaps, considerColumnGaps);
+        return SComparatorImpl.of(
+                considerRowGaps,
+                considerColumnGaps,
+                compareCellContents,
+                compareCellComments);
     }
     
     /**
@@ -172,19 +195,27 @@ public class Factory {
         
         short redundantColor = settings.get(SettingKeys.REDUNDANT_COLOR);
         short diffColor = settings.get(SettingKeys.DIFF_COLOR);
+        Color redundantCommentColor = settings.get(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        Color diffCommentColor = settings.get(SettingKeys.DIFF_COMMENT_COLOR);
+        // もうなんか滅茶苦茶や・・・
+        String redundantCommentHex = "#" + SettingKeys.REDUNDANT_COMMENT_COLOR.encoder().apply(redundantCommentColor);
+        String diffCommentHex = "#" + SettingKeys.DIFF_COMMENT_COLOR.encoder().apply(diffCommentColor);
         
         BookType bookType = BookType.of(bookPath);
         switch (bookType) {
         case XLS:
             return CombinedBookPainter.of(List.of(
                     // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
-                    () -> BookPainterWithPoiUserApi.of(redundantColor, diffColor)));
+                    () -> BookPainterWithPoiUserApi.of(
+                            redundantColor, diffColor, redundantCommentColor, diffCommentColor)));
         
         case XLSX:
         case XLSM:
             return CombinedBookPainter.of(List.of(
-                    () -> XSSFBookPainterWithStax.of(redundantColor, diffColor),
-                    () -> BookPainterWithPoiUserApi.of(redundantColor, diffColor)));
+                    () -> XSSFBookPainterWithStax.of(
+                            redundantColor, diffColor, redundantCommentHex, diffCommentHex),
+                    () -> BookPainterWithPoiUserApi.of(
+                            redundantColor, diffColor, redundantCommentColor, diffCommentColor)));
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]

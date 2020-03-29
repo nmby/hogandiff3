@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -32,8 +33,10 @@ import org.w3c.dom.Element;
 
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookType;
+import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
+import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
@@ -41,12 +44,13 @@ import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil;
 import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.NONS_QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.QNAME;
+import xyz.hotchpotch.hogandiff.excel.stax.readers.CloseAndUnpaintCommentsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.FilteringReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintColumnsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintDiffCellsReader;
+import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintDiffOrRedundantCommentsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRedundantCellsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRowsReader;
-import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -183,30 +187,45 @@ public class XSSFBookPainterWithStax implements BookPainter {
     /**
      * 新しいペインターを構成します。<br>
      * 
-     * @param redundantColor 余剰個所に着ける色のインデックス値
-     * @param diffColor 差分個所に着ける色のインデックス値
+     * @param redundantColor 余剰行・余剰列に着ける色のインデックス値
+     * @param diffColor 差分セルに着ける色のインデックス値
+     * @param redundantCommentColor 余剰セルコメントに着ける色の16進表現（例：{@code "#ff8080"}）
+     * @param diffCommentColor 余剰セルコメントに着ける色の16進表現（例：{@code "#ff8080"}）
      * @return 新たなペインター
      */
     public static BookPainter of(
             short redundantColor,
-            short diffColor) {
+            short diffColor,
+            String redundantCommentColor,
+            String diffCommentColor) {
+        
+        Objects.requireNonNull(redundantCommentColor, "redundantCommentColor");
+        Objects.requireNonNull(diffCommentColor, "diffCommentColor");
         
         return new XSSFBookPainterWithStax(
                 redundantColor,
-                diffColor);
+                diffColor,
+                redundantCommentColor,
+                diffCommentColor);
     }
     
     // [instance members] ******************************************************
     
     private final short redundantColor;
     private final short diffColor;
+    private final String redundantCommentColor;
+    private final String diffCommentColor;
     
     private XSSFBookPainterWithStax(
             short redundantColor,
-            short diffColor) {
+            short diffColor,
+            String redundantCommentColor,
+            String diffCommentColor) {
         
         this.redundantColor = redundantColor;
         this.diffColor = diffColor;
+        this.redundantCommentColor = redundantCommentColor;
+        this.diffCommentColor = diffCommentColor;
     }
     
     // 例外カスケードのポリシーについて：
@@ -241,13 +260,15 @@ public class XSSFBookPainterWithStax implements BookPainter {
         try (FileSystem inFs = FileSystems.newFileSystem(srcBookPath);
                 FileSystem outFs = FileSystems.newFileSystem(dstBookPath)) {
             
+            // TODO: 空のシートに着色されないというバグがあるので直す。
+            
             // 2-1. xl/sharedStrings.xml エントリに対する処理
             processSharedStringsEntry(inFs, outFs);
             
             // 2-2. xl/styles.xml エントリに対する処理
             processStylesEntry(inFs, outFs);
             
-            // 2-3. xl/worksheets/sheet?.xml エントリに対する処理
+            // 2-3. xl/worksheets/sheet?.xml と xl/drawings/vmlDrawing?.vml エントリに対する処理
             processWorksheetEntries(inFs, outFs, dstBookPath, diffs);
             
         } catch (ExcelHandlingException e) {
@@ -299,21 +320,23 @@ public class XSSFBookPainterWithStax implements BookPainter {
         
         final String targetEntry = "xl/sharedStrings.xml";
         
-        try (InputStream is = Files.newInputStream(inFs.getPath(targetEntry));
-                OutputStream os = Files.newOutputStream(outFs.getPath(targetEntry),
-                        StandardOpenOption.TRUNCATE_EXISTING)) {
-            
-            XMLEventReader reader = inFactory.createXMLEventReader(is, "UTF-8");
-            XMLEventWriter writer = outFactory.createXMLEventWriter(os, "UTF-8");
-            
-            reader = FilteringReader.builder(reader)
-                    .addFilter(QNAME.COLOR)
-                    .build();
-            
-            writer.add(reader);
-            
-        } catch (Exception e) {
-            throw new ExcelHandlingException(targetEntry + " エントリの処理に失敗しました。", e);
+        if (Files.exists(inFs.getPath(targetEntry))) {
+            try (InputStream is = Files.newInputStream(inFs.getPath(targetEntry));
+                    OutputStream os = Files.newOutputStream(outFs.getPath(targetEntry),
+                            StandardOpenOption.TRUNCATE_EXISTING)) {
+                
+                XMLEventReader reader = inFactory.createXMLEventReader(is, "UTF-8");
+                XMLEventWriter writer = outFactory.createXMLEventWriter(os, "UTF-8");
+                
+                reader = FilteringReader.builder(reader)
+                        .addFilter(QNAME.COLOR)
+                        .build();
+                
+                writer.add(reader);
+                
+            } catch (Exception e) {
+                throw new ExcelHandlingException(targetEntry + " エントリの処理に失敗しました。", e);
+            }
         }
     }
     
@@ -398,16 +421,24 @@ public class XSSFBookPainterWithStax implements BookPainter {
                     stylesEntry + " エントリの読み込みに失敗しました。", e);
         }
         
-        // 次に、比較対象シートに対応する xl/worksheets/sheet?.xml エントリに対する着色処理を行う。
-        Map<String, String> sheetNameToSource = SaxUtil.loadSheetInfo(bookPath).stream()
-                .collect(Collectors.toMap(SheetInfo::name, SheetInfo::source));
+        // 次に、比較対象シートに対する着色処理を行う。
+        Map<String, SheetInfo> sheetNameToInfo = SaxUtil.loadSheetInfo(bookPath).stream()
+                .collect(Collectors.toMap(SheetInfo::name, Function.identity()));
         
         for (Entry<String, Piece> diff : diffs.entrySet()) {
             String sheetName = diff.getKey();
-            String source = sheetNameToSource.get(sheetName);
             Piece piece = diff.getValue();
             
+            // xl/worksheets/sheet?.xml エントリに対する処理
+            String source = sheetNameToInfo.get(sheetName).source();
             processWorksheetEntry(inFs, outFs, stylesManager, source, piece);
+            
+            // xl/drawings/vmlDrawing?.vml エントリに対する処理
+            String vmlDrawingSource = sheetNameToInfo.get(sheetName).vmlDrawingSource();
+            if (vmlDrawingSource != null) {
+                processCommentDrawingEntry(
+                        inFs, outFs, vmlDrawingSource, piece, redundantCommentColor, diffCommentColor);
+            }
         }
         
         // 最後に、xl/styles.xml エントリを上書き保存する。
@@ -475,13 +506,49 @@ public class XSSFBookPainterWithStax implements BookPainter {
             reader = PaintDiffCellsReader.of(
                     reader,
                     stylesManager,
-                    piece.diffCells(),
+                    piece.diffCellContents(),
                     diffColor);
             
             writer.add(reader);
             
         } catch (Exception e) {
             throw new ExcelHandlingException(source + " エントリの処理に失敗しました。", e);
+        }
+    }
+    
+    private void processCommentDrawingEntry(
+            FileSystem inFs,
+            FileSystem outFs,
+            String vmlDrawingSource,
+            Piece piece,
+            String redundantCommentColor,
+            String diffCommentColor)
+            throws ExcelHandlingException {
+        
+        try (InputStream is = Files.newInputStream(inFs.getPath(vmlDrawingSource));
+                OutputStream os = Files.newOutputStream(outFs.getPath(vmlDrawingSource),
+                        StandardOpenOption.TRUNCATE_EXISTING)) {
+            
+            XMLEventReader reader = inFactory.createXMLEventReader(is, "UTF-8");
+            XMLEventWriter writer = outFactory.createXMLEventWriter(os, "UTF-8");
+            
+            reader = CloseAndUnpaintCommentsReader.of(reader);
+            
+            reader = PaintDiffOrRedundantCommentsReader.of(
+                    reader,
+                    piece.diffCellComments().stream()
+                            .map(CellReplica::address)
+                            .collect(Collectors.toSet()),
+                    piece.redundantCellComments().stream()
+                            .map(CellReplica::address)
+                            .collect(Collectors.toSet()),
+                    diffCommentColor,
+                    redundantCommentColor);
+            
+            writer.add(reader);
+            
+        } catch (Exception e) {
+            throw new ExcelHandlingException(vmlDrawingSource + " エントリの処理に失敗しました。", e);
         }
     }
 }

@@ -2,10 +2,12 @@ package xyz.hotchpotch.hogandiff.excel.poi.eventmodel;
 
 import java.io.FileInputStream;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,14 +19,18 @@ import org.apache.poi.hssf.record.BOFRecord;
 import org.apache.poi.hssf.record.BoolErrRecord;
 import org.apache.poi.hssf.record.BoundSheetRecord;
 import org.apache.poi.hssf.record.CellRecord;
+import org.apache.poi.hssf.record.CommonObjectDataSubRecord;
 import org.apache.poi.hssf.record.EOFRecord;
 import org.apache.poi.hssf.record.FormulaRecord;
 import org.apache.poi.hssf.record.LabelSSTRecord;
+import org.apache.poi.hssf.record.NoteRecord;
 import org.apache.poi.hssf.record.NumberRecord;
+import org.apache.poi.hssf.record.ObjRecord;
 import org.apache.poi.hssf.record.RKRecord;
 import org.apache.poi.hssf.record.Record;
 import org.apache.poi.hssf.record.SSTRecord;
 import org.apache.poi.hssf.record.StringRecord;
+import org.apache.poi.hssf.record.TextObjectRecord;
 import org.apache.poi.hssf.record.WSBoolRecord;
 import org.apache.poi.hssf.record.common.UnicodeString;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -75,8 +81,8 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         /** 目的のシートがワークシートなのかダイアログシートなのかを確認します。 */
         CHECK_WORKSHEET_OR_DIALOGSHEET,
         
-        /** 目的のシートのセルデータを読み取ります。 */
-        READING_SHEET_DATA,
+        /** 目的のシートのセル内容物とセルコメントを読み取ります。 */
+        READING_CELL_CONTENTS_AND_COMMENTS,
         
         /** 処理完了。 */
         COMPLETED;
@@ -91,19 +97,31 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         // [instance members] --------------------------------------------------
         
         private final String sheetName;
+        private final boolean extractContents;
+        private final boolean extractComments;
         private final boolean extractCachedValue;
-        private final Set<CellReplica> cells = new HashSet<>();
+        private final Map<String, CellReplica> cells = new HashMap<>();
+        private final Map<Integer, String> comments = new HashMap<>();
         
         private ProcessingStep step = ProcessingStep.SEARCHING_SHEET_DEFINITION;
         private int sheetIdx = 0;
         private int currIdx = 0;
         private List<String> sst;
         private FormulaRecord prevFormulaRec;
+        private CommonObjectDataSubRecord prevFtCmoRec;
         
-        private Listener1(String sheetName, boolean extractCachedValue) {
+        private Listener1(
+                String sheetName,
+                boolean extractContents,
+                boolean extractComments,
+                boolean extractCachedValue) {
+            
             assert sheetName != null;
+            assert extractContents || extractComments;
             
             this.sheetName = sheetName;
+            this.extractContents = extractContents;
+            this.extractComments = extractComments;
             this.extractCachedValue = extractCachedValue;
         }
         
@@ -137,8 +155,8 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                 checkWorksheetOrDialogsheet(record);
                 break;
             
-            case READING_SHEET_DATA:
-                readingSheetData(record);
+            case READING_CELL_CONTENTS_AND_COMMENTS:
+                readingCellContentsAndComments(record);
                 break;
             
             case COMPLETED:
@@ -248,7 +266,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     throw new UnsupportedOperationException(
                             "ダイアログシートはサポートされません。");
                 }
-                step = ProcessingStep.READING_SHEET_DATA;
+                step = ProcessingStep.READING_CELL_CONTENTS_AND_COMMENTS;
                 
             } else if (record.getSid() == EOFRecord.sid) {
                 throw new AssertionError("no WSBool record");
@@ -256,74 +274,130 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         }
         
         /**
-         * 目的のシートのセルデータを読み取ります。<br>
+         * 目的のシートのセル内容物とセルコメントを読み取ります。<br>
          * 
          * @param record レコード
          */
-        private void readingSheetData(Record record) {
-            if (record instanceof CellRecord) {
-                if (prevFormulaRec != null) {
-                    throw new AssertionError("no following string record");
+        private void readingCellContentsAndComments(Record record) {
+            if (extractContents) {
+                if (record instanceof CellRecord) {
+                    if (prevFormulaRec != null) {
+                        throw new AssertionError("no following string record");
+                    }
+                    
+                    String value = null;
+                    
+                    switch (record.getSid()) {
+                    case LabelSSTRecord.sid:
+                        LabelSSTRecord lRec = (LabelSSTRecord) record;
+                        value = sst.get(lRec.getSSTIndex());
+                        break;
+                    
+                    case NumberRecord.sid:
+                        NumberRecord nRec = (NumberRecord) record;
+                        value = NumberToTextConverter.toText(nRec.getValue());
+                        break;
+                    
+                    case RKRecord.sid:
+                        RKRecord rkRec = (RKRecord) record;
+                        value = NumberToTextConverter.toText(rkRec.getRKNumber());
+                        break;
+                    
+                    case BoolErrRecord.sid:
+                        BoolErrRecord beRec = (BoolErrRecord) record;
+                        if (beRec.isBoolean()) {
+                            value = Boolean.toString(beRec.getBooleanValue());
+                        } else {
+                            value = ErrorEval.getText(beRec.getErrorValue());
+                        }
+                        break;
+                    
+                    case FormulaRecord.sid:
+                        value = getValueFromFormulaRecord((FormulaRecord) record);
+                        break;
+                    
+                    default:
+                        throw new AssertionError(record.getSid());
+                    }
+                    
+                    if (value != null && !"".equals(value)) {
+                        CellRecord cellRec = (CellRecord) record;
+                        cells.put(
+                                CellReplica.idxToAddress(
+                                        cellRec.getRow(),
+                                        cellRec.getColumn()),
+                                CellReplica.of(
+                                        cellRec.getRow(),
+                                        cellRec.getColumn(),
+                                        value,
+                                        null));
+                    }
+                    
+                } else if (record.getSid() == StringRecord.sid) {
+                    if (prevFormulaRec == null) {
+                        throw new AssertionError("unexpected string record");
+                    }
+                    
+                    StringRecord sRec = (StringRecord) record;
+                    String value = sRec.getString();
+                    if (value != null && !"".equals(value)) {
+                        cells.put(
+                                CellReplica.idxToAddress(
+                                        prevFormulaRec.getRow(),
+                                        prevFormulaRec.getColumn()),
+                                CellReplica.of(
+                                        prevFormulaRec.getRow(),
+                                        prevFormulaRec.getColumn(),
+                                        sRec.getString(),
+                                        null));
+                    }
+                    prevFormulaRec = null;
                 }
-                
-                CellRecord cellRec = (CellRecord) record;
-                String value = null;
-                
+            }
+            
+            if (extractComments) {
                 switch (record.getSid()) {
-                case LabelSSTRecord.sid:
-                    LabelSSTRecord lRec = (LabelSSTRecord) cellRec;
-                    value = sst.get(lRec.getSSTIndex());
+                case ObjRecord.sid:
+                    ObjRecord objRec = (ObjRecord) record;
+                    Optional<CommonObjectDataSubRecord> ftCmo = objRec.getSubRecords().stream()
+                            .filter(sub -> sub instanceof CommonObjectDataSubRecord)
+                            .map(sub -> (CommonObjectDataSubRecord) sub)
+                            .filter(sub -> sub.getObjectType() == CommonObjectDataSubRecord.OBJECT_TYPE_COMMENT)
+                            .findAny();
+                    ftCmo.ifPresent(ftCmoRec -> {
+                        if (prevFtCmoRec != null) {
+                            throw new AssertionError("no following txo record");
+                        }
+                        prevFtCmoRec = ftCmoRec;
+                    });
                     break;
                 
-                case NumberRecord.sid:
-                    NumberRecord nRec = (NumberRecord) cellRec;
-                    value = NumberToTextConverter.toText(nRec.getValue());
+                case TextObjectRecord.sid:
+                    if (prevFtCmoRec == null) {
+                        // throw new AssertionError("no preceding ftCmo record");
+                        // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートの場合もこのパスに流れ込んできてしまう。
+                        break;
+                    }
+                    TextObjectRecord txoRec = (TextObjectRecord) record;
+                    comments.put(prevFtCmoRec.getObjectId(), txoRec.getStr().getString());
+                    prevFtCmoRec = null;
                     break;
                 
-                case RKRecord.sid:
-                    RKRecord rkRec = (RKRecord) cellRec;
-                    value = NumberToTextConverter.toText(rkRec.getRKNumber());
-                    break;
-                
-                case BoolErrRecord.sid:
-                    BoolErrRecord beRec = (BoolErrRecord) cellRec;
-                    if (beRec.isBoolean()) {
-                        value = Boolean.toString(beRec.getBooleanValue());
+                case NoteRecord.sid:
+                    NoteRecord noteRec = (NoteRecord) record;
+                    String address = CellReplica.idxToAddress(noteRec.getRow(), noteRec.getColumn());
+                    String comment = comments.remove(noteRec.getShapeId());
+                    
+                    if (cells.containsKey(address)) {
+                        cells.get(address).setComment(comment);
                     } else {
-                        value = ErrorEval.getText(beRec.getErrorValue());
+                        cells.put(address, CellReplica.of(address, "", comment));
                     }
                     break;
-                
-                case FormulaRecord.sid:
-                    value = getValueFromFormulaRecord((FormulaRecord) record);
-                    break;
-                
-                default:
-                    throw new AssertionError(record.getSid());
                 }
-                if (value != null && !"".equals(value)) {
-                    cells.add(CellReplica.of(
-                            cellRec.getRow(),
-                            cellRec.getColumn(),
-                            value));
-                }
-                
-            } else if (record.getSid() == StringRecord.sid) {
-                if (prevFormulaRec == null) {
-                    throw new AssertionError("unexpected string record");
-                }
-                
-                StringRecord sRec = (StringRecord) record;
-                String value = sRec.getString();
-                if (value != null && !"".equals(value)) {
-                    cells.add(CellReplica.of(
-                            prevFormulaRec.getRow(),
-                            prevFormulaRec.getColumn(),
-                            sRec.getString()));
-                }
-                prevFormulaRec = null;
-                
-            } else if (record.getSid() == EOFRecord.sid) {
+            }
+            
+            if (record.getSid() == EOFRecord.sid) {
                 step = ProcessingStep.COMPLETED;
             }
         }
@@ -387,20 +461,34 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
     /**
      * 新しいローダーを構成します。<br>
      * 
+     * @param extractContents セル内容物を抽出する場合は {@code true}
+     * @param extractComments セルコメントを抽出する場合は {@code true}
      * @param extractCachedValue
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}
      * @return 新しいローダー
      */
-    public static SheetLoader of(boolean extractCachedValue) {
-        return new HSSFSheetLoaderWithPoiEventApi(extractCachedValue);
+    public static SheetLoader of(
+            boolean extractContents,
+            boolean extractComments,
+            boolean extractCachedValue) {
+        
+        return new HSSFSheetLoaderWithPoiEventApi(extractContents, extractComments, extractCachedValue);
     }
     
     // [instance members] ******************************************************
     
+    private final boolean extractContents;
+    private final boolean extractComments;
     private final boolean extractCachedValue;
     
-    private HSSFSheetLoaderWithPoiEventApi(boolean extractCachedValue) {
+    private HSSFSheetLoaderWithPoiEventApi(
+            boolean extractContents,
+            boolean extractComments,
+            boolean extractCachedValue) {
+        
+        this.extractContents = extractContents;
+        this.extractComments = extractComments;
         this.extractCachedValue = extractCachedValue;
     }
     
@@ -427,15 +515,20 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         Objects.requireNonNull(sheetName, "sheetName");
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
+        if (!extractContents && !extractComments) {
+            return Set.of();
+        }
+        
         try (FileInputStream fin = new FileInputStream(bookPath.toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
             HSSFRequest req = new HSSFRequest();
-            Listener1 listener1 = new Listener1(sheetName, extractCachedValue);
+            Listener1 listener1 = new Listener1(
+                    sheetName, extractContents, extractComments, extractCachedValue);
             req.addListenerForAllRecords(listener1);
             HSSFEventFactory factory = new HSSFEventFactory();
             factory.abortableProcessWorkbookEvents(req, poifs);
-            return listener1.cells;
+            return Set.copyOf(listener1.cells.values());
             
         } catch (Exception e) {
             throw new ExcelHandlingException(String.format(

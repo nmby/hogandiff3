@@ -33,10 +33,9 @@ import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax.StylesManager
  * xl/worksheets/sheet?.xml エントリを処理対象とし、
  * {@code <c>} 要素に対する操作を行います。<br>
  *
- * @param <T> セルデータの型
  * @author nmby
  */
-public class PaintDiffCellsReader<T> extends BufferingReader {
+public class PaintDiffCellsReader extends BufferingReader {
     
     // [static members] ********************************************************
     
@@ -55,27 +54,26 @@ public class PaintDiffCellsReader<T> extends BufferingReader {
     /**
      * 新しいリーダーを構成します。<br>
      * 
-     * @param <T> セルデータの型
      * @param source ソースリーダー
      * @param stylesManager スタイルマネージャ
      * @param diffCells 差分セル
      * @param colorIdx 着色する色のインデックス
      * @return 新しいリーダー
      */
-    public static <T> XMLEventReader of(
+    public static XMLEventReader of(
             XMLEventReader source,
             StylesManager stylesManager,
-            List<CellReplica> diffCells,
+            List<CellReplica> diffCellContents,
             short colorIdx) {
         
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(stylesManager, "stylesManager");
-        Objects.requireNonNull(diffCells, "diffCells");
+        Objects.requireNonNull(diffCellContents, "diffCellContents");
         
-        return new PaintDiffCellsReader<>(
+        return new PaintDiffCellsReader(
                 source,
                 stylesManager,
-                diffCells,
+                diffCellContents,
                 colorIdx);
     }
     
@@ -90,16 +88,16 @@ public class PaintDiffCellsReader<T> extends BufferingReader {
     private PaintDiffCellsReader(
             XMLEventReader source,
             StylesManager stylesManager,
-            List<CellReplica> diffCells,
+            List<CellReplica> diffCellContents,
             short colorIdx) {
         
         super(source);
         
         assert stylesManager != null;
-        assert diffCells != null;
+        assert diffCellContents != null;
         
         this.stylesManager = stylesManager;
-        this.diffAddresses = diffCells.stream()
+        this.diffAddresses = diffCellContents.stream()
                 .sorted(cellSorter)
                 .collect(Collectors.groupingBy(
                         CellReplica::row,
@@ -111,7 +109,7 @@ public class PaintDiffCellsReader<T> extends BufferingReader {
                 .collect(Collectors.toCollection(ArrayDeque::new));
         this.colorIdx = colorIdx;
         
-        if (diffCells.isEmpty()) {
+        if (diffCellContents.isEmpty()) {
             auto = true;
         }
     }

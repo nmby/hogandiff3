@@ -8,9 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
-import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
-import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
-import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
 
 @BookHandler(targetTypes = { BookType.XLSB, BookType.XLS, BookType.XLSB })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET, SheetType.CHART_SHEET })

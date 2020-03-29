@@ -13,8 +13,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PoiUtil;
-
 class PoiUtilTest2_getCellContentAsString {
     
     // [static members] ********************************************************

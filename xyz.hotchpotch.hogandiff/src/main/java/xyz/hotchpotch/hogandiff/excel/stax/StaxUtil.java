@@ -106,6 +106,62 @@ public class StaxUtil {
         }
     }
     
+   /**
+     * xmlns = {@code "urn:schemas-microsoft-com:office:excel"}
+     * の各種QNAMEを提供します。<br>
+     *
+     * @author nmby
+     */
+    public static class X_QNAME {
+        
+        // [static members] ----------------------------------------------------
+        
+        /** xmlns */
+        public static final String XMLNS = "urn:schemas-microsoft-com:office:excel";
+        
+        /** ClientData */
+        public static final QName CLIENT_DATA = new QName(XMLNS, "ClientData", "x");
+        
+        /** Column */
+        public static final QName COLUMN = new QName(XMLNS, "Column", "x");
+        
+        /** Row */
+        public static final QName ROW = new QName(XMLNS, "Row", "x");
+        
+        /** Visible */
+        public static final QName VISIBLE = new QName(XMLNS, "Visible", "x");
+        
+        // [instance members] --------------------------------------------------
+        
+        private X_QNAME() {
+        }
+    }
+    
+    /**
+     * xmlns = {@code "urn:schemas-microsoft-com:vml"}
+     * の各種QNAMEを提供します。<br>
+     *
+     * @author nmby
+     */
+    public static class V_QNAME {
+        
+        // [static members] ----------------------------------------------------
+        
+        /** xmlns */
+        public static final String XMLNS = "urn:schemas-microsoft-com:vml";
+        
+        /** fill */
+        public static final QName FILL = new QName(XMLNS, "fill", "v");
+        
+        /** shape */
+        public static final QName SHAPE = new QName(XMLNS, "shape", "v");
+        
+        // [instance members] --------------------------------------------------
+        
+        private V_QNAME() {
+        }
+    }
+    
     /**
      * それ自体は xmlns の定義されない各種QNAMEを提供します。<br>
      * 
@@ -118,11 +174,17 @@ public class StaxUtil {
         /** customFormat */
         public static final QName CUSTOM_FORMAT = new QName(null, "customFormat");
         
+        /** fillcolor */
+        public static final QName FILL_COLOR = new QName(null, "fillcolor");
+        
         /** max */
         public static final QName MAX = new QName(null, "max");
         
         /** min */
         public static final QName MIN = new QName(null, "min");
+        
+        /** ObjectType */
+        public static final QName OBJECT_TYPE = new QName(null, "ObjectType");
         
         /** patternFill */
         public static final QName PATTERN_TYPE = new QName(null, "patternType");
@@ -136,8 +198,14 @@ public class StaxUtil {
         /** spans */
         public static final QName SPANS = new QName(null, "spans");
         
+        /** strokecolor */
+        public static final QName STROKE_COLOR = new QName(null, "strokecolor");
+        
         /** style */
         public static final QName STYLE = new QName(null, "style");
+        
+        /** type */
+        public static final QName TYPE = new QName(null, "type");
         
         /** width */
         public static final QName WIDTH = new QName(null, "width");

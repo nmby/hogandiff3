@@ -178,7 +178,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                     }
                 }
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellReplica.of(address, value));
+                    cells.add(CellReplica.of(address, value, null));
                 }
                 
                 qNames.removeFirst();
@@ -189,9 +189,63 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         }
     }
     
+    private static class Handler2 extends DefaultHandler {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+        
+        private final Set<CellReplica> cells;
+        private final Map<String, CellReplica> cellsMap;
+        
+        private String address;
+        private StringBuilder comment;
+        
+        private Handler2(Set<CellReplica> cells) {
+            assert cells != null;
+            
+            this.cells = cells;
+            this.cellsMap = cells.parallelStream()
+                    .collect(Collectors.toMap(CellReplica::address, Function.identity()));
+        }
+        
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes)
+                throws SAXException {
+            
+            if ("comment".equals(qName)) {
+                address = attributes.getValue("ref");
+                comment = new StringBuilder();
+            }
+        }
+        
+        @Override
+        public void characters(char ch[], int start, int length) {
+            if (comment != null) {
+                comment.append(ch, start, length);
+            }
+        }
+        
+        @Override
+        public void endElement(String uri, String localName, String qName) {
+            if ("comment".equals(qName)) {
+                if (cellsMap.containsKey(address)) {
+                    cellsMap.get(address).setComment(comment.toString());
+                } else {
+                    cells.add(CellReplica.of(address, "", comment.toString()));
+                }
+                
+                address = null;
+                comment = null;
+            }
+        }
+    }
+    
     /**
      * 新しいローダーを構成します。<br>
      * 
+     * @param extractContents セル内容物を抽出する場合は {@code true}
+     * @param extractComments セルコメントを抽出する場合は {@code true}
      * @param extractCachedValue
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}
@@ -206,6 +260,8 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
      *              具体的には、Excelブックから共通情報の取得に失敗した場合
      */
     public static SheetLoader of(
+            boolean extractContents,
+            boolean extractComments,
             boolean extractCachedValue,
             Path bookPath)
             throws ExcelHandlingException {
@@ -215,17 +271,25 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                 XSSFSheetLoaderWithSax.class,
                 BookType.of(bookPath));
         
-        return new XSSFSheetLoaderWithSax(extractCachedValue, bookPath);
+        return new XSSFSheetLoaderWithSax(
+                extractContents,
+                extractComments,
+                extractCachedValue,
+                bookPath);
     }
     
     // [instance members] ******************************************************
     
+    private final boolean extractContents;
+    private final boolean extractComments;
     private final boolean extractCachedValue;
     private final Path bookPath;
     private final Map<String, SheetInfo> nameToInfo;
     private final List<String> sst;
     
     private XSSFSheetLoaderWithSax(
+            boolean extractContents,
+            boolean extractComments,
             boolean extractCachedValue,
             Path bookPath)
             throws ExcelHandlingException {
@@ -233,13 +297,17 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         assert bookPath != null;
         assert CommonUtil.isSupportedBookType(getClass(), BookType.of(bookPath));
         
+        this.extractContents = extractContents;
+        this.extractComments = extractComments;
         this.extractCachedValue = extractCachedValue;
         this.bookPath = bookPath;
         this.nameToInfo = SaxUtil.loadSheetInfo(bookPath).stream()
                 .collect(Collectors.toMap(
                         SheetInfo::name,
                         Function.identity()));
-        this.sst = SaxUtil.loadSharedStrings(bookPath);
+        this.sst = extractContents
+                ? SaxUtil.loadSharedStrings(bookPath)
+                : null;
     }
     
     /**
@@ -271,6 +339,10 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                     this.bookPath, bookPath));
         }
         
+        if (!extractContents && !extractComments) {
+            return Set.of();
+        }
+        
         try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
             
             if (!nameToInfo.containsKey(sheetName)) {
@@ -285,13 +357,26 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
+            Set<CellReplica> cells = null;
             
-            Handler1 handler1 = new Handler1(extractCachedValue, sst);
-            try (InputStream is = Files.newInputStream(fs.getPath(info.source()))) {
-                parser.parse(is, handler1);
+            if (extractContents) {
+                Handler1 handler1 = new Handler1(extractCachedValue, sst);
+                try (InputStream is = Files.newInputStream(fs.getPath(info.source()))) {
+                    parser.parse(is, handler1);
+                }
+                cells = handler1.cells;
+            } else {
+                cells = new HashSet<>();
             }
             
-            return Set.copyOf(handler1.cells);
+            if (extractComments && info.commentSource() != null) {
+                Handler2 handler2 = new Handler2(cells);
+                try (InputStream is = Files.newInputStream(fs.getPath(info.commentSource()))) {
+                    parser.parse(is, handler2);
+                }
+            }
+            
+            return Set.copyOf(cells);
             
         } catch (Exception e) {
             throw new ExcelHandlingException(String.format(

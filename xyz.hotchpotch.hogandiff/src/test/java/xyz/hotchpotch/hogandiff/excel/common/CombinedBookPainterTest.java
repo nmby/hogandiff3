@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
-import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
 
 class CombinedBookPainterTest {
     

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
 
 class CombinedBookLoaderTest {
     
