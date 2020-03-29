@@ -63,17 +63,17 @@ public class PaintDiffCellsReader extends BufferingReader {
     public static XMLEventReader of(
             XMLEventReader source,
             StylesManager stylesManager,
-            List<CellReplica> diffCells,
+            List<CellReplica> diffCellContents,
             short colorIdx) {
         
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(stylesManager, "stylesManager");
-        Objects.requireNonNull(diffCells, "diffCells");
+        Objects.requireNonNull(diffCellContents, "diffCellContents");
         
         return new PaintDiffCellsReader(
                 source,
                 stylesManager,
-                diffCells,
+                diffCellContents,
                 colorIdx);
     }
     
@@ -88,16 +88,16 @@ public class PaintDiffCellsReader extends BufferingReader {
     private PaintDiffCellsReader(
             XMLEventReader source,
             StylesManager stylesManager,
-            List<CellReplica> diffCells,
+            List<CellReplica> diffCellContents,
             short colorIdx) {
         
         super(source);
         
         assert stylesManager != null;
-        assert diffCells != null;
+        assert diffCellContents != null;
         
         this.stylesManager = stylesManager;
-        this.diffAddresses = diffCells.stream()
+        this.diffAddresses = diffCellContents.stream()
                 .sorted(cellSorter)
                 .collect(Collectors.groupingBy(
                         CellReplica::row,
@@ -109,7 +109,7 @@ public class PaintDiffCellsReader extends BufferingReader {
                 .collect(Collectors.toCollection(ArrayDeque::new));
         this.colorIdx = colorIdx;
         
-        if (diffCells.isEmpty()) {
+        if (diffCellContents.isEmpty()) {
             auto = true;
         }
     }

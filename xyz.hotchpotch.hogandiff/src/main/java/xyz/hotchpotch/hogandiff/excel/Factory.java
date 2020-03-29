@@ -197,6 +197,9 @@ public class Factory {
         short diffColor = settings.get(SettingKeys.DIFF_COLOR);
         Color redundantCommentColor = settings.get(SettingKeys.REDUNDANT_COMMENT_COLOR);
         Color diffCommentColor = settings.get(SettingKeys.DIFF_COMMENT_COLOR);
+        // もうなんか滅茶苦茶や・・・
+        String redundantCommentHex = "#" + SettingKeys.REDUNDANT_COMMENT_COLOR.encoder().apply(redundantCommentColor);
+        String diffCommentHex = "#" + SettingKeys.DIFF_COMMENT_COLOR.encoder().apply(diffCommentColor);
         
         BookType bookType = BookType.of(bookPath);
         switch (bookType) {
@@ -209,7 +212,8 @@ public class Factory {
         case XLSX:
         case XLSM:
             return CombinedBookPainter.of(List.of(
-                    () -> XSSFBookPainterWithStax.of(redundantColor, diffColor),
+                    () -> XSSFBookPainterWithStax.of(
+                            redundantColor, diffColor, redundantCommentHex, diffCommentHex),
                     () -> BookPainterWithPoiUserApi.of(
                             redundantColor, diffColor, redundantCommentColor, diffCommentColor)));
         

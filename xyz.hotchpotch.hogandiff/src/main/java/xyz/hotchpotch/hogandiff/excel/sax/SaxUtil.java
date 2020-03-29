@@ -59,6 +59,7 @@ public class SaxUtil {
         private SheetType type;
         private String source;
         private String commentSource;
+        private String vmlDrawingSource;
         
         private SheetInfo(String name, String id) {
             this.name = name;
@@ -115,6 +116,17 @@ public class SaxUtil {
          */
         public String commentSource() {
             return commentSource;
+        }
+        
+        /**
+         * zipファイルとしてのExcelファイル内における
+         * セルコメントの図としての情報を保持するソースエントリのパス文字列を返します。<br>
+         * 例）{@code "xl/drawings/vmlDrawing1.vml"}
+         * 
+         * @return セルコメントの図としての情報を保持するソースエントリのパス文字列
+         */
+        public String vmlDrawingSource() {
+            return vmlDrawingSource;
         }
     }
     
@@ -269,7 +281,8 @@ public class SaxUtil {
     
     /**
      * zipファイルとしての.xlsx/.xlsmファイルから次のエントリを読み込み、
-     * 指定されたシートに対するセルコメントのソースパスを抽出します。<br>
+     * 指定されたシートに対するセルコメントのソースパス
+     * およびセルコメントの図としての情報を保持するソースパスを抽出します。<br>
      * <pre>
      * *.xlsx
      *   +-xl
@@ -285,6 +298,7 @@ public class SaxUtil {
         // [static members] ----------------------------------------------------
         
         private static final String commentRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
+        private static final String vmlDrawingRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing";
         
         // [instance members] --------------------------------------------------
         
@@ -300,8 +314,12 @@ public class SaxUtil {
         
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
-            if ("Relationship".equals(qName) && commentRelType.equals(attributes.getValue("Type"))) {
-                info.commentSource = attributes.getValue("Target").replace("../", "xl/");
+            if ("Relationship".equals(qName)) {
+                if (commentRelType.equals(attributes.getValue("Type"))) {
+                    info.commentSource = attributes.getValue("Target").replace("../", "xl/");
+                } else if (vmlDrawingRelType.equals(attributes.getValue("Type"))) {
+                    info.vmlDrawingSource = attributes.getValue("Target").replace("../", "xl/");
+                }
             }
         }
     }
