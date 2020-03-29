@@ -40,7 +40,7 @@ public enum AppMenu {
         }
         
         @Override
-        public List<Pair<String>> getSheetNamePairs(Settings settings, Factory<?> factory)
+        public List<Pair<String>> getSheetNamePairs(Settings settings, Factory factory)
                 throws ExcelHandlingException {
             
             Objects.requireNonNull(settings, "settings");
@@ -86,7 +86,7 @@ public enum AppMenu {
         }
         
         @Override
-        public List<Pair<String>> getSheetNamePairs(Settings settings, Factory<?> factory)
+        public List<Pair<String>> getSheetNamePairs(Settings settings, Factory factory)
                 throws ExcelHandlingException {
             
             Objects.requireNonNull(settings, "settings");
@@ -125,6 +125,6 @@ public enum AppMenu {
      * @throws ExcelHandlingException
      *              Excelファイルに対する処理に失敗した場合
      */
-    public abstract List<Pair<String>> getSheetNamePairs(Settings settings, Factory<?> factory)
+    public abstract List<Pair<String>> getSheetNamePairs(Settings settings, Factory factory)
             throws ExcelHandlingException;
 }

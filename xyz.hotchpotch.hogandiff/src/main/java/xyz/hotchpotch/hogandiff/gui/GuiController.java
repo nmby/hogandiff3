@@ -112,10 +112,16 @@ public class GuiController {
     private CheckBox checkConsiderColumnGaps;
     
     @FXML
+    private CheckBox checkCompareCellContents;
+    
+    @FXML
     private RadioButton radioCompareOnValue;
     
     @FXML
     private RadioButton radioCompareOnFormula;
+    
+    @FXML
+    private CheckBox checkCompareCellComments;
     
     @FXML
     private CheckBox checkShowPaintedSheets;
@@ -171,7 +177,7 @@ public class GuiController {
     // その他メンバ --------------------------
     
     private Path prevSelectedBookPath;
-    private Factory<?> factory;
+    private Factory factory;
     
     /**
      * 実行の準備が整っているかを返します。<br>
@@ -186,7 +192,7 @@ public class GuiController {
      * このコントローラオブジェクトを初期化します。<br>
      */
     public void initialize() {
-        factory = Factory.basicFactoryOf();
+        factory = Factory.of();
         
         initProperties();
         initTargetSelectionArea();
@@ -261,11 +267,17 @@ public class GuiController {
         // 各種設定を変更した場合は、それをプロパティに反映させる。
         checkConsiderRowGaps.setOnAction(event -> hasSettingsChanged.set(true));
         checkConsiderColumnGaps.setOnAction(event -> hasSettingsChanged.set(true));
+        checkCompareCellContents.setOnAction(event -> hasSettingsChanged.set(true));
         radioCompareOnValue.setOnAction(event -> hasSettingsChanged.set(true));
         radioCompareOnFormula.setOnAction(event -> hasSettingsChanged.set(true));
+        checkCompareCellComments.setOnAction(event -> hasSettingsChanged.set(true));
         checkShowPaintedSheets.setOnAction(event -> hasSettingsChanged.set(true));
         checkShowResultText.setOnAction(event -> hasSettingsChanged.set(true));
         checkExitWhenFinished.setOnAction(event -> hasSettingsChanged.set(true));
+        
+        // 「セル内容を比較する」が選択された場合のみ、「値／数式」の選択を有効にする。
+        radioCompareOnValue.disableProperty().bind(checkCompareCellContents.selectedProperty().not());
+        radioCompareOnFormula.disableProperty().bind(checkCompareCellContents.selectedProperty().not());
         
         // 各種設定の変更有無に応じて「設定の保存」ボタンの有効／無効を切り替える。
         buttonSaveSettings.disableProperty().bind(hasSettingsChanged.not());
@@ -369,6 +381,12 @@ public class GuiController {
             } else if (key == SettingKeys.CONSIDER_COLUMN_GAPS) {
                 checkConsiderColumnGaps.setSelected((boolean) settings.get(key));
                 
+            } else if (key == SettingKeys.COMPARE_CELL_CONTENTS) {
+                checkCompareCellContents.setSelected((boolean) settings.get(key));
+                
+            } else if (key == SettingKeys.COMPARE_CELL_COMMENTS) {
+                checkCompareCellComments.setSelected((boolean) settings.get(key));
+                
             } else if (key == SettingKeys.COMPARE_ON_FORMULA_STRING) {
                 radioCompareOnFormula.setSelected((boolean) settings.get(key));
                 
@@ -465,6 +483,12 @@ public class GuiController {
         if (targets == null || targets.contains(SettingKeys.CONSIDER_COLUMN_GAPS)) {
             builder.set(SettingKeys.CONSIDER_COLUMN_GAPS, checkConsiderColumnGaps.isSelected());
         }
+        if (targets == null || targets.contains(SettingKeys.COMPARE_CELL_CONTENTS)) {
+            builder.set(SettingKeys.COMPARE_CELL_CONTENTS, checkCompareCellContents.isSelected());
+        }
+        if (targets == null || targets.contains(SettingKeys.COMPARE_CELL_COMMENTS)) {
+            builder.set(SettingKeys.COMPARE_CELL_COMMENTS, checkCompareCellComments.isSelected());
+        }
         if (targets == null || targets.contains(SettingKeys.COMPARE_ON_FORMULA_STRING)) {
             builder.set(SettingKeys.COMPARE_ON_FORMULA_STRING, radioCompareOnFormula.isSelected());
         }
@@ -482,6 +506,12 @@ public class GuiController {
         }
         if (targets == null || targets.contains(SettingKeys.DIFF_COLOR)) {
             builder.setDefaultValue(SettingKeys.DIFF_COLOR);
+        }
+        if (targets == null || targets.contains(SettingKeys.REDUNDANT_COMMENT_COLOR)) {
+            builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        }
+        if (targets == null || targets.contains(SettingKeys.DIFF_COMMENT_COLOR)) {
+            builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
         }
         if (targets == null || targets.contains(AppSettingKeys.WORK_DIR_BASE)) {
             builder.setDefaultValue(AppSettingKeys.WORK_DIR_BASE);
@@ -516,7 +546,7 @@ public class GuiController {
         
         isRunning.set(true);
         
-        Task<Void> task = AppTask.of(settings, Factory.basicFactoryOf());
+        Task<Void> task = AppTask.of(settings, Factory.of());
         progressReport.progressProperty().bind(task.progressProperty());
         textReport.textProperty().bind(task.messageProperty());
         ExecutorService executor = Executors.newSingleThreadExecutor();

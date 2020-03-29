@@ -12,10 +12,9 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 /**
  * Excelシート同士の比較結果を表す不変クラスです。<br>
  * 
- * @param <T> セルデータの型
  * @author nmby
  */
-public class SResult<T> {
+public class SResult {
     
     // [static members] ********************************************************
     
@@ -24,10 +23,9 @@ public class SResult<T> {
     /**
      * 片側のシートに関する差分内容を表す不変クラスです。<br>
      *
-     * @param <T> セルデータの型
      * @author nmby
      */
-    public static class Piece<T> {
+    public static class Piece {
         
         // [static members] ----------------------------------------------------
         
@@ -35,21 +33,29 @@ public class SResult<T> {
         
         private final List<Integer> redundantRows;
         private final List<Integer> redundantColumns;
-        private final List<CellReplica<T>> diffCells;
+        private final List<CellReplica> diffCellContents;
+        private final List<CellReplica> diffCellComments;
+        private final List<CellReplica> redundantCellComments;
         
         private Piece(
                 List<Integer> redundantRows,
                 List<Integer> redundantColumns,
-                List<CellReplica<T>> diffCells) {
+                List<CellReplica> diffCellContents,
+                List<CellReplica> diffCellComments,
+                List<CellReplica> redundantCellComments) {
             
             assert redundantRows != null;
             assert redundantColumns != null;
-            assert diffCells != null;
+            assert diffCellContents != null;
+            assert diffCellComments != null;
+            assert redundantCellComments != null;
             
             // 一応防御的コピーしておく。
             this.redundantRows = List.copyOf(redundantRows);
             this.redundantColumns = List.copyOf(redundantColumns);
-            this.diffCells = List.copyOf(diffCells);
+            this.diffCellContents = List.copyOf(diffCellContents);
+            this.diffCellComments = List.copyOf(diffCellComments);
+            this.redundantCellComments = List.copyOf(redundantCellComments);
         }
         
         /**
@@ -71,21 +77,40 @@ public class SResult<T> {
         }
         
         /**
-         * 差分セルを返します。<br>
+         * セル内容の異なるセルを返します。<br>
          * 
-         * @return 差分セル
+         * @return セル内容の異なるセル
          */
-        public List<CellReplica<T>> diffCells() {
-            return diffCells;
+        public List<CellReplica> diffCellContents() {
+            return diffCellContents;
+        }
+        
+        /**
+         * セルコメントの異なるセルを返します。<br>
+         * 
+         * @return セルコメントの異なるセル
+         */
+        public List<CellReplica> diffCellComments() {
+            return diffCellComments;
+        }
+        
+        /**
+         * 余剰セルコメントのセルを返します。<br>
+         * 
+         * @return 余剰セルコメントのセル
+         */
+        public List<CellReplica> redundantCellComments() {
+            return redundantCellComments;
         }
     }
     
     /**
      * Excelシート同士の比較結果を生成します。<br>
      * 
-     * @param <T> セルデータの型
      * @param considerRowGaps 比較において行の余剰／欠損を考慮したか
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮したか
+     * @param compareCellContents 比較においてセル内容を比較したか
+     * @param compareCellComments 比較においてセルコメントを比較したか
      * @param redundantRows1 シート1における余剰行
      * @param redundantRows2 シート2における余剰行
      * @param redundantColumns1 シート1における余剰列
@@ -99,14 +124,16 @@ public class SResult<T> {
      * @throws IllegalArgumentException
      *              余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
      */
-    public static <T> SResult<T> of(
+    public static SResult of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
+            boolean compareCellContents,
+            boolean compareCellComments,
             List<Integer> redundantRows1,
             List<Integer> redundantRows2,
             List<Integer> redundantColumns1,
             List<Integer> redundantColumns2,
-            List<Pair<CellReplica<T>>> diffCells) {
+            List<Pair<CellReplica>> diffCells) {
         
         Objects.requireNonNull(redundantRows1, "redundantRows1");
         Objects.requireNonNull(redundantRows2, "redundantRows2");
@@ -120,9 +147,11 @@ public class SResult<T> {
             throw new IllegalArgumentException("illegal column result");
         }
         
-        return new SResult<>(
+        return new SResult(
                 considerRowGaps,
                 considerColumnGaps,
+                compareCellContents,
+                compareCellComments,
                 redundantRows1,
                 redundantRows2,
                 redundantColumns1,
@@ -134,18 +163,25 @@ public class SResult<T> {
     
     private final boolean considerRowGaps;
     private final boolean considerColumnGaps;
+    private final boolean compareCellContents;
+    private final boolean compareCellComments;
     private final Pair<List<Integer>> redundantRows;
     private final Pair<List<Integer>> redundantColumns;
-    private final List<Pair<CellReplica<T>>> diffCells;
+    private final List<Pair<CellReplica>> diffCells;
+    private final List<Pair<CellReplica>> diffCellContents;
+    private final List<Pair<CellReplica>> diffCellComments;
+    private final Pair<List<CellReplica>> redundantCellComments;
     
     private SResult(
             boolean considerRowGaps,
             boolean considerColumnGaps,
+            boolean compareCellContents,
+            boolean compareCellComments,
             List<Integer> redundantRows1,
             List<Integer> redundantRows2,
             List<Integer> redundantColumns1,
             List<Integer> redundantColumns2,
-            List<Pair<CellReplica<T>>> diffCells) {
+            List<Pair<CellReplica>> diffCells) {
         
         assert redundantRows1 != null;
         assert redundantRows2 != null;
@@ -160,6 +196,8 @@ public class SResult<T> {
         
         this.considerRowGaps = considerRowGaps;
         this.considerColumnGaps = considerColumnGaps;
+        this.compareCellContents = compareCellContents;
+        this.compareCellComments = compareCellComments;
         
         // 一応、防御的コピーしておく。
         this.redundantRows = Pair.of(
@@ -169,6 +207,33 @@ public class SResult<T> {
                 List.copyOf(redundantColumns1),
                 List.copyOf(redundantColumns2));
         this.diffCells = List.copyOf(diffCells);
+        
+        this.diffCellContents = !compareCellContents
+                ? List.of()
+                : !compareCellComments
+                        ? this.diffCells
+                        : List.copyOf(diffCells.stream()
+                                .filter(p -> !Objects.equals(p.a().getContent(), p.b().getContent()))
+                                .collect(Collectors.toList()));
+        this.diffCellComments = !compareCellComments
+                ? List.of()
+                : !compareCellContents
+                        ? this.diffCells
+                        : List.copyOf(diffCells.stream()
+                                .filter(p -> p.a().getComment() != null && p.b().getComment() != null)
+                                .filter(p -> !Objects.equals(p.a().getComment(), p.b().getComment()))
+                                .collect(Collectors.toList()));
+        this.redundantCellComments = !compareCellComments
+                ? Pair.of(List.of(), List.of())
+                : Pair.of(
+                        List.copyOf(diffCells.stream()
+                                .filter(p -> p.a().getComment() != null && p.b().getComment() == null)
+                                .map(Pair::a)
+                                .collect(Collectors.toList())),
+                        List.copyOf(diffCells.stream()
+                                .filter(p -> p.a().getComment() == null && p.b().getComment() != null)
+                                .map(Pair::b)
+                                .collect(Collectors.toList())));
     }
     
     /**
@@ -187,6 +252,24 @@ public class SResult<T> {
      */
     public boolean considerColumnGaps() {
         return considerColumnGaps;
+    }
+    
+    /**
+     * この比較においてセル内容が比較されたかを返します。<br>
+     * 
+     * @return この比較においてセル内容が比較された場合は {@code true}
+     */
+    public boolean compareCellContents() {
+        return compareCellContents;
+    }
+    
+    /**
+     * この比較においてセルコメントが比較されたかを返します。<br>
+     * 
+     * @return この比較においてセルコメントが比較された場合は {@code true}
+     */
+    public boolean compareCellComments() {
+        return compareCellComments;
     }
     
     /**
@@ -210,13 +293,33 @@ public class SResult<T> {
     }
     
     /**
-     * 差分セルを返します。<br>
+     * セル内容の異なるセルを返します。<br>
      * 
-     * @return 差分セル
+     * @return セル内容の異なるセル
      */
-    public List<Pair<CellReplica<T>>> diffCells() {
+    public List<Pair<CellReplica>> diffCellContents() {
         // 不変なのでこのまま返しちゃって問題ない。
-        return diffCells;
+        return diffCellContents;
+    }
+    
+    /**
+     * セルコメントの異なるセルを返します。<br>
+     * 
+     * @return セルコメントの異なるセル
+     */
+    public List<Pair<CellReplica>> diffCellComments() {
+        // 不変なのでこのまま返しちゃって問題ない。
+        return diffCellComments;
+    }
+    
+    /**
+     * 余剰セルコメントのセルを返します。<br>
+     * 
+     * @return 余剰セルコメントのセル
+     */
+    public Pair<List<CellReplica>> redundantCellComments() {
+        // 不変なのでこのまま返しちゃって問題ない。
+        return redundantCellComments;
     }
     
     /**
@@ -226,13 +329,15 @@ public class SResult<T> {
      * @return 指定された側のシートに関する差分内容
      * @throws NullPointerException {@code side} が {@code null} の場合
      */
-    public Piece<T> getPiece(Side side) {
+    public Piece getPiece(Side side) {
         Objects.requireNonNull(side, "side");
         
-        return new Piece<>(
+        return new Piece(
                 redundantRows.get(side),
                 redundantColumns.get(side),
-                diffCells.stream().map(p -> p.get(side)).collect(Collectors.toList()));
+                diffCellContents.stream().map(p -> p.get(side)).collect(Collectors.toList()),
+                diffCellComments.stream().map(p -> p.get(side)).collect(Collectors.toList()),
+                redundantCellComments.get(side));
     }
     
     /**
@@ -303,11 +408,11 @@ public class SResult<T> {
         if (diffCells.isEmpty()) {
             str.append(BR).append("    (なし)").append(BR);
         } else {
-            Iterator<Pair<CellReplica<T>>> itr = diffCells.iterator();
+            Iterator<Pair<CellReplica>> itr = diffCells.iterator();
             while (itr.hasNext()) {
-                Pair<CellReplica<T>> pair = itr.next();
-                CellReplica<T> cell1 = pair.a();
-                CellReplica<T> cell2 = pair.b();
+                Pair<CellReplica> pair = itr.next();
+                CellReplica cell1 = pair.a();
+                CellReplica cell2 = pair.b();
                 str.append(BR);
                 str.append("    ").append(cell1).append(BR);
                 str.append("    ").append(cell2).append(BR);

@@ -31,7 +31,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.6.5";
+    private static final String VERSION = "v0.7.0";
     
     /** プロパティファイルの相対パス */
     private static final Path APP_PROP_PATH = Path.of("hogandiff.properties");
@@ -40,6 +40,8 @@ public class AppMain extends Application {
     public static final Set<Settings.Key<?>> keysToBeSaved = Set.of(
             SettingKeys.CONSIDER_ROW_GAPS,
             SettingKeys.CONSIDER_COLUMN_GAPS,
+            SettingKeys.COMPARE_CELL_CONTENTS,
+            SettingKeys.COMPARE_CELL_COMMENTS,
             SettingKeys.COMPARE_ON_FORMULA_STRING,
             AppSettingKeys.SHOW_PAINTED_SHEETS,
             AppSettingKeys.SHOW_RESULT_TEXT,

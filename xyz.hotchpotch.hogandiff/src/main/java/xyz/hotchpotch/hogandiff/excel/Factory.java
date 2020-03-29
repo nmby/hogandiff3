@@ -1,35 +1,52 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.awt.Color;
 import java.nio.file.Path;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
 
-import xyz.hotchpotch.hogandiff.excel.feature.basic.BasicFactory;
+import org.apache.poi.ss.usermodel.Cell;
+
+import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
+import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
+import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetLoader;
+import xyz.hotchpotch.hogandiff.excel.common.SComparatorImpl;
+import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFBookLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookPainterWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PoiUtil;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.SheetLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.sax.XSSFBookLoaderWithSax;
+import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetLoaderWithSax;
+import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
  * 比較処理に必要な一連の機能を提供するファクトリです。<br>
  *
- * @param <T> セルデータの型
  * @author nmby
  */
-public interface Factory<T> {
+public class Factory {
     
     // [static members] ********************************************************
     
     /**
-     * セルの内容を文字列として比較するためのファクトリを返します。<br>
+     * 新しいファクトリを返します。<br>
      * 
-     * @return セルの内容を文字列として比較するためのファクトリ
+     * @return 新しいファクトリ
      */
-    public static Factory<String> basicFactoryOf() {
-        return BasicFactory.of();
+    public static Factory of() {
+        return new Factory();
     }
     
-    // FIXME: [No.99 機能追加] 将来的には basic 以外の feature も提供したい。
-    // セル書式を比較する feature とか、セルコメントを比較する feature とか、
-    // オブジェクト内のテキストを比較する feature とか、
-    // それらを統合的に扱う feature とか。
-    
     // [instance members] ******************************************************
+    
+    private Factory() {
+    }
     
     /**
      * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
@@ -37,9 +54,39 @@ public interface Factory<T> {
      * @param bookPath Excelブックのパス
      * @return Excelブックからシート名の一覧を抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
+     * @throws NullPointerException
+     *              {@code bookPath} が {@code null} の場合
+     * @throws IllegalArgumentException
+     *              {@code bookPath} が不明な形式のファイルの場合
+     * @throws UnsupportedOperationException
+     *              {@code bookPath} がサポートされないブック形式の場合
      */
-    BookLoader bookLoader(Path bookPath)
-            throws ExcelHandlingException;
+    public BookLoader bookLoader(Path bookPath) throws ExcelHandlingException {
+        Objects.requireNonNull(bookPath, "bookPath");
+        
+        Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
+        
+        BookType bookType = BookType.of(bookPath);
+        switch (bookType) {
+        case XLS:
+            return CombinedBookLoader.of(List.of(
+                    () -> HSSFBookLoaderWithPoiEventApi.of(targetSheetTypes),
+                    () -> BookLoaderWithPoiUserApi.of(targetSheetTypes)));
+        
+        case XLSX:
+        case XLSM:
+            return CombinedBookLoader.of(List.of(
+                    () -> XSSFBookLoaderWithSax.of(targetSheetTypes),
+                    () -> BookLoaderWithPoiUserApi.of(targetSheetTypes)));
+        
+        case XLSB:
+            // FIXME: [No.2 .xlsbのサポート]
+            throw new UnsupportedOperationException(".xlsb 形式はサポート対象外です。");
+        
+        default:
+            throw new AssertionError("unknown book type: " + bookType);
+        }
+    }
     
     /**
      * Excelシートからセルデータを抽出するローダーを返します。<br>
@@ -48,17 +95,90 @@ public interface Factory<T> {
      * @param bookPath Excelブックのパス
      * @return Excelシートからセルデータを抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
+     * @throws NullPointerException
+     *              {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
+     * @throws IllegalArgumentException
+     *              {@code bookPath} が不明な形式のファイルの場合
+     * @throws UnsupportedOperationException
+     *              {@code bookPath} がサポートされないブック形式の場合
      */
-    SheetLoader<T> sheetLoader(Settings settings, Path bookPath)
-            throws ExcelHandlingException;
+    public SheetLoader sheetLoader(Settings settings, Path bookPath) throws ExcelHandlingException {
+        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(bookPath, "bookPath");
+        
+        // 設計メモ：
+        // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
+        // Settings 丸ごとではなく、必要な個別のパラメータを渡すこととする。
+        
+        // 実装メモ：
+        // COMPARE_CELL_CONTENTS == true の場合だけでなく、
+        // CONSIDER_ROW_GAPS == true, CONSIDER_COLUMN_GAPS == true の場合も
+        // 行同士・列同士の対応関係決定のためにセル内容を抽出することにする。
+        // TODO: 上記方針でよいかどこかで見直す。上記撤回した方が処理としては早くなるので。
+        boolean extractContents = settings.get(SettingKeys.COMPARE_CELL_CONTENTS)
+                || settings.get(SettingKeys.CONSIDER_ROW_GAPS)
+                || settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
+        boolean extractComments = settings.get(SettingKeys.COMPARE_CELL_COMMENTS);
+        boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
+        
+        Function<Cell, CellReplica> converter = cell -> {
+            String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
+            return content != null && !"".equals(content)
+                    ? CellReplica.of(
+                            cell.getRowIndex(),
+                            cell.getColumnIndex(),
+                            content,
+                            null)
+                    : null;
+        };
+        
+        BookType bookType = BookType.of(bookPath);
+        switch (bookType) {
+        case XLS:
+            return CombinedSheetLoader.of(List.of(
+                    () -> HSSFSheetLoaderWithPoiEventApi.of(
+                            extractContents, extractComments, useCachedValue),
+                    () -> SheetLoaderWithPoiUserApi.of(
+                            extractContents, extractComments, converter)));
+        
+        case XLSX:
+        case XLSM:
+            return CombinedSheetLoader.of(List.of(
+                    () -> XSSFSheetLoaderWithSax.of(
+                            extractContents, extractComments, useCachedValue, bookPath),
+                    () -> SheetLoaderWithPoiUserApi.of(
+                            extractContents, extractComments, converter)));
+        
+        case XLSB:
+            // FIXME: [No.2 .xlsbのサポート]
+            throw new UnsupportedOperationException(".xlsb 形式はサポート対象外です。");
+        
+        default:
+            throw new AssertionError("unknown book type: " + bookType);
+        }
+    }
     
     /**
      * 2つのExcelシートから抽出したセルセット同士を比較するコンパレータを返します。<br>
      * 
      * @param settings 設定
      * @return セルセット同士を比較するコンパレータ
+     * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    SComparator<T> comparator(Settings settings);
+    public SComparator comparator(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
+        boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
+        boolean compareCellContents = settings.get(SettingKeys.COMPARE_CELL_CONTENTS);
+        boolean compareCellComments = settings.get(SettingKeys.COMPARE_CELL_COMMENTS);
+        
+        return SComparatorImpl.of(
+                considerRowGaps,
+                considerColumnGaps,
+                compareCellContents,
+                compareCellComments);
+    }
     
     /**
      * Excelブックの差分個所に色を付けて新しいファイルとして保存する
@@ -69,6 +189,40 @@ public interface Factory<T> {
      * @return Excelブックの差分個所に色を付けて保存するペインター
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    BookPainter painter(Settings settings, Path bookPath)
-            throws ExcelHandlingException;
+    public BookPainter painter(Settings settings, Path bookPath) throws ExcelHandlingException {
+        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(bookPath, "bookPath");
+        
+        short redundantColor = settings.get(SettingKeys.REDUNDANT_COLOR);
+        short diffColor = settings.get(SettingKeys.DIFF_COLOR);
+        Color redundantCommentColor = settings.get(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        Color diffCommentColor = settings.get(SettingKeys.DIFF_COMMENT_COLOR);
+        // もうなんか滅茶苦茶や・・・
+        String redundantCommentHex = "#" + SettingKeys.REDUNDANT_COMMENT_COLOR.encoder().apply(redundantCommentColor);
+        String diffCommentHex = "#" + SettingKeys.DIFF_COMMENT_COLOR.encoder().apply(diffCommentColor);
+        
+        BookType bookType = BookType.of(bookPath);
+        switch (bookType) {
+        case XLS:
+            return CombinedBookPainter.of(List.of(
+                    // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
+                    () -> BookPainterWithPoiUserApi.of(
+                            redundantColor, diffColor, redundantCommentColor, diffCommentColor)));
+        
+        case XLSX:
+        case XLSM:
+            return CombinedBookPainter.of(List.of(
+                    () -> XSSFBookPainterWithStax.of(
+                            redundantColor, diffColor, redundantCommentHex, diffCommentHex),
+                    () -> BookPainterWithPoiUserApi.of(
+                            redundantColor, diffColor, redundantCommentColor, diffCommentColor)));
+        
+        case XLSB:
+            // FIXME: [No.2 .xlsbのサポート]
+            throw new UnsupportedOperationException(".xlsb 形式はサポート対象外です。");
+        
+        default:
+            throw new AssertionError("unknown book type: " + bookType);
+        }
+    }
 }
