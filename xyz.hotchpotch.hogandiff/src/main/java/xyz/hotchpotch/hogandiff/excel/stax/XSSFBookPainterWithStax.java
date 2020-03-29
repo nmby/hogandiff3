@@ -268,7 +268,10 @@ public class XSSFBookPainterWithStax implements BookPainter {
             // 2-2. xl/styles.xml エントリに対する処理
             processStylesEntry(inFs, outFs);
             
-            // 2-3. xl/worksheets/sheet?.xml と xl/drawings/vmlDrawing?.vml エントリに対する処理
+            // 2-3. 個別のワークシートに対応する以下の各エントリに対する処理
+            //          - xl/worksheets/sheet?.xml
+            //          - xl/drawings/vmlDrawing?.vml
+            //          - xl/comments?.xml
             processWorksheetEntries(inFs, outFs, dstBookPath, diffs);
             
         } catch (ExcelHandlingException e) {
@@ -428,16 +431,23 @@ public class XSSFBookPainterWithStax implements BookPainter {
         for (Entry<String, Piece> diff : diffs.entrySet()) {
             String sheetName = diff.getKey();
             Piece piece = diff.getValue();
+            SheetInfo info = sheetNameToInfo.get(sheetName);
             
             // xl/worksheets/sheet?.xml エントリに対する処理
-            String source = sheetNameToInfo.get(sheetName).source();
+            String source = info.source();
             processWorksheetEntry(inFs, outFs, stylesManager, source, piece);
             
             // xl/drawings/vmlDrawing?.vml エントリに対する処理
-            String vmlDrawingSource = sheetNameToInfo.get(sheetName).vmlDrawingSource();
+            String vmlDrawingSource = info.vmlDrawingSource();
             if (vmlDrawingSource != null) {
                 processCommentDrawingEntry(
                         inFs, outFs, vmlDrawingSource, piece, redundantCommentColor, diffCommentColor);
+            }
+            
+            // xl/comments?.xml エントリに対する処理
+            String commentSource = info.commentSource();
+            if (commentSource != null) {
+                processCommentEntry(inFs, outFs, commentSource);
             }
         }
         
@@ -549,6 +559,31 @@ public class XSSFBookPainterWithStax implements BookPainter {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(vmlDrawingSource + " エントリの処理に失敗しました。", e);
+        }
+    }
+    
+    private void processCommentEntry(
+            FileSystem inFs,
+            FileSystem outFs,
+            String commentSource)
+            throws ExcelHandlingException {
+        
+        try (InputStream is = Files.newInputStream(inFs.getPath(commentSource));
+                OutputStream os = Files.newOutputStream(outFs.getPath(commentSource),
+                        StandardOpenOption.TRUNCATE_EXISTING)) {
+            
+            XMLEventReader reader = inFactory.createXMLEventReader(is, "UTF-8");
+            XMLEventWriter writer = outFactory.createXMLEventWriter(os, "UTF-8");
+            
+            // 不要な要素を除去するリーダーを追加
+            reader = FilteringReader.builder(reader)
+                    .addFilter(QNAME.COMMENT, QNAME.TEXT, QNAME.R, QNAME.RPR, QNAME.COLOR)
+                    .build();
+            
+            writer.add(reader);
+            
+        } catch (Exception e) {
+            throw new ExcelHandlingException(commentSource + " エントリの処理に失敗しました。", e);
         }
     }
 }

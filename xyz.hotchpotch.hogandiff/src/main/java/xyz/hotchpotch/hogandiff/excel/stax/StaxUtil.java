@@ -52,6 +52,9 @@ public class StaxUtil {
         /** color */
         public static final QName COLOR = new QName(XMLNS, "color");
         
+        /** comment */
+        public static final QName COMMENT = new QName(XMLNS, "comment");
+        
         /** conditionalFormatting */
         public static final QName CONDITIONAL_FORMATTING = new QName(XMLNS, "conditionalFormatting");
         
@@ -82,11 +85,17 @@ public class StaxUtil {
         /** patternFill */
         public static final QName PATTERN_FILL = new QName(XMLNS, "patternFill");
         
+        /** r */
+        public static final QName R = new QName(XMLNS, "r");
+        
         /** right */
         public static final QName RIGHT = new QName(XMLNS, "right");
         
         /** row */
         public static final QName ROW = new QName(XMLNS, "row");
+        
+        /** rPr */
+        public static final QName RPR = new QName(XMLNS, "rPr");
         
         /** sheetData */
         public static final QName SHEET_DATA = new QName(XMLNS, "sheetData");
@@ -96,6 +105,9 @@ public class StaxUtil {
         
         /** tabColor */
         public static final QName TAB_COLOR = new QName(XMLNS, "tabColor");
+        
+        /** text */
+        public static final QName TEXT = new QName(XMLNS, "text");
         
         /** top */
         public static final QName TOP = new QName(XMLNS, "top");
