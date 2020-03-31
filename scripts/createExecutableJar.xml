@@ -4,7 +4,7 @@
 	<!--ANT 1.7 is required                                        -->
 
 	<!--define app properties-->
-	<property name="app.version" value="0.7.1" />
+	<property name="app.version" value="0.7.2" />
 
 	<property name="poi" value="poi-4.1.2" />
 	<property name="javafx" value="javafx-13" />
