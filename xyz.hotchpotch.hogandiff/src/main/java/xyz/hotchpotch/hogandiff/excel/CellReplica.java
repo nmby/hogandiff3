@@ -276,7 +276,7 @@ public class CellReplica {
         
         return !content.equals(cell.content)
                 ? content.compareTo(cell.content)
-                : comment != null
+                : comment != null && cell.comment != null
                         ? comment.compareTo(cell.comment)
                         : 0;
     }
