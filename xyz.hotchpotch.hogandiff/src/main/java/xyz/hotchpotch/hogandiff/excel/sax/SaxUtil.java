@@ -179,25 +179,6 @@ public class SaxUtil {
         
         private static final String targetEntry = "xl/_rels/workbook.xml.rels";
         
-        // switch 式はまだプレビュー機能なので使わないことにする。
-        // こっちの方が見通し良いし。
-        private static SheetType sheetTypeOf(String type) {
-            assert type != null;
-            
-            switch (type) {
-            case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet":
-                return SheetType.WORKSHEET;
-            case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet":
-                return SheetType.CHART_SHEET;
-            case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/dialogsheet":
-                return SheetType.DIALOG_SHEET;
-            case "http://schemas.microsoft.com/office/2006/relationships/xlMacrosheet":
-                return SheetType.MACRO_SHEET;
-            default:
-                return null;
-            }
-        }
-        
         // [instance members] --------------------------------------------------
         
         private final Map<String, SheetInfo> sheets;
@@ -216,7 +197,13 @@ public class SaxUtil {
             if ("Relationship".equals(qName)) {
                 SheetInfo info = sheets.get(attributes.getValue("Id"));
                 if (info != null) {
-                    info.type = sheetTypeOf(attributes.getValue("Type"));
+                    info.type = switch (attributes.getValue("Type")) {
+                        case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" -> SheetType.WORKSHEET;
+                        case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet" -> SheetType.CHART_SHEET;
+                        case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/dialogsheet" -> SheetType.DIALOG_SHEET;
+                        case "http://schemas.microsoft.com/office/2006/relationships/xlMacrosheet" -> SheetType.MACRO_SHEET;
+                        default -> null;
+                    };
                     info.source = "xl/" + attributes.getValue("Target");
                 }
             }

@@ -140,10 +140,10 @@ public class SResult {
         Objects.requireNonNull(redundantColumns1, "redundantColumns1");
         Objects.requireNonNull(redundantColumns2, "redundantColumns2");
         Objects.requireNonNull(diffCells, "diffCells");
-        if (!considerRowGaps && (!redundantRows1.isEmpty() || !redundantRows2.isEmpty())) {
+        if (considerRowGaps != (!redundantRows1.isEmpty() || !redundantRows2.isEmpty())) {
             throw new IllegalArgumentException("illegal row result");
         }
-        if (!considerColumnGaps && (!redundantColumns1.isEmpty() || !redundantColumns2.isEmpty())) {
+        if (considerColumnGaps != (!redundantColumns1.isEmpty() || !redundantColumns2.isEmpty())) {
             throw new IllegalArgumentException("illegal column result");
         }
         

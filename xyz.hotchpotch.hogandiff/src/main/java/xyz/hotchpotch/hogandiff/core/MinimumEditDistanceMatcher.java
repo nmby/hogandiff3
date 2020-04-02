@@ -127,6 +127,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         //    比較対象リストが長くなるほど、すなわちエディットグラフ（探索平面）が広くなるほど
         //    処理の並列化が効果を発揮すると信じて、処理を並列化する。
         //    縦方向、横方向には並列化できないため、探索平面を斜めにスライスして並列化する。
+        // FIXME: [No.91 内部実装改善] ループの外側で並列化する方策を考える。何らかできるはず。
         for (int n = 0; n <= listA.size() + listB.size(); n++) {
             final int nn = n;
             IntStream.rangeClosed(Math.max(0, nn - listB.size() + 1), Math.min(nn, listA.size() - 1))

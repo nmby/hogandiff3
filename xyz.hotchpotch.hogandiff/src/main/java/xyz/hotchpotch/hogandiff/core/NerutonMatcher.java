@@ -149,7 +149,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
                 .mapToObj(j -> new Cost(null, j, gapEvaluator.applyAsInt(listB.get(j))));
         Stream<Cost> diffCosts = IntStream.range(0, listA.size()).parallel()
                 .mapToObj(Integer::valueOf)
-                .flatMap(i -> IntStream.range(0, listB.size()).parallel()
+                .flatMap(i -> IntStream.range(0, listB.size())
                         .mapToObj(j -> new Cost(i, j, diffEvaluator.applyAsInt(listA.get(i), listB.get(j)))));
         
         // これらを結合し、小さい順にソートする。
