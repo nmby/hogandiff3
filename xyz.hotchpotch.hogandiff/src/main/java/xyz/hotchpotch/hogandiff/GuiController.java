@@ -283,7 +283,7 @@ public class GuiController {
         
         // 「設定を保存」ボタンのイベントハンドラを登録する。
         buttonSaveSettings.setOnAction(event -> {
-            Settings settings = gatherSettings(AppMain.keysToBeSaved);
+            Settings settings = gatherSettings(SettingKeys.storableKeys());
             Properties properties = settings.toProperties();
             AppMain.storeProperties(properties);
             hasSettingsChanged.set(false);
