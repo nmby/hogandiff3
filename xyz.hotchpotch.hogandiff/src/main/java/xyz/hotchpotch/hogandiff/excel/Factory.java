@@ -12,16 +12,16 @@ import org.apache.poi.ss.usermodel.Cell;
 
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
-import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetLoader;
+import xyz.hotchpotch.hogandiff.excel.common.CombinedCellLoader;
 import xyz.hotchpotch.hogandiff.excel.common.SComparatorImpl;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFBookLoaderWithPoiEventApi;
-import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFCellLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookLoaderWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookPainterWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PoiUtil;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.SheetLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.CellLoaderWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.sax.XSSFBookLoaderWithSax;
-import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetLoaderWithSax;
+import xyz.hotchpotch.hogandiff.excel.sax.XSSFCellLoaderWithSax;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -102,7 +102,7 @@ public class Factory {
      * @throws UnsupportedOperationException
      *              {@code bookPath} がサポートされないブック形式の場合
      */
-    public SheetLoader sheetLoader(Settings settings, Path bookPath) throws ExcelHandlingException {
+    public CellLoader cellLoader(Settings settings, Path bookPath) throws ExcelHandlingException {
         Objects.requireNonNull(settings, "settings");
         Objects.requireNonNull(bookPath, "bookPath");
         
@@ -135,18 +135,18 @@ public class Factory {
         BookType bookType = BookType.of(bookPath);
         switch (bookType) {
         case XLS:
-            return CombinedSheetLoader.of(List.of(
-                    () -> HSSFSheetLoaderWithPoiEventApi.of(
+            return CombinedCellLoader.of(List.of(
+                    () -> HSSFCellLoaderWithPoiEventApi.of(
                             extractContents, extractComments, useCachedValue),
-                    () -> SheetLoaderWithPoiUserApi.of(
+                    () -> CellLoaderWithPoiUserApi.of(
                             extractContents, extractComments, converter)));
         
         case XLSX:
         case XLSM:
-            return CombinedSheetLoader.of(List.of(
-                    () -> XSSFSheetLoaderWithSax.of(
+            return CombinedCellLoader.of(List.of(
+                    () -> XSSFCellLoaderWithSax.of(
                             extractContents, extractComments, useCachedValue, bookPath),
-                    () -> SheetLoaderWithPoiUserApi.of(
+                    () -> CellLoaderWithPoiUserApi.of(
                             extractContents, extractComments, converter)));
         
         case XLSB:

@@ -28,7 +28,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -38,13 +38,13 @@ import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
 /**
  * SAX (Simple API for XML) を利用して、
  * .xlsx/.xlsm 形式のExcelブックのワークシートから
- * セルデータを抽出する {@link SheetLoader} の実装です。<br>
+ * セルデータを抽出する {@link CellLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class XSSFSheetLoaderWithSax implements SheetLoader {
+public class XSSFCellLoaderWithSax implements CellLoader {
     
     // [static members] ********************************************************
     
@@ -259,7 +259,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
      *              ローダーの構成に失敗した場合。
      *              具体的には、Excelブックから共通情報の取得に失敗した場合
      */
-    public static SheetLoader of(
+    public static CellLoader of(
             boolean extractContents,
             boolean extractComments,
             boolean extractCachedValue,
@@ -268,10 +268,10 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         
         Objects.requireNonNull(bookPath, "bookPath");
         CommonUtil.ifNotSupportedBookTypeThenThrow(
-                XSSFSheetLoaderWithSax.class,
+                XSSFCellLoaderWithSax.class,
                 BookType.of(bookPath));
         
-        return new XSSFSheetLoaderWithSax(
+        return new XSSFCellLoaderWithSax(
                 extractContents,
                 extractComments,
                 extractCachedValue,
@@ -287,7 +287,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
     private final Map<String, SheetInfo> nameToInfo;
     private final List<String> sst;
     
-    private XSSFSheetLoaderWithSax(
+    private XSSFCellLoaderWithSax(
             boolean extractContents,
             boolean extractComments,
             boolean extractCachedValue,

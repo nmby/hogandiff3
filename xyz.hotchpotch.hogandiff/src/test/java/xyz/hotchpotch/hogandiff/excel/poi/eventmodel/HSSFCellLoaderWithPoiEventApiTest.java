@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellLoader;
 
-class HSSFSheetLoaderWithPoiEventApiTest {
+class HSSFCellLoaderWithPoiEventApiTest {
     
     // [static members] ********************************************************
     
@@ -30,14 +30,14 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI());
-        test1_xlsb = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI());
-        test1_xlsm = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI());
-        test1_xlsx = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI());
-        test2_xls = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
-        test2_xlsx = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
-        test3_xls = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test3.xls").toURI());
-        test5_xls = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test5.xls").toURI());
+        test1_xls = Path.of(HSSFCellLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI());
+        test1_xlsb = Path.of(HSSFCellLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI());
+        test1_xlsm = Path.of(HSSFCellLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI());
+        test1_xlsx = Path.of(HSSFCellLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI());
+        test2_xls = Path.of(HSSFCellLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
+        test2_xlsx = Path.of(HSSFCellLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
+        test3_xls = Path.of(HSSFCellLoaderWithPoiEventApiTest.class.getResource("Test3.xls").toURI());
+        test5_xls = Path.of(HSSFCellLoaderWithPoiEventApiTest.class.getResource("Test5.xls").toURI());
     }
     
     // [instance members] ******************************************************
@@ -45,14 +45,14 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     @Test
     void testOf() {
         assertTrue(
-                HSSFSheetLoaderWithPoiEventApi.of(true, true, true) instanceof HSSFSheetLoaderWithPoiEventApi);
+                HSSFCellLoaderWithPoiEventApi.of(true, true, true) instanceof HSSFCellLoaderWithPoiEventApi);
         assertTrue(
-                HSSFSheetLoaderWithPoiEventApi.of(false, false, false) instanceof HSSFSheetLoaderWithPoiEventApi);
+                HSSFCellLoaderWithPoiEventApi.of(false, false, false) instanceof HSSFCellLoaderWithPoiEventApi);
     }
     
     @Test
     void testLoadCells_例外系_非チェック例外() {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, true, true);
+        CellLoader testee = HSSFCellLoaderWithPoiEventApi.of(true, true, true);
         
         // 対照群
         assertDoesNotThrow(
@@ -88,7 +88,7 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_例外系_チェック例外1() {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, true, true);
+        CellLoader testee = HSSFCellLoaderWithPoiEventApi.of(true, true, true);
         
         // 存在しないファイル
         assertThrows(
@@ -122,7 +122,7 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_例外系_チェック例外2() {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, true, false);
+        CellLoader testee = HSSFCellLoaderWithPoiEventApi.of(true, true, false);
         
         // FIXME: [No.4 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
         assertThrows(
@@ -136,7 +136,7 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_正常系1() throws ExcelHandlingException {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, true, true);
+        CellLoader testee = HSSFCellLoaderWithPoiEventApi.of(true, true, true);
         
         assertEquals(
                 Set.of(
@@ -152,7 +152,7 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, true, true);
+        CellLoader testee = HSSFCellLoaderWithPoiEventApi.of(true, true, true);
         
         List<CellReplica> actual = new ArrayList<>(
                 testee.loadCells(test3_xls, "A_バリエーション"));
@@ -257,7 +257,7 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_正常系3_バリエーション_数式抽出() throws ExcelHandlingException {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, true, false);
+        CellLoader testee = HSSFCellLoaderWithPoiEventApi.of(true, true, false);
         
         // FIXME: [No.4 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
         assertThrows(
@@ -267,7 +267,7 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連a() throws ExcelHandlingException {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, true, true);
+        CellLoader testee = HSSFCellLoaderWithPoiEventApi.of(true, true, true);
         
         assertEquals(
                 Set.of(
@@ -283,7 +283,7 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連b() throws ExcelHandlingException {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, false, true);
+        CellLoader testee = HSSFCellLoaderWithPoiEventApi.of(true, false, true);
         
         assertEquals(
                 Set.of(
@@ -295,7 +295,7 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連c() throws ExcelHandlingException {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(false, true, true);
+        CellLoader testee = HSSFCellLoaderWithPoiEventApi.of(false, true, true);
         
         assertEquals(
                 Set.of(
@@ -310,7 +310,7 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連d() throws ExcelHandlingException {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(false, false, true);
+        CellLoader testee = HSSFCellLoaderWithPoiEventApi.of(false, false, true);
         
         assertEquals(
                 Set.of(),

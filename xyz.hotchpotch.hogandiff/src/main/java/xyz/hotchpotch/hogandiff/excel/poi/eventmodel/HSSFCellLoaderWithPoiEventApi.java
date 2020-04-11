@@ -41,7 +41,7 @@ import org.apache.poi.ss.util.NumberToTextConverter;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -50,13 +50,13 @@ import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
 /**
  * Apache POI イベントモデル API を利用して、
  * .xls 形式のExcelブックのワークシートから
- * セルデータを抽出する {@link SheetLoader} の実装です。<br>
+ * セルデータを抽出する {@link CellLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
+public class HSSFCellLoaderWithPoiEventApi implements CellLoader {
     
     // [static members] ********************************************************
     
@@ -468,12 +468,12 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
      *              数式文字列を抽出する場合は {@code false}
      * @return 新しいローダー
      */
-    public static SheetLoader of(
+    public static CellLoader of(
             boolean extractContents,
             boolean extractComments,
             boolean extractCachedValue) {
         
-        return new HSSFSheetLoaderWithPoiEventApi(extractContents, extractComments, extractCachedValue);
+        return new HSSFCellLoaderWithPoiEventApi(extractContents, extractComments, extractCachedValue);
     }
     
     // [instance members] ******************************************************
@@ -482,7 +482,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
     private final boolean extractComments;
     private final boolean extractCachedValue;
     
-    private HSSFSheetLoaderWithPoiEventApi(
+    private HSSFCellLoaderWithPoiEventApi(
             boolean extractContents,
             boolean extractComments,
             boolean extractCachedValue) {

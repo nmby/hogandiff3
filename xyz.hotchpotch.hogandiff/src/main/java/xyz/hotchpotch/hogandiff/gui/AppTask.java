@@ -18,7 +18,7 @@ import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SComparator;
 import xyz.hotchpotch.hogandiff.excel.SResult;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellLoader;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -217,10 +217,10 @@ public class AppTask extends Task<Void> {
             
             Path bookPath1 = settings.get(AppSettingKeys.CURR_BOOK_PATH1);
             Path bookPath2 = settings.get(AppSettingKeys.CURR_BOOK_PATH2);
-            SheetLoader loader1 = factory.sheetLoader(settings, bookPath1);
-            SheetLoader loader2 = bookPath1.equals(bookPath2)
+            CellLoader loader1 = factory.cellLoader(settings, bookPath1);
+            CellLoader loader2 = bookPath1.equals(bookPath2)
                     ? loader1
-                    : factory.sheetLoader(settings, bookPath2);
+                    : factory.cellLoader(settings, bookPath2);
             SComparator comparator = factory.comparator(settings);
             
             Map<Pair<String>, SResult> results = new HashMap<>();

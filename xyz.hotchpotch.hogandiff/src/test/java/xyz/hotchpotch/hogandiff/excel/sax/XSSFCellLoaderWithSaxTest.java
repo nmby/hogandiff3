@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellLoader;
 
-class XSSFSheetLoaderWithSaxTest {
+class XSSFCellLoaderWithSaxTest {
     
     // [static members] ********************************************************
     
@@ -29,13 +29,13 @@ class XSSFSheetLoaderWithSaxTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test1.xls").toURI());
-        test1_xlsb = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI());
-        test1_xlsm = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI());
-        test1_xlsx = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI());
-        test2_xlsm = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsm").toURI());
-        test3_xlsx = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test3.xlsx").toURI());
-        test4_xlsx = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test4.xlsx").toURI());
+        test1_xls = Path.of(XSSFCellLoaderWithSaxTest.class.getResource("Test1.xls").toURI());
+        test1_xlsb = Path.of(XSSFCellLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI());
+        test1_xlsm = Path.of(XSSFCellLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI());
+        test1_xlsx = Path.of(XSSFCellLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI());
+        test2_xlsm = Path.of(XSSFCellLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsm").toURI());
+        test3_xlsx = Path.of(XSSFCellLoaderWithSaxTest.class.getResource("Test3.xlsx").toURI());
+        test4_xlsx = Path.of(XSSFCellLoaderWithSaxTest.class.getResource("Test4.xlsx").toURI());
     }
     
     // [instance members] ******************************************************
@@ -46,37 +46,37 @@ class XSSFSheetLoaderWithSaxTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, true, true, null));
+                () -> XSSFCellLoaderWithSax.of(true, true, true, null));
         
         // サポート対象外のブック形式
         assertThrows(
                 IllegalArgumentException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, true, true, test1_xls));
+                () -> XSSFCellLoaderWithSax.of(true, true, true, test1_xls));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, true, true, test1_xlsb));
+                () -> XSSFCellLoaderWithSax.of(true, true, true, test1_xlsb));
         
         // ■チェック例外
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, true, true, Path.of("dummy\\dummy.xlsx")));
+                () -> XSSFCellLoaderWithSax.of(true, true, true, Path.of("dummy\\dummy.xlsx")));
         
         // 暗号化ファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, true, true, test2_xlsm));
+                () -> XSSFCellLoaderWithSax.of(true, true, true, test2_xlsm));
         
         // ■正常系
         assertTrue(
-                XSSFSheetLoaderWithSax.of(true, true, true, test1_xlsx) instanceof XSSFSheetLoaderWithSax);
+                XSSFCellLoaderWithSax.of(true, true, true, test1_xlsx) instanceof XSSFCellLoaderWithSax);
         assertTrue(
-                XSSFSheetLoaderWithSax.of(true, true, false, test1_xlsm) instanceof XSSFSheetLoaderWithSax);
+                XSSFCellLoaderWithSax.of(true, true, false, test1_xlsm) instanceof XSSFCellLoaderWithSax);
     }
     
     @Test
     void testLoadCells_例外系_非チェック例外() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, true, test1_xlsm);
+        CellLoader testee = XSSFCellLoaderWithSax.of(true, true, true, test1_xlsm);
         
         // 対照
         assertDoesNotThrow(
@@ -101,7 +101,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_例外系_チェック例外() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, true, test1_xlsm);
+        CellLoader testee = XSSFCellLoaderWithSax.of(true, true, true, test1_xlsm);
         
         // 存在しないシート
         assertThrows(
@@ -122,7 +122,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系1() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, true, test1_xlsx);
+        CellLoader testee = XSSFCellLoaderWithSax.of(true, true, true, test1_xlsx);
         
         assertEquals(
                 Set.of(
@@ -138,7 +138,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, true, test3_xlsx);
+        CellLoader testee = XSSFCellLoaderWithSax.of(true, true, true, test3_xlsx);
         
         List<CellReplica> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
@@ -248,7 +248,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系3_数式抽出() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, false, test3_xlsx);
+        CellLoader testee = XSSFCellLoaderWithSax.of(true, true, false, test3_xlsx);
         
         List<CellReplica> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
@@ -353,7 +353,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連a() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, true, test4_xlsx);
+        CellLoader testee = XSSFCellLoaderWithSax.of(true, true, true, test4_xlsx);
         
         assertEquals(
                 Set.of(
@@ -369,7 +369,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連b() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, false, test4_xlsx);
+        CellLoader testee = XSSFCellLoaderWithSax.of(true, true, false, test4_xlsx);
         
         assertEquals(
                 Set.of(
@@ -385,7 +385,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連c() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, false, true, test4_xlsx);
+        CellLoader testee = XSSFCellLoaderWithSax.of(true, false, true, test4_xlsx);
         
         assertEquals(
                 Set.of(
@@ -397,7 +397,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連d() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, false, false, test4_xlsx);
+        CellLoader testee = XSSFCellLoaderWithSax.of(true, false, false, test4_xlsx);
         
         assertEquals(
                 Set.of(
@@ -409,8 +409,8 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連e() throws ExcelHandlingException {
-        SheetLoader testee1 = XSSFSheetLoaderWithSax.of(false, true, true, test4_xlsx);
-        SheetLoader testee2 = XSSFSheetLoaderWithSax.of(false, true, false, test4_xlsx);
+        CellLoader testee1 = XSSFCellLoaderWithSax.of(false, true, true, test4_xlsx);
+        CellLoader testee2 = XSSFCellLoaderWithSax.of(false, true, false, test4_xlsx);
         
         assertEquals(
                 Set.of(
@@ -428,8 +428,8 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連f() throws ExcelHandlingException {
-        SheetLoader testee1 = XSSFSheetLoaderWithSax.of(false, false, true, test4_xlsx);
-        SheetLoader testee2 = XSSFSheetLoaderWithSax.of(false, false, false, test4_xlsx);
+        CellLoader testee1 = XSSFCellLoaderWithSax.of(false, false, true, test4_xlsx);
+        CellLoader testee2 = XSSFCellLoaderWithSax.of(false, false, false, test4_xlsx);
         
         assertEquals(
                 Set.of(),
