@@ -49,14 +49,15 @@ public class Settings {
                 String name,
                 Supplier<? extends T> defaultValueSupplier,
                 Function<? super T, String> encoder,
-                Function<String, ? extends T> decoder) {
+                Function<String, ? extends T> decoder,
+                boolean storable) {
             
             Objects.requireNonNull(name, "name");
             Objects.requireNonNull(defaultValueSupplier, "defaultValueSupplier");
             Objects.requireNonNull(encoder, "encoder");
             Objects.requireNonNull(decoder, "decoder");
             
-            return new Key<>(name, defaultValueSupplier, encoder, decoder);
+            return new Key<>(name, defaultValueSupplier, encoder, decoder, storable);
         }
         
         // [instance members] --------------------------------------------------
@@ -65,12 +66,14 @@ public class Settings {
         private final Supplier<? extends T> defaultValueSupplier;
         private final Function<? super T, String> encoder;
         private final Function<String, ? extends T> decoder;
+        private final boolean storable;
         
         private Key(
                 String name,
                 Supplier<? extends T> defaultValueSupplier,
                 Function<? super T, String> encoder,
-                Function<String, ? extends T> decoder) {
+                Function<String, ? extends T> decoder,
+                boolean storable) {
             
             assert name != null;
             assert defaultValueSupplier != null;
@@ -81,6 +84,7 @@ public class Settings {
             this.defaultValueSupplier = defaultValueSupplier;
             this.encoder = encoder;
             this.decoder = decoder;
+            this.storable = storable;
         }
         
         /**
@@ -117,6 +121,15 @@ public class Settings {
          */
         public Function<String, ? extends T> decoder() {
             return decoder;
+        }
+        
+        /**
+         * この設定項目の値がプロパティファイルへの保存対象かを返します。<br>
+         * 
+         * @return この設定項目の値がプロパティファイルへの保存対象の場合は {@code true}
+         */
+        public boolean storable() {
+            return storable;
         }
     }
     
