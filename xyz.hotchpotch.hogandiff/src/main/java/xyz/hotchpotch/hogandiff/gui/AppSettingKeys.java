@@ -9,7 +9,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import xyz.hotchpotch.hogandiff.excel.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
@@ -106,7 +105,7 @@ public class AppSettingKeys {
     // Collectors#toSet は実態として immutable set を返してくれるはずだが
     // 保証されないということなので、一応 Set#copyOf でラップしておく。
     private static final Set<Key<?>> keys = Set.copyOf(
-            Stream.of(SettingKeys.class.getFields())
+            Stream.of(AppSettingKeys.class.getFields())
                     .filter(f -> f.getType() == Key.class && Modifier.isPublic(f.getModifiers()))
                     .map(f -> {
                         try {
