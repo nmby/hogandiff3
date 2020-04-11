@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.gui;
+package xyz.hotchpotch.hogandiff;
 
 /**
  * アプリケーション処理に失敗したことを表す例外です。<br>

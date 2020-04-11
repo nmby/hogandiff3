@@ -24,7 +24,7 @@
 	<target name="create_jar">
 		<jar destfile="${dir.out.jarfile}/xyz.hotchpotch.hogandiff.jar">
 			<manifest>
-				<attribute name="Main-Class" value="xyz.hotchpotch.hogandiff.gui.AppMain" />
+				<attribute name="Main-Class" value="xyz.hotchpotch.hogandiff.AppMain" />
 				<attribute name="Class-Path" value=". 
 					lib/${poi}/poi-4.1.2.jar 
 					lib/${poi}/poi-ooxml-4.1.2.jar 
