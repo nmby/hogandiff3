@@ -56,4 +56,9 @@ public class ShapeReplica {
     public int hashCode() {
         return Objects.hash(id, text);
     }
+    
+    @Override
+    public String toString() {
+        return String.format("%d: %s", id, text);
+    }
 }

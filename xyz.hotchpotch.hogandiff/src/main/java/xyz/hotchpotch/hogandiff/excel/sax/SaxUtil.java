@@ -60,6 +60,7 @@ public class SaxUtil {
         private String source;
         private String commentSource;
         private String vmlDrawingSource;
+        private String drawingSource;
         
         private SheetInfo(String name, String id) {
             this.name = name;
@@ -127,6 +128,17 @@ public class SaxUtil {
          */
         public String vmlDrawingSource() {
             return vmlDrawingSource;
+        }
+        
+        /**
+         * zipファイルとしてのExcelファイル内における
+         * 図形の情報を保持するソースエントリのパス文字列を返します。<br>
+         * 例）{@code "xl/drawings/drawing1.xml"}
+         * 
+         * @return セルコメントの図としての情報を保持するソースエントリのパス文字列
+         */
+        public String drawingSource() {
+            return drawingSource;
         }
     }
     
@@ -198,11 +210,11 @@ public class SaxUtil {
                 SheetInfo info = sheets.get(attributes.getValue("Id"));
                 if (info != null) {
                     info.type = switch (attributes.getValue("Type")) {
-                        case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" -> SheetType.WORKSHEET;
-                        case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet" -> SheetType.CHART_SHEET;
-                        case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/dialogsheet" -> SheetType.DIALOG_SHEET;
-                        case "http://schemas.microsoft.com/office/2006/relationships/xlMacrosheet" -> SheetType.MACRO_SHEET;
-                        default -> null;
+                    case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" -> SheetType.WORKSHEET;
+                    case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet" -> SheetType.CHART_SHEET;
+                    case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/dialogsheet" -> SheetType.DIALOG_SHEET;
+                    case "http://schemas.microsoft.com/office/2006/relationships/xlMacrosheet" -> SheetType.MACRO_SHEET;
+                    default -> null;
                     };
                     info.source = "xl/" + attributes.getValue("Target");
                 }
@@ -286,6 +298,7 @@ public class SaxUtil {
         
         private static final String commentRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
         private static final String vmlDrawingRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing";
+        private static final String drawingRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing";
         
         // [instance members] --------------------------------------------------
         
@@ -302,10 +315,18 @@ public class SaxUtil {
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
             if ("Relationship".equals(qName)) {
-                if (commentRelType.equals(attributes.getValue("Type"))) {
+                switch (attributes.getValue("Type")) {
+                case commentRelType:
                     info.commentSource = attributes.getValue("Target").replace("../", "xl/");
-                } else if (vmlDrawingRelType.equals(attributes.getValue("Type"))) {
+                    break;
+                
+                case vmlDrawingRelType:
                     info.vmlDrawingSource = attributes.getValue("Target").replace("../", "xl/");
+                    break;
+                
+                case drawingRelType:
+                    info.drawingSource = attributes.getValue("Target").replace("../", "xl/");
+                    break;
                 }
             }
         }
