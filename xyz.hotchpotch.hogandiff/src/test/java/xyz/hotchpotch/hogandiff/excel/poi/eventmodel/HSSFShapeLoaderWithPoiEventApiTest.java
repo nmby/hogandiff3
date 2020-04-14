@@ -22,7 +22,6 @@ class HSSFShapeLoaderWithPoiEventApiTest {
     private static Path test101_xlsb;
     private static Path test101_xlsm;
     private static Path test101_xlsx;
-    private static Path test2_xls;
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
@@ -31,7 +30,6 @@ class HSSFShapeLoaderWithPoiEventApiTest {
         test101_xlsb = Path.of(HSSFShapeLoaderWithPoiEventApiTest.class.getResource("Test101.xlsb").toURI());
         test101_xlsm = Path.of(HSSFShapeLoaderWithPoiEventApiTest.class.getResource("Test101.xlsm").toURI());
         test101_xlsx = Path.of(HSSFShapeLoaderWithPoiEventApiTest.class.getResource("Test101.xlsx").toURI());
-        test2_xls = Path.of(HSSFShapeLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
     }
     
     // [instance members] ******************************************************
