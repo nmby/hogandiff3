@@ -84,7 +84,7 @@ public class XSSFShapeLoaderWithSax implements ShapeLoader {
         @Override
         public void endElement(String uri, String localName, String qName) {
             if ("xdr:txBody".equals(qName)) {
-                if (0 < id && text != null) {
+                if (0 < id && text != null && !text.toString().isEmpty()) {
                     shapes.add(ShapeReplica.of(id, text.toString()));
                 }
                 id = 0;

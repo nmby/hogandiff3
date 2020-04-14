@@ -122,9 +122,9 @@ class XSSFShapeLoaderWithSaxTest {
         
         assertEquals(
                 Set.of(
-                        ShapeReplica.of(2, ""),
+                        //ShapeReplica.of(2, ""),
                         ShapeReplica.of(3, "あいう"),
-                        ShapeReplica.of(4, ""),
+                        //ShapeReplica.of(4, ""),
                         // FIXME: [No.8 図形関連] SmartArtのテキストを取れるようにする
                         //ShapeReplica.of(7, ""),
                         //ShapeReplica.of(8, ""),
