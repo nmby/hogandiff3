@@ -1,62 +1,51 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <project name="Create Runnable Jar for Project hogandiff3 with libraries in sub-folder">
-	<!--this file was created by Eclipse Runnable JAR Export Wizard-->
-	<!--ANT 1.7 is required                                        -->
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
 
-	<!--define app properties-->
-	<property name="app.version" value="0.7.2" />
+    <!--define app properties-->
+    <property name="app.version" value="0.7.2" />
 
-	<property name="poi" value="poi-4.1.2" />
-	<property name="javafx" value="javafx-13" />
-	<property name="javafx-sdk" value="javafx-sdk-13" />
+    <property name="poi" value="poi-4.1.2" />
+    <property name="javafx" value="javafx-13" />
+    <property name="javafx-sdk" value="javafx-sdk-13" />
 
-	<property name="dir.pjhome" value=".." />
-	<property name="dir.userlib" value="C:/Users/ya_na/OneDrive/UserLibs" />
-	<property name="dir.out.product" value="${dir.pjhome}/build/方眼Diff-${app.version}" />
-	<property name="dir.out.jarfile" value="${dir.pjhome}/build/jar" />
-	<property name="dir.out.lib" value="${dir.out.product}/lib" />
+    <property name="dir.pjhome" value=".." />
+    <property name="dir.userlib" value="C:/Users/ya_na/OneDrive/UserLibs" />
+    <property name="dir.out.jarfile" value="${dir.pjhome}/build/jar" />
+    <property name="dir.out.product" value="${dir.pjhome}/build/方眼Diff-${app.version}" />
+    <property name="dir.out.lib" value="${dir.out.product}/lib" />
 
-	<target name="delete_dirs">
-		<delete dir="${dir.out.product}" />
-		<delete dir="${dir.out.jarfile}" />
-	</target>
+    <target name="delete_dirs">
+        <delete dir="${dir.out.product}" />
+    </target>
 
-	<target name="create_jar">
-		<jar destfile="${dir.out.jarfile}/xyz.hotchpotch.hogandiff.jar">
-			<manifest>
-				<attribute name="Main-Class" value="xyz.hotchpotch.hogandiff.gui.AppMain" />
-				<attribute name="Class-Path" value="lib" />
-			</manifest>
-			<fileset dir="${dir.pjhome}/xyz.hotchpotch.hogandiff/bin/main" />
-		</jar>
-	</target>
+    <target name="copy_files">
+        <copy todir="${dir.out.product}" file="${dir.pjhome}/README.md" />
+        <copy todir="${dir.out.product}" file="${dir.pjhome}/LICENSE" />
 
-	<target name="copy_files">
-		<copy file="${dir.pjhome}/README.md"  todir="${dir.out.product}" />
-		<copy file="${dir.pjhome}/LICENSE"    todir="${dir.out.product}" />
+        <copy todir="${dir.out.lib}/${poi}" file="${dir.userlib}/${poi}/LICENSE" />
+        <copy todir="${dir.out.lib}/${poi}" file="${dir.userlib}/${poi}/NOTICE" />
+        <copy todir="${dir.out.lib}/${poi}" file="${dir.userlib}/${poi}/poi-4.1.2.jar" />
+        <copy todir="${dir.out.lib}/${poi}" file="${dir.userlib}/${poi}/poi-ooxml-4.1.2.jar" />
+        <copy todir="${dir.out.lib}/${poi}" file="${dir.userlib}/${poi}/poi-ooxml-schemas-4.1.2.jar" />
+        <copy todir="${dir.out.lib}/${poi}/lib" file="${dir.userlib}/${poi}/lib/commons-codec-1.13.jar" />
+        <copy todir="${dir.out.lib}/${poi}/lib" file="${dir.userlib}/${poi}/lib/commons-collections4-4.4.jar" />
+        <copy todir="${dir.out.lib}/${poi}/lib" file="${dir.userlib}/${poi}/lib/commons-compress-1.19.jar" />
+        <copy todir="${dir.out.lib}/${poi}/lib" file="${dir.userlib}/${poi}/lib/commons-math3-3.6.1.jar" />
+        <copy todir="${dir.out.lib}/${poi}/lib" file="${dir.userlib}/${poi}/lib/SparseBitSet-1.2.jar" />
+        <copy todir="${dir.out.lib}/${poi}/ooxml-lib" file="${dir.userlib}/${poi}/ooxml-lib/xmlbeans-3.1.0.jar" />
 
-		<copy file="${dir.userlib}/${poi}/LICENSE"                            todir="${dir.out.lib}/${poi}" />
-		<copy file="${dir.userlib}/${poi}/NOTICE"                             todir="${dir.out.lib}/${poi}" />
-		<copy file="${dir.userlib}/${poi}/poi-4.1.2.jar"                      todir="${dir.out.lib}/${poi}" />
-		<copy file="${dir.userlib}/${poi}/poi-ooxml-4.1.2.jar"                todir="${dir.out.lib}/${poi}" />
-		<copy file="${dir.userlib}/${poi}/poi-ooxml-schemas-4.1.2.jar"        todir="${dir.out.lib}/${poi}" />
-		<copy file="${dir.userlib}/${poi}/lib/commons-codec-1.13.jar"         todir="${dir.out.lib}/${poi}/lib" />
-		<copy file="${dir.userlib}/${poi}/lib/commons-collections4-4.4.jar"   todir="${dir.out.lib}/${poi}/lib" />
-		<copy file="${dir.userlib}/${poi}/lib/commons-compress-1.19.jar"      todir="${dir.out.lib}/${poi}/lib" />
-		<copy file="${dir.userlib}/${poi}/lib/commons-math3-3.6.1.jar"        todir="${dir.out.lib}/${poi}/lib" />
-        <copy file="${dir.userlib}/${poi}/lib/SparseBitSet-1.2.jar"           todir="${dir.out.lib}/${poi}/lib" />
-		<copy file="${dir.userlib}/${poi}/ooxml-lib/xmlbeans-3.1.0.jar"       todir="${dir.out.lib}/${poi}/ooxml-lib" />
-
-		<copy todir="${dir.out.lib}\${javafx}/legal">
-			<fileset dir="${dir.userlib}/${javafx-sdk}/legal" />
-		</copy>
-		<copy file="${dir.userlib}/${javafx-sdk}/lib/javafx.base.jar"     todir="${dir.out.lib}/${javafx}/lib" />
-		<copy file="${dir.userlib}/${javafx-sdk}/lib/javafx.controls.jar" todir="${dir.out.lib}/${javafx}/lib" />
-		<copy file="${dir.userlib}/${javafx-sdk}/lib/javafx.fxml.jar"     todir="${dir.out.lib}/${javafx}/lib" />
-		<copy file="${dir.userlib}/${javafx-sdk}/lib/javafx.graphics.jar" todir="${dir.out.lib}/${javafx}/lib" />
-		<copy file="${dir.userlib}/${javafx-sdk}/lib/javafx.media.jar"    todir="${dir.out.lib}/${javafx}/lib" />
-		<copy file="${dir.userlib}/${javafx-sdk}/lib/javafx.swing.jar"    todir="${dir.out.lib}/${javafx}/lib" />
-		<copy file="${dir.userlib}/${javafx-sdk}/lib/javafx.web.jar"      todir="${dir.out.lib}/${javafx}/lib" />
-		<copy file="${dir.userlib}/${javafx-sdk}/lib/javafx-swt.jar"      todir="${dir.out.lib}/${javafx}/lib" />
-	</target>
+        <copy todir="${dir.out.lib}\${javafx}/legal">
+            <fileset dir="${dir.userlib}/${javafx-sdk}/legal" />
+        </copy>
+        <copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.base.jar" />
+        <copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.controls.jar" />
+        <copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.fxml.jar" />
+        <copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.graphics.jar" />
+        <copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.media.jar" />
+        <copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.swing.jar" />
+        <copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.web.jar" />
+        <copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx-swt.jar" />
+    </target>
 </project>
