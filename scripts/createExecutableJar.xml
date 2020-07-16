@@ -25,24 +25,7 @@
 		<jar destfile="${dir.out.jarfile}/xyz.hotchpotch.hogandiff.jar">
 			<manifest>
 				<attribute name="Main-Class" value="xyz.hotchpotch.hogandiff.gui.AppMain" />
-				<attribute name="Class-Path" value=". 
-					lib/${poi}/poi-4.1.2.jar 
-					lib/${poi}/poi-ooxml-4.1.2.jar 
-					lib/${poi}/poi-ooxml-schemas-4.1.2.jar 
-					lib/${poi}/lib/commons-codec-1.13.jar 
-					lib/${poi}/lib/commons-collections4-4.4.jar 
-					lib/${poi}/lib/commons-compress-1.19 
-					lib/${poi}/lib/commons-math3-3.6.1.jar.jar 
-                    lib/${poi}/lib/SparseBitSet-1.2.jar 
-					lib/${poi}/ooxml-lib/xmlbeans-3.1.0.jar 
-					lib/${javafx}/lib/javafx.base.jar 
-					lib/${javafx}/lib/javafx.controls.jar 
-					lib/${javafx}/lib/javafx.fxml.jar 
-					lib/${javafx}/lib/javafx.graphics.jar 
-					lib/${javafx}/lib/javafx.media.jar 
-					lib/${javafx}/lib/javafx.swing.jar 
-					lib/${javafx}/lib/javafx.web.jar 
-					lib/${javafx}/lib/javafx-swt.jar" />
+				<attribute name="Class-Path" value="lib" />
 			</manifest>
 			<fileset dir="${dir.pjhome}/xyz.hotchpotch.hogandiff/bin/main" />
 		</jar>
@@ -61,7 +44,7 @@
 		<copy file="${dir.userlib}/${poi}/lib/commons-collections4-4.4.jar"   todir="${dir.out.lib}/${poi}/lib" />
 		<copy file="${dir.userlib}/${poi}/lib/commons-compress-1.19.jar"      todir="${dir.out.lib}/${poi}/lib" />
 		<copy file="${dir.userlib}/${poi}/lib/commons-math3-3.6.1.jar"        todir="${dir.out.lib}/${poi}/lib" />
-        <copy file="${dir.userlib}/${poi}/lib/SparseBitSet-1.2.jar"           todir="${dir.out.lib}/${poi}/lib" />
+		<copy file="${dir.userlib}/${poi}/lib/SparseBitSet-1.2.jar"           todir="${dir.out.lib}/${poi}/lib" />
 		<copy file="${dir.userlib}/${poi}/ooxml-lib/xmlbeans-3.1.0.jar"       todir="${dir.out.lib}/${poi}/ooxml-lib" />
 
 		<copy todir="${dir.out.lib}\${javafx}/legal">
