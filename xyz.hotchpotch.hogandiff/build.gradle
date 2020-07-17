@@ -23,8 +23,8 @@ test {
     useJUnitPlatform()
 }
 
-sourceCompatibility = "13"
-targetCompatibility = "13"
+sourceCompatibility = "14"
+targetCompatibility = "14"
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
