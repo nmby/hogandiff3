@@ -36,3 +36,11 @@ javafx {
 }
 
 mainClassName = 'xyz.hotchpotch.hogandiff.gui.AppMain'
+
+jar {
+    manifest {
+        attributes (
+            "Main-Class": mainClassName,
+            "Class-Path": "lib")
+    }
+}
