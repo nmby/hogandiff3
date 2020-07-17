@@ -7,8 +7,8 @@
 	<property name="app.version" value="0.7.2" />
 
 	<property name="poi" value="poi-4.1.2" />
-	<property name="javafx" value="javafx-13" />
-	<property name="javafx-sdk" value="javafx-sdk-13" />
+	<property name="javafx" value="javafx-14.0.1" />
+	<property name="javafx-sdk" value="javafx-sdk-14.0.1" />
 
 	<property name="dir.pjhome" value=".." />
 	<property name="dir.userlib" value="C:/Users/ya_na/OneDrive/UserLibs" />

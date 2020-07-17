@@ -2,7 +2,7 @@
 plugins {
     id 'java-library'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
 }
 
 repositories {
@@ -31,7 +31,7 @@ tasks.withType(JavaCompile) {
 }
 
 javafx {
-    version = "13"
+    version = "14"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
