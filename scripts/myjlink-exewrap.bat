@@ -30,4 +30,4 @@ set JFX_WIN=C:\Users\ya_na\OneDrive\UserLibs\javafx-jmods-13
 
 set EXEWRAP_CMD=exewrap1.5.0\x64\exewrap.exe
 
-%EXEWRAP_CMD% -g -t 11 -i ..\resources\favicon.ico -v %VERSION% -V %VERSION% -d "方眼Diff" -c "(c) 2020 nmby" -p "方眼Diff" -j ..\build\jar\xyz.hotchpotch.hogandiff.jar -o %OUTPUT_WIN%\方眼Diff.exe
+%EXEWRAP_CMD% -g -t 11 -i ..\resources\favicon.ico -v %VERSION% -V %VERSION% -d "方眼Diff" -c "(c) 2020 nmby" -p "方眼Diff" -j ..\xyz.hotchpotch.hogandiff\build\libs\xyz.hotchpotch.hogandiff.jar -o %OUTPUT_WIN%\方眼Diff.exe
