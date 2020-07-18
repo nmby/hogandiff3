@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
@@ -283,7 +282,7 @@ public class GuiController {
         
         // 「設定を保存」ボタンのイベントハンドラを登録する。
         buttonSaveSettings.setOnAction(event -> {
-            Settings settings = gatherSettings(AppMain.keysToBeSaved);
+            Settings settings = gatherSettings();
             Properties properties = settings.toProperties();
             AppMain.storeProperties(properties);
             hasSettingsChanged.set(false);
@@ -454,70 +453,39 @@ public class GuiController {
         event.consume();
     }
     
-    private Settings gatherSettings(Set<Settings.Key<?>> targets) {
+    private Settings gatherSettings() {
         Settings.Builder builder = Settings.builder();
         
-        // なんかもうちょいスマートに出来そうな気もするけど。。。
-        // このクラスはやっつけで良いやと思ってしまう。。。
-        if (targets == null || targets.contains(SettingKeys.CURR_MENU)) {
-            builder.set(SettingKeys.CURR_MENU, menu.getValue());
-        }
-        if (targets == null || targets.contains(SettingKeys.CURR_BOOK_PATH1)) {
+        builder.set(SettingKeys.CURR_MENU, menu.getValue());
+        if (bookPath1.getValue() != null) {
             builder.set(SettingKeys.CURR_BOOK_PATH1, bookPath1.getValue());
         }
-        if (targets == null || targets.contains(SettingKeys.CURR_BOOK_PATH2)) {
+        if (bookPath2.getValue() != null) {
             builder.set(SettingKeys.CURR_BOOK_PATH2, bookPath2.getValue());
         }
         if (menu.getValue() == AppMenu.COMPARE_SHEETS) {
-            if (targets == null || targets.contains(SettingKeys.CURR_SHEET_NAME1)) {
+            if (sheetName1.getValue() != null) {
                 builder.set(SettingKeys.CURR_SHEET_NAME1, sheetName1.getValue());
             }
-            if (targets == null || targets.contains(SettingKeys.CURR_SHEET_NAME2)) {
+            if (sheetName2.getValue() != null) {
                 builder.set(SettingKeys.CURR_SHEET_NAME2, sheetName2.getValue());
             }
         }
-        if (targets == null || targets.contains(SettingKeys.CONSIDER_ROW_GAPS)) {
-            builder.set(SettingKeys.CONSIDER_ROW_GAPS, checkConsiderRowGaps.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.CONSIDER_COLUMN_GAPS)) {
-            builder.set(SettingKeys.CONSIDER_COLUMN_GAPS, checkConsiderColumnGaps.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.COMPARE_CELL_CONTENTS)) {
-            builder.set(SettingKeys.COMPARE_CELL_CONTENTS, checkCompareCellContents.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.COMPARE_CELL_COMMENTS)) {
-            builder.set(SettingKeys.COMPARE_CELL_COMMENTS, checkCompareCellComments.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.COMPARE_ON_FORMULA_STRING)) {
-            builder.set(SettingKeys.COMPARE_ON_FORMULA_STRING, radioCompareOnFormula.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.SHOW_PAINTED_SHEETS)) {
-            builder.set(SettingKeys.SHOW_PAINTED_SHEETS, checkShowPaintedSheets.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.SHOW_RESULT_TEXT)) {
-            builder.set(SettingKeys.SHOW_RESULT_TEXT, checkShowResultText.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.EXIT_WHEN_FINISHED)) {
-            builder.set(SettingKeys.EXIT_WHEN_FINISHED, checkExitWhenFinished.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.REDUNDANT_COLOR)) {
-            builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
-        }
-        if (targets == null || targets.contains(SettingKeys.DIFF_COLOR)) {
-            builder.setDefaultValue(SettingKeys.DIFF_COLOR);
-        }
-        if (targets == null || targets.contains(SettingKeys.REDUNDANT_COMMENT_COLOR)) {
-            builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
-        }
-        if (targets == null || targets.contains(SettingKeys.DIFF_COMMENT_COLOR)) {
-            builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
-        }
-        if (targets == null || targets.contains(SettingKeys.WORK_DIR_BASE)) {
-            builder.setDefaultValue(SettingKeys.WORK_DIR_BASE);
-        }
-        if (targets == null || targets.contains(SettingKeys.CURR_TIMESTAMP)) {
-            builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
-        }
+        builder.set(SettingKeys.CONSIDER_ROW_GAPS, checkConsiderRowGaps.isSelected());
+        builder.set(SettingKeys.CONSIDER_COLUMN_GAPS, checkConsiderColumnGaps.isSelected());
+        builder.set(SettingKeys.COMPARE_CELL_CONTENTS, checkCompareCellContents.isSelected());
+        builder.set(SettingKeys.COMPARE_CELL_COMMENTS, checkCompareCellComments.isSelected());
+        builder.set(SettingKeys.COMPARE_ON_FORMULA_STRING, radioCompareOnFormula.isSelected());
+        builder.set(SettingKeys.SHOW_PAINTED_SHEETS, checkShowPaintedSheets.isSelected());
+        builder.set(SettingKeys.SHOW_RESULT_TEXT, checkShowResultText.isSelected());
+        builder.set(SettingKeys.EXIT_WHEN_FINISHED, checkExitWhenFinished.isSelected());
+        builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_COLOR);
+        builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
+        builder.setDefaultValue(SettingKeys.WORK_DIR_BASE);
+        builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
+        
         return builder.build();
     }
     
@@ -531,7 +499,7 @@ public class GuiController {
             throw new IllegalStateException("I'm not ready.");
         }
         
-        Settings settings = gatherSettings(null);
+        Settings settings = gatherSettings();
         AppMenu menu = settings.get(SettingKeys.CURR_MENU);
         
         if (!menu.isValidTargets(settings)) {

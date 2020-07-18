@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -34,17 +33,6 @@ public class AppMain extends Application {
     
     /** プロパティファイルの相対パス */
     private static final Path APP_PROP_PATH = Path.of("hogandiff.properties");
-    
-    /** プロパティファイルに記録すべき設定項目 */
-    public static final Set<Settings.Key<?>> keysToBeSaved = Set.of(
-            SettingKeys.CONSIDER_ROW_GAPS,
-            SettingKeys.CONSIDER_COLUMN_GAPS,
-            SettingKeys.COMPARE_CELL_CONTENTS,
-            SettingKeys.COMPARE_CELL_COMMENTS,
-            SettingKeys.COMPARE_ON_FORMULA_STRING,
-            SettingKeys.SHOW_PAINTED_SHEETS,
-            SettingKeys.SHOW_RESULT_TEXT,
-            SettingKeys.EXIT_WHEN_FINISHED);
     
     /**
      * このアプリケーションのエントリポイントです。<br>
@@ -119,7 +107,7 @@ public class AppMain extends Application {
         try {
             // 1. プロパティファイルから設定を抽出する。
             Properties properties = loadProperties();
-            Settings.Builder builder = Settings.builder(properties, keysToBeSaved);
+            Settings.Builder builder = Settings.builder(properties, SettingKeys.storableKeys);
             
             // 2. アプリケーション実行時引数から設定を抽出する。
             Optional<Settings> fromArgs = AppArgsParser.parseArgs(getParameters().getRaw());
