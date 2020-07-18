@@ -28,7 +28,7 @@ public class SettingKeys {
             "application.system.workDirBase",
             () -> Path.of(
                     System.getProperty("java.io.tmpdir"),
-                    "xyz.hotchpotch.hogandiff"),
+                    SettingKeys.class.getPackageName()),
             Path::toString,
             Path::of,
             false);
