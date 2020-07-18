@@ -19,7 +19,7 @@ rem WIN ------------------------------------------------------------------------
 
 set OUTPUT_WIN=%OUTPUT_COMMON%-win64
 
-rmdir/s /q %OUTPUT_WIN%
+rmdir /s /q %OUTPUT_WIN%
 xcopy %OUTPUT_COMMON% %OUTPUT_WIN% /e /i
 copy ..\resources\方眼Diff.exe.vmoptions %OUTPUT_WIN%
 
