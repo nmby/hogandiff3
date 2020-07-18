@@ -490,34 +490,42 @@ public class XSSFBookPainterWithStax implements BookPainter {
                     .addFilter(QNAME.CONDITIONAL_FORMATTING)
                     .build();
             
-            // 余剰列にデフォルト色を付けるリーダーを追加
-            reader = PaintColumnsReader.of(
-                    reader,
-                    stylesManager,
-                    piece.redundantColumns(),
-                    redundantColor);
+            if (!piece.redundantColumns().isEmpty()) {
+                // 余剰列にデフォルト色を付けるリーダーを追加
+                reader = PaintColumnsReader.of(
+                        reader,
+                        stylesManager,
+                        piece.redundantColumns(),
+                        redundantColor);
+            }
             
-            // 余剰行にデフォルト色を付けるリーダーを追加
-            reader = PaintRowsReader.of(
-                    reader,
-                    stylesManager,
-                    piece.redundantRows(),
-                    redundantColor);
+            if (!piece.redundantRows().isEmpty()) {
+                // 余剰行にデフォルト色を付けるリーダーを追加
+                reader = PaintRowsReader.of(
+                        reader,
+                        stylesManager,
+                        piece.redundantRows(),
+                        redundantColor);
+            }
             
-            // 余剰行や余剰列の上にあるセルに色を付けるリーダーを追加
-            reader = PaintRedundantCellsReader.of(
-                    reader,
-                    stylesManager,
-                    piece.redundantRows(),
-                    piece.redundantColumns(),
-                    redundantColor);
+            if (!piece.redundantRows().isEmpty() || !piece.redundantColumns().isEmpty()) {
+                // 余剰行や余剰列の上にあるセルに色を付けるリーダーを追加
+                reader = PaintRedundantCellsReader.of(
+                        reader,
+                        stylesManager,
+                        piece.redundantRows(),
+                        piece.redundantColumns(),
+                        redundantColor);
+            }
             
-            // 差分セルに色を付けるリーダーを追加
-            reader = PaintDiffCellsReader.of(
-                    reader,
-                    stylesManager,
-                    piece.diffCellContents(),
-                    diffColor);
+            if (!piece.diffCellContents().isEmpty()) {
+                // 差分セルに色を付けるリーダーを追加
+                reader = PaintDiffCellsReader.of(
+                        reader,
+                        stylesManager,
+                        piece.diffCellContents(),
+                        diffColor);
+            }
             
             writer.add(reader);
             
