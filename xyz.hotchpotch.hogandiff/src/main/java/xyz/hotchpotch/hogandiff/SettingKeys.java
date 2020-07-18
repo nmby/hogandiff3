@@ -1,8 +1,12 @@
-package xyz.hotchpotch.hogandiff.excel;
+package xyz.hotchpotch.hogandiff;
 
 import java.awt.Color;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -11,13 +15,74 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
- * Excelシートの比較における設定項目を集めたクラスです。<br>
+ * このアプリケーションの設定項目を集めたクラスです。<br>
  *
  * @author nmby
  */
 public class SettingKeys {
     
     // [static members] ********************************************************
+    
+    /** 作業用フォルダの作成場所のパス */
+    public static final Key<Path> WORK_DIR_BASE = Key.defineAs(
+            "application.system.workDirBase",
+            () -> Path.of(
+                    System.getProperty("java.io.tmpdir"),
+                    "xyz.hotchpotch.hogandiff"),
+            Path::toString,
+            Path::of);
+    
+    /** 今回の実行を識別するためのタイムスタンプタグ */
+    public static final Key<String> CURR_TIMESTAMP = Key.defineAs(
+            "application.current.timestamp",
+            () -> LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS")),
+            Function.identity(),
+            Function.identity());
+    
+    /** 今回の実行における比較メニュー */
+    public static final Key<AppMenu> CURR_MENU = Key.defineAs(
+            "application.current.menu",
+            () -> {
+                throw new UnsupportedOperationException("the key has no default value.");
+            },
+            AppMenu::toString,
+            AppMenu::valueOf);
+    
+    /** 今回の実行における比較対象Excelブック1のパス */
+    public static final Key<Path> CURR_BOOK_PATH1 = Key.defineAs(
+            "application.current.bookPath1",
+            () -> {
+                throw new UnsupportedOperationException("the key has no default value.");
+            },
+            Path::toString,
+            Path::of);
+    
+    /** 今回の実行における比較対象Excelブック2のパス */
+    public static final Key<Path> CURR_BOOK_PATH2 = Key.defineAs(
+            "application.current.bookPath2",
+            () -> {
+                throw new UnsupportedOperationException("the key has no default value.");
+            },
+            Path::toString,
+            Path::of);
+    
+    /** 今回の実行における比較対象Excelシート1の名前 */
+    public static final Key<String> CURR_SHEET_NAME1 = Key.defineAs(
+            "application.current.sheetName1",
+            () -> {
+                throw new UnsupportedOperationException("the key has no default value.");
+            },
+            Function.identity(),
+            Function.identity());
+    
+    /** 今回の実行における比較対象Excelシート2の名前 */
+    public static final Key<String> CURR_SHEET_NAME2 = Key.defineAs(
+            "application.current.sheetName2",
+            () -> {
+                throw new UnsupportedOperationException("the key has no default value.");
+            },
+            Function.identity(),
+            Function.identity());
     
     /**
      * Excelシート同士の比較において、
@@ -103,6 +168,27 @@ public class SettingKeys {
             () -> Color.YELLOW,
             color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
             Color::decode);
+    
+    /** レポートオプション：差分個所に色を付けたシートを表示するか */
+    public static final Key<Boolean> SHOW_PAINTED_SHEETS = Key.defineAs(
+            "application.report.showPaintedSheets",
+            () -> true,
+            String::valueOf,
+            Boolean::valueOf);
+    
+    /** レポートオプション：比較結果が記載されたテキストを表示するか */
+    public static final Key<Boolean> SHOW_RESULT_TEXT = Key.defineAs(
+            "application.report.showResultText",
+            () -> true,
+            String::valueOf,
+            Boolean::valueOf);
+    
+    /** 実行オプション：比較完了時にこのアプリを終了するか */
+    public static final Key<Boolean> EXIT_WHEN_FINISHED = Key.defineAs(
+            "application.execution.exitWhenFinished",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf);
     
     // Collectors#toSet は実態として immutable set を返してくれるはずだが
     // 保証されないということなので、一応 Set#copyOf でラップしておく。

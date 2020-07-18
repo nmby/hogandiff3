@@ -33,8 +33,8 @@ public enum AppMenu {
         public boolean isValidTargets(Settings settings) {
             Objects.requireNonNull(settings, "settings");
             
-            Path bookPath1 = settings.get(AppSettingKeys.CURR_BOOK_PATH1);
-            Path bookPath2 = settings.get(AppSettingKeys.CURR_BOOK_PATH2);
+            Path bookPath1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
+            Path bookPath2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
             
             return !Objects.equals(bookPath1, bookPath2);
         }
@@ -46,8 +46,8 @@ public enum AppMenu {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(factory, "factory");
             
-            Path bookPath1 = settings.get(AppSettingKeys.CURR_BOOK_PATH1);
-            Path bookPath2 = settings.get(AppSettingKeys.CURR_BOOK_PATH2);
+            Path bookPath1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
+            Path bookPath2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
             BookLoader bookLoader1 = factory.bookLoader(bookPath1);
             BookLoader bookLoader2 = factory.bookLoader(bookPath2);
             List<String> sheetNames1 = bookLoader1.loadSheetNames(bookPath1);
@@ -76,10 +76,10 @@ public enum AppMenu {
         public boolean isValidTargets(Settings settings) {
             Objects.requireNonNull(settings, "settings");
             
-            Path bookPath1 = settings.get(AppSettingKeys.CURR_BOOK_PATH1);
-            Path bookPath2 = settings.get(AppSettingKeys.CURR_BOOK_PATH2);
-            String sheetName1 = settings.get(AppSettingKeys.CURR_SHEET_NAME1);
-            String sheetName2 = settings.get(AppSettingKeys.CURR_SHEET_NAME2);
+            Path bookPath1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
+            Path bookPath2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
+            String sheetName1 = settings.get(SettingKeys.CURR_SHEET_NAME1);
+            String sheetName2 = settings.get(SettingKeys.CURR_SHEET_NAME2);
             
             return !Objects.equals(bookPath1, bookPath2)
                     || !Objects.equals(sheetName1, sheetName2);
@@ -93,8 +93,8 @@ public enum AppMenu {
             Objects.requireNonNull(factory, "factory");
             
             return List.of(Pair.of(
-                    settings.get(AppSettingKeys.CURR_SHEET_NAME1),
-                    settings.get(AppSettingKeys.CURR_SHEET_NAME2)));
+                    settings.get(SettingKeys.CURR_SHEET_NAME1),
+                    settings.get(SettingKeys.CURR_SHEET_NAME2)));
         }
     };
     

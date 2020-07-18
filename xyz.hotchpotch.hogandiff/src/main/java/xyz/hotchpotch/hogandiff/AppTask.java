@@ -80,7 +80,7 @@ public class AppTask extends Task<Void> {
         
         this.settings = settings;
         this.factory = factory;
-        this.menu = settings.get(AppSettingKeys.CURR_MENU);
+        this.menu = settings.get(SettingKeys.CURR_MENU);
     }
     
     @Override
@@ -99,12 +99,12 @@ public class AppTask extends Task<Void> {
         BResult results = compareSheets(pairs, 5, 75);
         
         // 4. 比較結果の表示（テキスト）
-        if (settings.get(AppSettingKeys.SHOW_RESULT_TEXT)) {
+        if (settings.get(SettingKeys.SHOW_RESULT_TEXT)) {
             showResultText(workDir, results, 75, 80);
         }
         
         // 5. 比較結果の表示（Excelブック）
-        if (settings.get(AppSettingKeys.SHOW_PAINTED_SHEETS)) {
+        if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
             showPaintedSheets(workDir, results, 80, 98);
         }
         
@@ -117,8 +117,8 @@ public class AppTask extends Task<Void> {
     private void announceStart(int progressBefore, int progressAfter) {
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        Path bookPath1 = settings.get(AppSettingKeys.CURR_BOOK_PATH1);
-        Path bookPath2 = settings.get(AppSettingKeys.CURR_BOOK_PATH2);
+        Path bookPath1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
+        Path bookPath2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
         
         if (menu == AppMenu.COMPARE_BOOKS) {
             str.append(String.format(
@@ -126,8 +126,8 @@ public class AppTask extends Task<Void> {
                     bookPath1, bookPath2));
             
         } else {
-            String sheetName1 = settings.get(AppSettingKeys.CURR_SHEET_NAME1);
-            String sheetName2 = settings.get(AppSettingKeys.CURR_SHEET_NAME2);
+            String sheetName1 = settings.get(SettingKeys.CURR_SHEET_NAME1);
+            String sheetName2 = settings.get(SettingKeys.CURR_SHEET_NAME2);
             
             if (bookPath1.equals(bookPath2)) {
                 str.append(String.format(
@@ -151,8 +151,8 @@ public class AppTask extends Task<Void> {
         Path workDir = null;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            workDir = settings.get(AppSettingKeys.WORK_DIR_BASE)
-                    .resolve(settings.get(AppSettingKeys.CURR_TIMESTAMP));
+            workDir = settings.get(SettingKeys.WORK_DIR_BASE)
+                    .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
             str.append(String.format(
                     "作業用フォルダを作成しています...\n  - %s\n\n", workDir));
             updateMessage(str.toString());
@@ -215,8 +215,8 @@ public class AppTask extends Task<Void> {
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            Path bookPath1 = settings.get(AppSettingKeys.CURR_BOOK_PATH1);
-            Path bookPath2 = settings.get(AppSettingKeys.CURR_BOOK_PATH2);
+            Path bookPath1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
+            Path bookPath2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
             SheetLoader loader1 = factory.sheetLoader(settings, bookPath1);
             SheetLoader loader2 = bookPath1.equals(bookPath2)
                     ? loader1
@@ -300,8 +300,8 @@ public class AppTask extends Task<Void> {
             throws ApplicationException {
         
         boolean isSameBook = Objects.equals(
-                settings.get(AppSettingKeys.CURR_BOOK_PATH1),
-                settings.get(AppSettingKeys.CURR_BOOK_PATH2));
+                settings.get(SettingKeys.CURR_BOOK_PATH1),
+                settings.get(SettingKeys.CURR_BOOK_PATH2));
         
         if (isSameBook) {
             showPaintedSheets1(workDir, results, progressBefore, progressAfter);
@@ -322,7 +322,7 @@ public class AppTask extends Task<Void> {
             
             str.append("Excelブックに比較結果の色を付けて保存しています...\n");
             updateMessage(str.toString());
-            Path src = settings.get(AppSettingKeys.CURR_BOOK_PATH1);
+            Path src = settings.get(SettingKeys.CURR_BOOK_PATH1);
             Path dst = workDir.resolve(src.getFileName());
             BookPainter painter = factory.painter(settings, dst);
             str.append(String.format("  - %s\n\n", dst));
@@ -359,7 +359,7 @@ public class AppTask extends Task<Void> {
             
             str.append("Excelブックに比較結果の色を付けて保存しています(1/2)...\n");
             updateMessage(str.toString());
-            Path src1 = settings.get(AppSettingKeys.CURR_BOOK_PATH1);
+            Path src1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
             Path dst1 = workDir.resolve("【A】" + src1.getFileName());
             BookPainter painter1 = factory.painter(settings, dst1);
             str.append(String.format("  - %s\n\n", dst1));
@@ -369,7 +369,7 @@ public class AppTask extends Task<Void> {
             
             str.append("Excelブックに比較結果の色を付けて保存しています(2/2)...\n");
             updateMessage(str.toString());
-            Path src2 = settings.get(AppSettingKeys.CURR_BOOK_PATH2);
+            Path src2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
             Path dst2 = workDir.resolve("【B】" + src2.getFileName());
             BookPainter painter2 = factory.painter(settings, dst2);
             str.append(String.format("  - %s\n\n", dst2));

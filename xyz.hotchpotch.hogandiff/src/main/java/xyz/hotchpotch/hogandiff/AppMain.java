@@ -18,7 +18,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import xyz.hotchpotch.hogandiff.excel.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -43,9 +42,9 @@ public class AppMain extends Application {
             SettingKeys.COMPARE_CELL_CONTENTS,
             SettingKeys.COMPARE_CELL_COMMENTS,
             SettingKeys.COMPARE_ON_FORMULA_STRING,
-            AppSettingKeys.SHOW_PAINTED_SHEETS,
-            AppSettingKeys.SHOW_RESULT_TEXT,
-            AppSettingKeys.EXIT_WHEN_FINISHED);
+            SettingKeys.SHOW_PAINTED_SHEETS,
+            SettingKeys.SHOW_RESULT_TEXT,
+            SettingKeys.EXIT_WHEN_FINISHED);
     
     /**
      * このアプリケーションのエントリポイントです。<br>
