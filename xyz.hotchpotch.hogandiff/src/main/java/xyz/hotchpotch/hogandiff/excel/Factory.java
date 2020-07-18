@@ -123,13 +123,13 @@ public class Factory {
         
         Function<Cell, CellReplica> converter = cell -> {
             String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
-            return content != null && !"".equals(content)
-                    ? CellReplica.of(
+            return "".equals(content)
+                    ? null
+                    : CellReplica.of(
                             cell.getRowIndex(),
                             cell.getColumnIndex(),
                             content,
-                            null)
-                    : null;
+                            null);
         };
         
         BookType bookType = BookType.of(bookPath);
