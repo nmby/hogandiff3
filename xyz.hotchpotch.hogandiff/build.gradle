@@ -35,7 +35,7 @@ javafx {
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
-mainClassName = 'xyz.hotchpotch.hogandiff.gui.AppMain'
+mainClassName = 'xyz.hotchpotch.hogandiff.AppMain'
 
 jar {
     manifest {
