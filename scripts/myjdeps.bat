@@ -3,7 +3,6 @@
 chcp 65001
 
 set JDEPS_CMD=c:\pleiades_202006\java\14\bin\jdeps
-set VERSION=0.7.2
 
 set MODULE_PATH_JRE=C:\pleiades_202006\java\14\jmods
 set MODULE_PATH_JAVAFX=C:\Users\ya_na\OneDrive\UserLibs\javafx-sdk-14.0.1\lib

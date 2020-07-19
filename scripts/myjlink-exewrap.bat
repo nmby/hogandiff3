@@ -5,7 +5,7 @@ chcp 65001
 
 rem COMMON ---------------------------------------------------------------------
 
-set VERSION=0.7.2
+set VERSION=0.7.3
 
 set JLINK_CMD=c:\pleiades_202006\java\14\bin\jlink
 

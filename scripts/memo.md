@@ -11,8 +11,6 @@
 
 - scripts/createExecutableJar.xml
     - "app.version" プロパティの値
-- myjdeps.bat
-    - "VERSION" 変数の値
 - myjlink-exewrap.bat
     - "VERSION" 変数の値
 

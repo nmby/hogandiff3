@@ -538,6 +538,7 @@ public class PoiUtil {
         Objects.requireNonNull(color, "color");
         
         if (sheet instanceof XSSFSheet) {
+            // FIXME: [No.3 着色関連] シート見出しの色の設定方法が分からない
             ((XSSFSheet) sheet).setTabColor(new XSSFColor(color));
             
         } else if (sheet instanceof HSSFSheet) {
