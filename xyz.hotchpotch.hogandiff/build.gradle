@@ -2,7 +2,7 @@
 plugins {
     id 'java-library'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
 }
 
 repositories {
@@ -13,26 +13,34 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:4.1.2'
     implementation 'org.apache.poi:poi-ooxml-schemas:4.1.2'
     
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.6.0'
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.6.2'
 }
 
 test {
     useJUnitPlatform()
 }
 
-sourceCompatibility = "13"
-targetCompatibility = "13"
+sourceCompatibility = "14"
+targetCompatibility = "14"
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
 javafx {
-    version = "13"
+    version = "14"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
-mainClassName = 'xyz.hotchpotch.hogandiff.gui.AppMain'
+mainClassName = 'xyz.hotchpotch.hogandiff.AppMain'
+
+jar {
+    manifest {
+        attributes (
+            "Main-Class": mainClassName,
+            "Class-Path": "lib")
+    }
+}

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ class CombinedBookPainterTest {
     
     private static final BookPainter successPainter = new BookPainter() {
         @Override
-        public void paintAndSave(Path srcBookPath, Path dstBookPath, Map<String, Piece> diffs)
+        public void paintAndSave(Path srcBookPath, Path dstBookPath, Map<String, Optional<Piece>> diffs)
                 throws ExcelHandlingException {
             // nop
         }
@@ -26,7 +27,7 @@ class CombinedBookPainterTest {
     
     private static final BookPainter failPainter = new BookPainter() {
         @Override
-        public void paintAndSave(Path srcBookPath, Path dstBookPath, Map<String, Piece> diffs)
+        public void paintAndSave(Path srcBookPath, Path dstBookPath, Map<String, Optional<Piece>> diffs)
                 throws ExcelHandlingException {
             
             throw new ExcelHandlingException();

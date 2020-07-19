@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,21 +44,40 @@ public class BookPainterWithPoiUserApi implements BookPainter {
      * 
      * @param redundantColor 余剰行・余剰列に着ける色のインデックス値
      * @param diffColor 差分セルに着ける色のインデックス値
-     * @param redundantCommentColor 余剰セルコメントに着ける色のインデックス値
-     * @param diffCommentColor 差分セルコメントに着ける色のインデックス値
+     * @param redundantCommentColor 余剰セルコメントに着ける色
+     * @param diffCommentColor 差分セルコメントに着ける色
+     * @param redundantSheetColor 余剰シートの見出しに着ける色
+     * @param diffSheetColor 差分シートの見出しに着ける色
+     * @param sameSheetColor 差分が無いシートの見出しに着ける色
      * @return 新たなペインター
+     * @throws NullPointerException
+     *          {@code redundantCommentColor}, {@code diffCommentColor},
+     *          {@code redundantSheetColor}, {@code diffSheetColor}, {@code sameSheetColor}
+     *          のいずれかが {@code null} の場合
      */
     public static BookPainter of(
             short redundantColor,
             short diffColor,
             Color redundantCommentColor,
-            Color diffCommentColor) {
+            Color diffCommentColor,
+            Color redundantSheetColor,
+            Color diffSheetColor,
+            Color sameSheetColor) {
+        
+        Objects.requireNonNull(redundantCommentColor, "redundantCommentColor");
+        Objects.requireNonNull(diffCommentColor, "diffCommentColor");
+        Objects.requireNonNull(redundantSheetColor, "redundantSheetColor");
+        Objects.requireNonNull(diffSheetColor, "diffSheetColor");
+        Objects.requireNonNull(sameSheetColor, "sameSheetColor");
         
         return new BookPainterWithPoiUserApi(
                 redundantColor,
                 diffColor,
                 redundantCommentColor,
-                diffCommentColor);
+                diffCommentColor,
+                redundantSheetColor,
+                diffSheetColor,
+                sameSheetColor);
     }
     
     // [instance members] ******************************************************
@@ -66,20 +86,32 @@ public class BookPainterWithPoiUserApi implements BookPainter {
     private final short diffColor;
     private final Color redundantCommentColor;
     private final Color diffCommentColor;
+    private final Color redundantSheetColor;
+    private final Color diffSheetColor;
+    private final Color sameSheetColor;
     
     private BookPainterWithPoiUserApi(
             short redundantColor,
             short diffColor,
             Color redundantCommentColor,
-            Color diffCommentColor) {
+            Color diffCommentColor,
+            Color redundantSheetColor,
+            Color diffSheetColor,
+            Color sameSheetColor) {
         
         assert redundantCommentColor != null;
         assert diffCommentColor != null;
+        assert redundantSheetColor != null;
+        assert diffSheetColor != null;
+        assert sameSheetColor != null;
         
         this.redundantColor = redundantColor;
         this.diffColor = diffColor;
         this.redundantCommentColor = redundantCommentColor;
         this.diffCommentColor = diffCommentColor;
+        this.redundantSheetColor = redundantSheetColor;
+        this.diffSheetColor = diffSheetColor;
+        this.sameSheetColor = sameSheetColor;
     }
     
     /**
@@ -104,7 +136,7 @@ public class BookPainterWithPoiUserApi implements BookPainter {
     public void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            Map<String, Piece> diffs)
+            Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(srcBookPath, "srcBookPath");
@@ -147,23 +179,33 @@ public class BookPainterWithPoiUserApi implements BookPainter {
             // 4. 差分個所に色を付ける。
             diffs.forEach((sheetName, piece) -> {
                 Sheet sheet = book.getSheet(sheetName);
-                PoiUtil.paintRows(sheet, piece.redundantRows(), redundantColor);
-                PoiUtil.paintColumns(sheet, piece.redundantColumns(), redundantColor);
                 
-                Set<CellAddress> diffContents = piece.diffCellContents().stream()
-                        .map(c -> new CellAddress(c.row(), c.column()))
-                        .collect(Collectors.toSet());
-                PoiUtil.paintCells(sheet, diffContents, diffColor);
-                
-                Set<CellAddress> diffComments = piece.diffCellComments().stream()
-                        .map(c -> new CellAddress(c.row(), c.column()))
-                        .collect(Collectors.toSet());
-                PoiUtil.paintComments(sheet, diffComments, diffCommentColor);
-                
-                Set<CellAddress> redundantComments = piece.redundantCellComments().stream()
-                        .map(c -> new CellAddress(c.row(), c.column()))
-                        .collect(Collectors.toSet());
-                PoiUtil.paintComments(sheet, redundantComments, redundantCommentColor);
+                if (piece.isPresent()) {
+                    Piece p = piece.get();
+                    
+                    PoiUtil.paintRows(sheet, p.redundantRows(), redundantColor);
+                    PoiUtil.paintColumns(sheet, p.redundantColumns(), redundantColor);
+                    
+                    Set<CellAddress> diffContents = p.diffCellContents().stream()
+                            .map(c -> new CellAddress(c.row(), c.column()))
+                            .collect(Collectors.toSet());
+                    PoiUtil.paintCells(sheet, diffContents, diffColor);
+                    
+                    Set<CellAddress> diffComments = p.diffCellComments().stream()
+                            .map(c -> new CellAddress(c.row(), c.column()))
+                            .collect(Collectors.toSet());
+                    PoiUtil.paintComments(sheet, diffComments, diffCommentColor);
+                    
+                    Set<CellAddress> redundantComments = p.redundantCellComments().stream()
+                            .map(c -> new CellAddress(c.row(), c.column()))
+                            .collect(Collectors.toSet());
+                    PoiUtil.paintComments(sheet, redundantComments, redundantCommentColor);
+                    
+                    PoiUtil.paintSheetTab(sheet, p.hasDiff() ? diffSheetColor : sameSheetColor);
+                    
+                } else {
+                    PoiUtil.paintSheetTab(sheet, redundantSheetColor);
+                }
             });
             
             // 5. Excelブックを上書き保存する。

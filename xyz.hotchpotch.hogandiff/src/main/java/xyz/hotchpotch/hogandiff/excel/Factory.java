@@ -10,6 +10,7 @@ import java.util.function.Function;
 
 import org.apache.poi.ss.usermodel.Cell;
 
+import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetLoader;
@@ -123,13 +124,13 @@ public class Factory {
         
         Function<Cell, CellReplica> converter = cell -> {
             String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
-            return content != null && !"".equals(content)
-                    ? CellReplica.of(
+            return "".equals(content)
+                    ? null
+                    : CellReplica.of(
                             cell.getRowIndex(),
                             cell.getColumnIndex(),
                             content,
-                            null)
-                    : null;
+                            null);
         };
         
         BookType bookType = BookType.of(bookPath);
@@ -200,6 +201,9 @@ public class Factory {
         // もうなんか滅茶苦茶や・・・
         String redundantCommentHex = "#" + SettingKeys.REDUNDANT_COMMENT_COLOR.encoder().apply(redundantCommentColor);
         String diffCommentHex = "#" + SettingKeys.DIFF_COMMENT_COLOR.encoder().apply(diffCommentColor);
+        Color redundantSheetColor = settings.get(SettingKeys.REDUNDANT_SHEET_COLOR);
+        Color diffSheetColor = settings.get(SettingKeys.DIFF_SHEET_COLOR);
+        Color sameSheetColor = settings.get(SettingKeys.SAME_SHEET_COLOR);
         
         BookType bookType = BookType.of(bookPath);
         switch (bookType) {
@@ -207,15 +211,33 @@ public class Factory {
             return CombinedBookPainter.of(List.of(
                     // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
                     () -> BookPainterWithPoiUserApi.of(
-                            redundantColor, diffColor, redundantCommentColor, diffCommentColor)));
+                            redundantColor,
+                            diffColor,
+                            redundantCommentColor,
+                            diffCommentColor,
+                            redundantSheetColor,
+                            diffSheetColor,
+                            sameSheetColor)));
         
         case XLSX:
         case XLSM:
             return CombinedBookPainter.of(List.of(
                     () -> XSSFBookPainterWithStax.of(
-                            redundantColor, diffColor, redundantCommentHex, diffCommentHex),
+                            redundantColor,
+                            diffColor,
+                            redundantCommentHex,
+                            diffCommentHex,
+                            redundantSheetColor,
+                            diffSheetColor,
+                            sameSheetColor),
                     () -> BookPainterWithPoiUserApi.of(
-                            redundantColor, diffColor, redundantCommentColor, diffCommentColor)));
+                            redundantColor,
+                            diffColor,
+                            redundantCommentColor,
+                            diffCommentColor,
+                            redundantSheetColor,
+                            diffSheetColor,
+                            sameSheetColor)));
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]

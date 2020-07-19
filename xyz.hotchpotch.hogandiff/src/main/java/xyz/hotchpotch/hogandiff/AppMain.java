@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.gui;
+package xyz.hotchpotch.hogandiff;
 
 import java.io.Reader;
 import java.io.Writer;
@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -18,7 +17,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import xyz.hotchpotch.hogandiff.excel.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -31,21 +29,10 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.7.2";
+    private static final String VERSION = "v0.7.3";
     
     /** プロパティファイルの相対パス */
     private static final Path APP_PROP_PATH = Path.of("hogandiff.properties");
-    
-    /** プロパティファイルに記録すべき設定項目 */
-    public static final Set<Settings.Key<?>> keysToBeSaved = Set.of(
-            SettingKeys.CONSIDER_ROW_GAPS,
-            SettingKeys.CONSIDER_COLUMN_GAPS,
-            SettingKeys.COMPARE_CELL_CONTENTS,
-            SettingKeys.COMPARE_CELL_COMMENTS,
-            SettingKeys.COMPARE_ON_FORMULA_STRING,
-            AppSettingKeys.SHOW_PAINTED_SHEETS,
-            AppSettingKeys.SHOW_RESULT_TEXT,
-            AppSettingKeys.EXIT_WHEN_FINISHED);
     
     /**
      * このアプリケーションのエントリポイントです。<br>
@@ -120,7 +107,7 @@ public class AppMain extends Application {
         try {
             // 1. プロパティファイルから設定を抽出する。
             Properties properties = loadProperties();
-            Settings.Builder builder = Settings.builder(properties, keysToBeSaved);
+            Settings.Builder builder = Settings.builder(properties, SettingKeys.storableKeys);
             
             // 2. アプリケーション実行時引数から設定を抽出する。
             Optional<Settings> fromArgs = AppArgsParser.parseArgs(getParameters().getRaw());

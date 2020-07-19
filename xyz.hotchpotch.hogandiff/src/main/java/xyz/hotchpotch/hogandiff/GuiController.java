@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.gui;
+package xyz.hotchpotch.hogandiff;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
@@ -47,7 +46,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
-import xyz.hotchpotch.hogandiff.excel.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
 
@@ -284,7 +282,7 @@ public class GuiController {
         
         // 「設定を保存」ボタンのイベントハンドラを登録する。
         buttonSaveSettings.setOnAction(event -> {
-            Settings settings = gatherSettings(AppMain.keysToBeSaved);
+            Settings settings = gatherSettings();
             Properties properties = settings.toProperties();
             AppMain.storeProperties(properties);
             hasSettingsChanged.set(false);
@@ -309,7 +307,7 @@ public class GuiController {
     }
     
     private void initUtilArea() {
-        Path workDir = AppSettingKeys.WORK_DIR_BASE.defaultValueSupplier().get();
+        Path workDir = SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get();
         
         buttonShowWorkDir.setOnAction(event -> {
             try {
@@ -358,21 +356,21 @@ public class GuiController {
         Objects.requireNonNull(settings, "settings");
         
         settings.keySet().forEach(key -> {
-            if (key == AppSettingKeys.CURR_MENU) {
+            if (key == SettingKeys.CURR_MENU) {
                 radioCompareBooks.setSelected(settings.get(key) == AppMenu.COMPARE_BOOKS);
                 
-            } else if (key == AppSettingKeys.CURR_BOOK_PATH1) {
+            } else if (key == SettingKeys.CURR_BOOK_PATH1) {
                 bookPath1.setValue((Path) settings.get(key));
                 prevSelectedBookPath = (Path) settings.get(key);
                 
-            } else if (key == AppSettingKeys.CURR_BOOK_PATH2) {
+            } else if (key == SettingKeys.CURR_BOOK_PATH2) {
                 bookPath2.setValue((Path) settings.get(key));
                 prevSelectedBookPath = (Path) settings.get(key);
                 
-            } else if (key == AppSettingKeys.CURR_SHEET_NAME1) {
+            } else if (key == SettingKeys.CURR_SHEET_NAME1) {
                 choiceSheetName1.setValue((String) settings.get(key));
                 
-            } else if (key == AppSettingKeys.CURR_SHEET_NAME2) {
+            } else if (key == SettingKeys.CURR_SHEET_NAME2) {
                 choiceSheetName2.setValue((String) settings.get(key));
                 
             } else if (key == SettingKeys.CONSIDER_ROW_GAPS) {
@@ -390,13 +388,13 @@ public class GuiController {
             } else if (key == SettingKeys.COMPARE_ON_FORMULA_STRING) {
                 radioCompareOnFormula.setSelected((boolean) settings.get(key));
                 
-            } else if (key == AppSettingKeys.SHOW_PAINTED_SHEETS) {
+            } else if (key == SettingKeys.SHOW_PAINTED_SHEETS) {
                 checkShowPaintedSheets.setSelected((boolean) settings.get(key));
                 
-            } else if (key == AppSettingKeys.SHOW_RESULT_TEXT) {
+            } else if (key == SettingKeys.SHOW_RESULT_TEXT) {
                 checkShowResultText.setSelected((boolean) settings.get(key));
                 
-            } else if (key == AppSettingKeys.EXIT_WHEN_FINISHED) {
+            } else if (key == SettingKeys.EXIT_WHEN_FINISHED) {
                 checkExitWhenFinished.setSelected((boolean) settings.get(key));
             }
         });
@@ -455,70 +453,42 @@ public class GuiController {
         event.consume();
     }
     
-    private Settings gatherSettings(Set<Settings.Key<?>> targets) {
+    private Settings gatherSettings() {
         Settings.Builder builder = Settings.builder();
         
-        // なんかもうちょいスマートに出来そうな気もするけど。。。
-        // このクラスはやっつけで良いやと思ってしまう。。。
-        if (targets == null || targets.contains(AppSettingKeys.CURR_MENU)) {
-            builder.set(AppSettingKeys.CURR_MENU, menu.getValue());
+        builder.set(SettingKeys.CURR_MENU, menu.getValue());
+        if (bookPath1.getValue() != null) {
+            builder.set(SettingKeys.CURR_BOOK_PATH1, bookPath1.getValue());
         }
-        if (targets == null || targets.contains(AppSettingKeys.CURR_BOOK_PATH1)) {
-            builder.set(AppSettingKeys.CURR_BOOK_PATH1, bookPath1.getValue());
-        }
-        if (targets == null || targets.contains(AppSettingKeys.CURR_BOOK_PATH2)) {
-            builder.set(AppSettingKeys.CURR_BOOK_PATH2, bookPath2.getValue());
+        if (bookPath2.getValue() != null) {
+            builder.set(SettingKeys.CURR_BOOK_PATH2, bookPath2.getValue());
         }
         if (menu.getValue() == AppMenu.COMPARE_SHEETS) {
-            if (targets == null || targets.contains(AppSettingKeys.CURR_SHEET_NAME1)) {
-                builder.set(AppSettingKeys.CURR_SHEET_NAME1, sheetName1.getValue());
+            if (sheetName1.getValue() != null) {
+                builder.set(SettingKeys.CURR_SHEET_NAME1, sheetName1.getValue());
             }
-            if (targets == null || targets.contains(AppSettingKeys.CURR_SHEET_NAME2)) {
-                builder.set(AppSettingKeys.CURR_SHEET_NAME2, sheetName2.getValue());
+            if (sheetName2.getValue() != null) {
+                builder.set(SettingKeys.CURR_SHEET_NAME2, sheetName2.getValue());
             }
         }
-        if (targets == null || targets.contains(SettingKeys.CONSIDER_ROW_GAPS)) {
-            builder.set(SettingKeys.CONSIDER_ROW_GAPS, checkConsiderRowGaps.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.CONSIDER_COLUMN_GAPS)) {
-            builder.set(SettingKeys.CONSIDER_COLUMN_GAPS, checkConsiderColumnGaps.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.COMPARE_CELL_CONTENTS)) {
-            builder.set(SettingKeys.COMPARE_CELL_CONTENTS, checkCompareCellContents.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.COMPARE_CELL_COMMENTS)) {
-            builder.set(SettingKeys.COMPARE_CELL_COMMENTS, checkCompareCellComments.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.COMPARE_ON_FORMULA_STRING)) {
-            builder.set(SettingKeys.COMPARE_ON_FORMULA_STRING, radioCompareOnFormula.isSelected());
-        }
-        if (targets == null || targets.contains(AppSettingKeys.SHOW_PAINTED_SHEETS)) {
-            builder.set(AppSettingKeys.SHOW_PAINTED_SHEETS, checkShowPaintedSheets.isSelected());
-        }
-        if (targets == null || targets.contains(AppSettingKeys.SHOW_RESULT_TEXT)) {
-            builder.set(AppSettingKeys.SHOW_RESULT_TEXT, checkShowResultText.isSelected());
-        }
-        if (targets == null || targets.contains(AppSettingKeys.EXIT_WHEN_FINISHED)) {
-            builder.set(AppSettingKeys.EXIT_WHEN_FINISHED, checkExitWhenFinished.isSelected());
-        }
-        if (targets == null || targets.contains(SettingKeys.REDUNDANT_COLOR)) {
-            builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
-        }
-        if (targets == null || targets.contains(SettingKeys.DIFF_COLOR)) {
-            builder.setDefaultValue(SettingKeys.DIFF_COLOR);
-        }
-        if (targets == null || targets.contains(SettingKeys.REDUNDANT_COMMENT_COLOR)) {
-            builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
-        }
-        if (targets == null || targets.contains(SettingKeys.DIFF_COMMENT_COLOR)) {
-            builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
-        }
-        if (targets == null || targets.contains(AppSettingKeys.WORK_DIR_BASE)) {
-            builder.setDefaultValue(AppSettingKeys.WORK_DIR_BASE);
-        }
-        if (targets == null || targets.contains(AppSettingKeys.CURR_TIMESTAMP)) {
-            builder.setDefaultValue(AppSettingKeys.CURR_TIMESTAMP);
-        }
+        builder.set(SettingKeys.CONSIDER_ROW_GAPS, checkConsiderRowGaps.isSelected());
+        builder.set(SettingKeys.CONSIDER_COLUMN_GAPS, checkConsiderColumnGaps.isSelected());
+        builder.set(SettingKeys.COMPARE_CELL_CONTENTS, checkCompareCellContents.isSelected());
+        builder.set(SettingKeys.COMPARE_CELL_COMMENTS, checkCompareCellComments.isSelected());
+        builder.set(SettingKeys.COMPARE_ON_FORMULA_STRING, radioCompareOnFormula.isSelected());
+        builder.set(SettingKeys.SHOW_PAINTED_SHEETS, checkShowPaintedSheets.isSelected());
+        builder.set(SettingKeys.SHOW_RESULT_TEXT, checkShowResultText.isSelected());
+        builder.set(SettingKeys.EXIT_WHEN_FINISHED, checkExitWhenFinished.isSelected());
+        builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_COLOR);
+        builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
+        builder.setDefaultValue(SettingKeys.REDUNDANT_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.WORK_DIR_BASE);
+        builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
+        
         return builder.build();
     }
     
@@ -532,8 +502,8 @@ public class GuiController {
             throw new IllegalStateException("I'm not ready.");
         }
         
-        Settings settings = gatherSettings(null);
-        AppMenu menu = settings.get(AppSettingKeys.CURR_MENU);
+        Settings settings = gatherSettings();
+        AppMenu menu = settings.get(SettingKeys.CURR_MENU);
         
         if (!menu.isValidTargets(settings)) {
             new Alert(
@@ -557,7 +527,7 @@ public class GuiController {
             progressReport.progressProperty().unbind();
             progressReport.setProgress(0D);
             textReport.textProperty().unbind();
-            if (settings.get(AppSettingKeys.EXIT_WHEN_FINISHED)) {
+            if (settings.get(SettingKeys.EXIT_WHEN_FINISHED)) {
                 Platform.exit();
             } else {
                 isRunning.set(false);

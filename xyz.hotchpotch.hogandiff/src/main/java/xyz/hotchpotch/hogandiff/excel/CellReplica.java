@@ -81,7 +81,7 @@ public class CellReplica {
      * 
      * @param cell1 比較対象のセル1（{@code null} 許容）
      * @param cell2 比較対象のセル2（{@code null} 許容）
-     * @return {@code cell1}, {@code cell2} が {@code null} でなく属性値が等しい場合は {@code true}
+     * @return {@code cell1}, {@code cell2} が同一か属性値が等しい場合は {@code true}
      */
     public static boolean attrEquals(CellReplica cell1, CellReplica cell2) {
         return cell1 == cell2 || (cell1 != null && cell1.attrEquals(cell2));

@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.gui;
+package xyz.hotchpotch.hogandiff;
 
 import java.nio.file.Path;
 import java.util.ArrayDeque;
@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.excel.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -25,7 +24,6 @@ public class AppArgsParser {
     private static final String BR = System.lineSeparator();
     
     /** このアプリケーションのコマンドライン起動時の使い方 */
-    // TODO: compare-cell-contents と compare-cell-comments を追加する
     public static final String USAGE = ""
             + "方眼Diff.exe bookPath1 bookPath2 <OPTIONS>" + BR
             + BR
@@ -46,9 +44,9 @@ public class AppArgsParser {
             "--compare-cell-contents", SettingKeys.COMPARE_CELL_CONTENTS,
             "--compare-cell-comments", SettingKeys.COMPARE_CELL_COMMENTS,
             "--compare-on-formulas", SettingKeys.COMPARE_ON_FORMULA_STRING,
-            "--show-painted-sheets", AppSettingKeys.SHOW_PAINTED_SHEETS,
-            "--show-result-text", AppSettingKeys.SHOW_RESULT_TEXT,
-            "--exit-when-finished", AppSettingKeys.EXIT_WHEN_FINISHED);
+            "--show-painted-sheets", SettingKeys.SHOW_PAINTED_SHEETS,
+            "--show-result-text", SettingKeys.SHOW_RESULT_TEXT,
+            "--exit-when-finished", SettingKeys.EXIT_WHEN_FINISHED);
     
     /**
      * {@link #parseArgs(List)} と同じ。<br>
@@ -81,9 +79,9 @@ public class AppArgsParser {
         try {
             // 比較メニューと比較対象Excelブックパスのパース
             Settings.Builder builder = Settings.builder()
-                    .set(AppSettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS)
-                    .set(AppSettingKeys.CURR_BOOK_PATH1, Path.of(args.get(0)))
-                    .set(AppSettingKeys.CURR_BOOK_PATH2, Path.of(args.get(1)));
+                    .set(SettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS)
+                    .set(SettingKeys.CURR_BOOK_PATH1, Path.of(args.get(0)))
+                    .set(SettingKeys.CURR_BOOK_PATH2, Path.of(args.get(1)));
             
             // オプションのパース
             Deque<String> remainingParams = new ArrayDeque<>(args.subList(2, args.size()));

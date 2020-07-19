@@ -40,6 +40,7 @@ public class Settings {
          * @param defaultValueSupplier 設定項目のデフォルト値のサプライヤ
          * @param encoder 設定値を文字列に変換するエンコーダー
          * @param decoder 文字列を設定値に変換するエンコーダー
+         * @param storable この設定項目の値がプロパティファイルへの保存対象の場合は {@code true}
          * @return 新しい設定項目
          * @throws NullPointerException
          *          {@code name}, {@code defaultValueSupplier}, {@code encoder}, {@code decoder}
@@ -49,14 +50,15 @@ public class Settings {
                 String name,
                 Supplier<? extends T> defaultValueSupplier,
                 Function<? super T, String> encoder,
-                Function<String, ? extends T> decoder) {
+                Function<String, ? extends T> decoder,
+                boolean storable) {
             
             Objects.requireNonNull(name, "name");
             Objects.requireNonNull(defaultValueSupplier, "defaultValueSupplier");
             Objects.requireNonNull(encoder, "encoder");
             Objects.requireNonNull(decoder, "decoder");
             
-            return new Key<>(name, defaultValueSupplier, encoder, decoder);
+            return new Key<>(name, defaultValueSupplier, encoder, decoder, storable);
         }
         
         // [instance members] --------------------------------------------------
@@ -65,12 +67,14 @@ public class Settings {
         private final Supplier<? extends T> defaultValueSupplier;
         private final Function<? super T, String> encoder;
         private final Function<String, ? extends T> decoder;
+        private final boolean storable;
         
         private Key(
                 String name,
                 Supplier<? extends T> defaultValueSupplier,
                 Function<? super T, String> encoder,
-                Function<String, ? extends T> decoder) {
+                Function<String, ? extends T> decoder,
+                boolean storable) {
             
             assert name != null;
             assert defaultValueSupplier != null;
@@ -81,6 +85,7 @@ public class Settings {
             this.defaultValueSupplier = defaultValueSupplier;
             this.encoder = encoder;
             this.decoder = decoder;
+            this.storable = storable;
         }
         
         /**
@@ -117,6 +122,15 @@ public class Settings {
          */
         public Function<String, ? extends T> decoder() {
             return decoder;
+        }
+        
+        /**
+         * この設定項目の値がプロパティファイルへの保存対象かを返します。<br>
+         * 
+         * @return この設定項目の値がプロパティファイルへの保存対象の場合は {@code true}
+         */
+        public boolean storable() {
+            return storable;
         }
     }
     
@@ -374,30 +388,16 @@ public class Settings {
     }
     
     /**
-     * この設定に含まれる全ての設定項目をプロパティセットに抽出します。<br>
+     * この設定に含まれる設定項目のうちプロパティファイルに保存可能なものを
+     * プロパティセットに抽出します。<br>
      * 
-     * @return この設定に含まれる全ての設定項目を含むプロパティセット
+     * @return 保存可能な設定項目を含むプロパティセット
      */
     public Properties toProperties() {
-        return toProperties(map.keySet());
-    }
-    
-    /**
-     * この設定に含まれる設定項目のうち指定されたもののみをプロパティセットに抽出します。<br>
-     * 
-     * @param keys 抽出する設定項目
-     * @return この設定に含まれる設定項目のうち指定されたものを含むプロパティセット
-     * @throws NullPointerException {@code keys} が {@code null} の場合
-     * @throws IllegalArgumentException {@code keys} に同じ名前の設定項目が含まれる場合
-     */
-    public Properties toProperties(Set<Key<?>> keys) {
-        Objects.requireNonNull(keys, "keys");
-        ifDuplicatedThenThrow(keys, IllegalArgumentException::new);
-        
         Properties properties = new Properties();
         
-        keys.stream()
-                .filter(map::containsKey)
+        map.keySet().stream()
+                .filter(Key::storable)
                 .forEach(key -> properties.setProperty(key.name(), encodeItem(key)));
         
         return properties;
