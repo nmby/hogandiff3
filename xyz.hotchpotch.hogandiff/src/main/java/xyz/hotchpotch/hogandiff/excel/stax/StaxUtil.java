@@ -112,6 +112,9 @@ public class StaxUtil {
         /** top */
         public static final QName TOP = new QName(XMLNS, "top");
         
+        /** worksheet */
+        public static final QName WORKSHEET = new QName(XMLNS, "worksheet");
+        
         // [instance members] --------------------------------------------------
         
         private QNAME() {
@@ -203,6 +206,9 @@ public class StaxUtil {
         
         /** r */
         public static final QName R = new QName(null, "r");
+        
+        /** rgb */
+        public static final QName RGB = new QName(null, "rgb");
         
         /** s */
         public static final QName S = new QName(null, "s");

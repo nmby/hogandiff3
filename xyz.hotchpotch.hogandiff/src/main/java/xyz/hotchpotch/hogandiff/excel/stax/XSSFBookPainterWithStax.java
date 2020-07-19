@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.stax;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,6 +52,7 @@ import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintDiffCellsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintDiffOrRedundantCommentsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRedundantCellsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRowsReader;
+import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintSheetTabReader;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -486,9 +488,14 @@ public class XSSFBookPainterWithStax implements BookPainter {
             
             // 不要な要素を除去するリーダーを追加
             reader = FilteringReader.builder(reader)
-                    .addFilter(QNAME.SHEET_PR, QNAME.TAB_COLOR)
+                    //.addFilter(QNAME.SHEET_PR, QNAME.TAB_COLOR)
+                    .addFilter(QNAME.SHEET_PR)
                     .addFilter(QNAME.CONDITIONAL_FORMATTING)
                     .build();
+            
+            // シート見出しに色を付けるリーダーを追加
+            // TODO: 条件に応じた色を設定する
+            reader = PaintSheetTabReader.of(reader, Color.RED);
             
             if (!piece.redundantColumns().isEmpty()) {
                 // 余剰列にデフォルト色を付けるリーダーを追加
