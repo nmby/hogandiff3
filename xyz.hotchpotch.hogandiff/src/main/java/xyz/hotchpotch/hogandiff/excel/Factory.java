@@ -201,6 +201,9 @@ public class Factory {
         // もうなんか滅茶苦茶や・・・
         String redundantCommentHex = "#" + SettingKeys.REDUNDANT_COMMENT_COLOR.encoder().apply(redundantCommentColor);
         String diffCommentHex = "#" + SettingKeys.DIFF_COMMENT_COLOR.encoder().apply(diffCommentColor);
+        Color redundantSheetColor = settings.get(SettingKeys.REDUNDANT_SHEET_COLOR);
+        Color diffSheetColor = settings.get(SettingKeys.DIFF_SHEET_COLOR);
+        Color sameSheetColor = settings.get(SettingKeys.SAME_SHEET_COLOR);
         
         BookType bookType = BookType.of(bookPath);
         switch (bookType) {
@@ -214,7 +217,13 @@ public class Factory {
         case XLSM:
             return CombinedBookPainter.of(List.of(
                     () -> XSSFBookPainterWithStax.of(
-                            redundantColor, diffColor, redundantCommentHex, diffCommentHex),
+                            redundantColor,
+                            diffColor,
+                            redundantCommentHex,
+                            diffCommentHex,
+                            redundantSheetColor,
+                            diffSheetColor,
+                            sameSheetColor),
                     () -> BookPainterWithPoiUserApi.of(
                             redundantColor, diffColor, redundantCommentColor, diffCommentColor)));
         

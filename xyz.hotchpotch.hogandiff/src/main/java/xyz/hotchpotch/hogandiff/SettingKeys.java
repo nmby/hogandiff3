@@ -185,6 +185,36 @@ public class SettingKeys {
             Color::decode,
             false);
     
+    /**
+     * 比較結果のレポートにおいて、余剰シートの見出しに着ける色を表します。<br>
+     */
+    public static final Key<Color> REDUNDANT_SHEET_COLOR = Key.defineAs(
+            "report.redundantSheetColor",
+            () -> Color.RED,
+            color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
+            Color::decode,
+            false);
+    
+    /**
+     * 比較結果のレポートにおいて、差分シートの見出しに着ける色を表します。<br>
+     */
+    public static final Key<Color> DIFF_SHEET_COLOR = Key.defineAs(
+            "report.diffSheetColor",
+            () -> Color.YELLOW,
+            color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
+            Color::decode,
+            false);
+    
+    /**
+     * 比較結果のレポートにおいて、差分無しシートの見出しに着ける色を表します。<br>
+     */
+    public static final Key<Color> SAME_SHEET_COLOR = Key.defineAs(
+            "report.sameSheetColor",
+            () -> Color.CYAN,
+            color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
+            Color::decode,
+            false);
+    
     /** レポートオプション：差分個所に色を付けたシートを表示するか */
     public static final Key<Boolean> SHOW_PAINTED_SHEETS = Key.defineAs(
             "application.report.showPaintedSheets",

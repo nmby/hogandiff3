@@ -193,22 +193,34 @@ public class XSSFBookPainterWithStax implements BookPainter {
      * @param diffColor 差分セルに着ける色のインデックス値
      * @param redundantCommentColor 余剰セルコメントに着ける色の16進表現（例：{@code "#ff8080"}）
      * @param diffCommentColor 余剰セルコメントに着ける色の16進表現（例：{@code "#ff8080"}）
+     * @param redundantSheetColor 余剰シートの見出しにつける色
+     * @param diffSheetColor 差分シートの見出しにつける色
+     * @param sameSheetColor 差分の無いシートの見出しにつける色
      * @return 新たなペインター
      */
     public static BookPainter of(
             short redundantColor,
             short diffColor,
             String redundantCommentColor,
-            String diffCommentColor) {
+            String diffCommentColor,
+            Color redundantSheetColor,
+            Color diffSheetColor,
+            Color sameSheetColor) {
         
         Objects.requireNonNull(redundantCommentColor, "redundantCommentColor");
         Objects.requireNonNull(diffCommentColor, "diffCommentColor");
+        Objects.requireNonNull(redundantSheetColor, "redundantSheetColor");
+        Objects.requireNonNull(diffSheetColor, "diffSheetColor");
+        Objects.requireNonNull(sameSheetColor, "sameSheetColor");
         
         return new XSSFBookPainterWithStax(
                 redundantColor,
                 diffColor,
                 redundantCommentColor,
-                diffCommentColor);
+                diffCommentColor,
+                redundantSheetColor,
+                diffSheetColor,
+                sameSheetColor);
     }
     
     // [instance members] ******************************************************
@@ -217,17 +229,32 @@ public class XSSFBookPainterWithStax implements BookPainter {
     private final short diffColor;
     private final String redundantCommentColor;
     private final String diffCommentColor;
+    private final Color redundantSheetColor;
+    private final Color diffSheetColor;
+    private final Color sameSheetColor;
     
     private XSSFBookPainterWithStax(
             short redundantColor,
             short diffColor,
             String redundantCommentColor,
-            String diffCommentColor) {
+            String diffCommentColor,
+            Color redundantSheetColor,
+            Color diffSheetColor,
+            Color sameSheetColor) {
+        
+        assert redundantCommentColor != null;
+        assert diffCommentColor != null;
+        assert redundantSheetColor != null;
+        assert diffSheetColor != null;
+        assert sameSheetColor != null;
         
         this.redundantColor = redundantColor;
         this.diffColor = diffColor;
         this.redundantCommentColor = redundantCommentColor;
         this.diffCommentColor = diffCommentColor;
+        this.redundantSheetColor = redundantSheetColor;
+        this.diffSheetColor = diffSheetColor;
+        this.sameSheetColor = sameSheetColor;
     }
     
     // 例外カスケードのポリシーについて：
@@ -494,8 +521,9 @@ public class XSSFBookPainterWithStax implements BookPainter {
                     .build();
             
             // シート見出しに色を付けるリーダーを追加
-            // TODO: 条件に応じた色を設定する
-            reader = PaintSheetTabReader.of(reader, Color.RED);
+            reader = PaintSheetTabReader.of(
+                    reader,
+                    piece.hasDiff() ? diffSheetColor : sameSheetColor);
             
             if (!piece.redundantColumns().isEmpty()) {
                 // 余剰列にデフォルト色を付けるリーダーを追加

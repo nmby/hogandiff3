@@ -483,6 +483,9 @@ public class GuiController {
         builder.setDefaultValue(SettingKeys.DIFF_COLOR);
         builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
         builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
+        builder.setDefaultValue(SettingKeys.REDUNDANT_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
         builder.setDefaultValue(SettingKeys.WORK_DIR_BASE);
         builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
         
