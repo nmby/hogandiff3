@@ -266,7 +266,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
     public void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            Map<String, Piece> diffs)
+            Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(srcBookPath, "srcBookPath");
@@ -425,14 +425,14 @@ public class XSSFBookPainterWithStax implements BookPainter {
      * @param inFs
      * @param outFs
      * @param bookPath
-     * @param results
+     * @param diffs
      * @throws ExcelHandlingException
      */
     private void processWorksheetEntries(
             FileSystem inFs,
             FileSystem outFs,
             Path bookPath,
-            Map<String, Piece> diffs)
+            Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
         final String stylesEntry = "xl/styles.xml";
@@ -457,9 +457,9 @@ public class XSSFBookPainterWithStax implements BookPainter {
         Map<String, SheetInfo> sheetNameToInfo = SaxUtil.loadSheetInfo(bookPath).stream()
                 .collect(Collectors.toMap(SheetInfo::name, Function.identity()));
         
-        for (Entry<String, Piece> diff : diffs.entrySet()) {
+        for (Entry<String, Optional<Piece>> diff : diffs.entrySet()) {
             String sheetName = diff.getKey();
-            Piece piece = diff.getValue();
+            Optional<Piece> piece = diff.getValue();
             SheetInfo info = sheetNameToInfo.get(sheetName);
             
             // xl/worksheets/sheet?.xml エントリに対する処理
@@ -498,7 +498,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             FileSystem outFs,
             StylesManager stylesManager,
             String source,
-            Piece piece)
+            Optional<Piece> piece)
             throws ExcelHandlingException {
         
         try (InputStream is = Files.newInputStream(inFs.getPath(source));
@@ -520,46 +520,57 @@ public class XSSFBookPainterWithStax implements BookPainter {
                     .addFilter(QNAME.CONDITIONAL_FORMATTING)
                     .build();
             
-            // シート見出しに色を付けるリーダーを追加
-            reader = PaintSheetTabReader.of(
-                    reader,
-                    piece.hasDiff() ? diffSheetColor : sameSheetColor);
-            
-            if (!piece.redundantColumns().isEmpty()) {
-                // 余剰列にデフォルト色を付けるリーダーを追加
-                reader = PaintColumnsReader.of(
+            if (piece.isPresent()) {
+                Piece p = piece.get();
+                
+                // シート見出しに色を付けるリーダーを追加
+                reader = PaintSheetTabReader.of(
                         reader,
-                        stylesManager,
-                        piece.redundantColumns(),
-                        redundantColor);
-            }
-            
-            if (!piece.redundantRows().isEmpty()) {
-                // 余剰行にデフォルト色を付けるリーダーを追加
-                reader = PaintRowsReader.of(
+                        p.hasDiff() ? diffSheetColor : sameSheetColor);
+                
+                if (!p.redundantColumns().isEmpty()) {
+                    // 余剰列にデフォルト色を付けるリーダーを追加
+                    reader = PaintColumnsReader.of(
+                            reader,
+                            stylesManager,
+                            p.redundantColumns(),
+                            redundantColor);
+                }
+                
+                if (!p.redundantRows().isEmpty()) {
+                    // 余剰行にデフォルト色を付けるリーダーを追加
+                    reader = PaintRowsReader.of(
+                            reader,
+                            stylesManager,
+                            p.redundantRows(),
+                            redundantColor);
+                }
+                
+                if (!p.redundantRows().isEmpty() || !p.redundantColumns().isEmpty()) {
+                    // 余剰行や余剰列の上にあるセルに色を付けるリーダーを追加
+                    reader = PaintRedundantCellsReader.of(
+                            reader,
+                            stylesManager,
+                            p.redundantRows(),
+                            p.redundantColumns(),
+                            redundantColor);
+                }
+                
+                if (!p.diffCellContents().isEmpty()) {
+                    // 差分セルに色を付けるリーダーを追加
+                    reader = PaintDiffCellsReader.of(
+                            reader,
+                            stylesManager,
+                            p.diffCellContents(),
+                            diffColor);
+                }
+                
+            } else {
+                
+                // シート見出しに色を付けるリーダーを追加
+                reader = PaintSheetTabReader.of(
                         reader,
-                        stylesManager,
-                        piece.redundantRows(),
-                        redundantColor);
-            }
-            
-            if (!piece.redundantRows().isEmpty() || !piece.redundantColumns().isEmpty()) {
-                // 余剰行や余剰列の上にあるセルに色を付けるリーダーを追加
-                reader = PaintRedundantCellsReader.of(
-                        reader,
-                        stylesManager,
-                        piece.redundantRows(),
-                        piece.redundantColumns(),
-                        redundantColor);
-            }
-            
-            if (!piece.diffCellContents().isEmpty()) {
-                // 差分セルに色を付けるリーダーを追加
-                reader = PaintDiffCellsReader.of(
-                        reader,
-                        stylesManager,
-                        piece.diffCellContents(),
-                        diffColor);
+                        redundantSheetColor);
             }
             
             writer.add(reader);
@@ -573,7 +584,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             FileSystem inFs,
             FileSystem outFs,
             String vmlDrawingSource,
-            Piece piece,
+            Optional<Piece> piece,
             String redundantCommentColor,
             String diffCommentColor)
             throws ExcelHandlingException {
@@ -587,16 +598,20 @@ public class XSSFBookPainterWithStax implements BookPainter {
             
             reader = CloseAndUnpaintCommentsReader.of(reader);
             
-            reader = PaintDiffOrRedundantCommentsReader.of(
-                    reader,
-                    piece.diffCellComments().stream()
-                            .map(CellReplica::address)
-                            .collect(Collectors.toSet()),
-                    piece.redundantCellComments().stream()
-                            .map(CellReplica::address)
-                            .collect(Collectors.toSet()),
-                    diffCommentColor,
-                    redundantCommentColor);
+            if (piece.isPresent()) {
+                Piece p = piece.get();
+                
+                reader = PaintDiffOrRedundantCommentsReader.of(
+                        reader,
+                        p.diffCellComments().stream()
+                                .map(CellReplica::address)
+                                .collect(Collectors.toSet()),
+                        p.redundantCellComments().stream()
+                                .map(CellReplica::address)
+                                .collect(Collectors.toSet()),
+                        diffCommentColor,
+                        redundantCommentColor);
+            }
             
             writer.add(reader);
             

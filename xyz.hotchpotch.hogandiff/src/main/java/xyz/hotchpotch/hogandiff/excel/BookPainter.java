@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
 
@@ -33,6 +34,6 @@ public interface BookPainter {
     void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            Map<String, Piece> diffs)
+            Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException;
 }

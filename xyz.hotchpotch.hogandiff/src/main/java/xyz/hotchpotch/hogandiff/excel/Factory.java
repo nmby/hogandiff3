@@ -211,7 +211,13 @@ public class Factory {
             return CombinedBookPainter.of(List.of(
                     // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
                     () -> BookPainterWithPoiUserApi.of(
-                            redundantColor, diffColor, redundantCommentColor, diffCommentColor)));
+                            redundantColor,
+                            diffColor,
+                            redundantCommentColor,
+                            diffCommentColor,
+                            redundantSheetColor,
+                            diffSheetColor,
+                            sameSheetColor)));
         
         case XLSX:
         case XLSM:
@@ -225,7 +231,13 @@ public class Factory {
                             diffSheetColor,
                             sameSheetColor),
                     () -> BookPainterWithPoiUserApi.of(
-                            redundantColor, diffColor, redundantCommentColor, diffCommentColor)));
+                            redundantColor,
+                            diffColor,
+                            redundantCommentColor,
+                            diffCommentColor,
+                            redundantSheetColor,
+                            diffSheetColor,
+                            sameSheetColor)));
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]

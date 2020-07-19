@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookType;
@@ -80,7 +81,7 @@ public class CombinedBookPainter implements BookPainter {
     public void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            Map<String, Piece> diffs)
+            Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(srcBookPath, "srcBookPath");
