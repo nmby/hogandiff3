@@ -59,6 +59,19 @@ public class SResult {
         }
         
         /**
+         * ひとつでも差分があるかを返します。<br>
+         * 
+         * @return ひとつでも差分がある場合は {@code true}
+         */
+        public boolean hasDiff() {
+            return !redundantRows.isEmpty()
+                    || !redundantColumns.isEmpty()
+                    || !diffCellContents.isEmpty()
+                    || !diffCellComments.isEmpty()
+                    || !redundantCellComments.isEmpty();
+        }
+        
+        /**
          * 余剰行のインデックスを返します。<br>
          * 
          * @return 余剰行のインデックス

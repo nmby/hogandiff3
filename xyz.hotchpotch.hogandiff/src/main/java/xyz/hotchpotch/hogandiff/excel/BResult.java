@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class BResult {
      * @param bookPath1 比較対象Excelブックのパス1
      * @param bookPath2 比較対象Excelブックのパス2
      * @param sheetPairs 比較したシート名のペア（片側だけの欠損ペアも含む）
-     * @param results Excelシート同士の比較結果（片側だけの欠損ペアは含まない）
+     * @param results Excelシート同士の比較結果（片側だけの欠損ペアも含む）
      * @return Excelブック同士の比較結果
      * @throws NullPointerException
      *          {@code bookPath1}, {@code bookPath2}, {@code sheetPairs}, {@code results}
@@ -38,7 +39,7 @@ public class BResult {
             Path bookPath1,
             Path bookPath2,
             List<Pair<String>> sheetPairs,
-            Map<Pair<String>, SResult> results) {
+            Map<Pair<String>, Optional<SResult>> results) {
         
         Objects.requireNonNull(bookPath1, "bookPath1");
         Objects.requireNonNull(bookPath2, "bookPath2");
@@ -52,13 +53,13 @@ public class BResult {
     
     private final Pair<Path> bookPath;
     private final List<Pair<String>> sheetPairs;
-    private final Map<Pair<String>, SResult> results;
+    private final Map<Pair<String>, Optional<SResult>> results;
     
     private BResult(
             Path bookPath1,
             Path bookPath2,
             List<Pair<String>> sheetPairs,
-            Map<Pair<String>, SResult> results) {
+            Map<Pair<String>, Optional<SResult>> results) {
         
         assert bookPath1 != null;
         assert bookPath2 != null;
@@ -76,13 +77,14 @@ public class BResult {
      * @param side Excelブックの側
      * @return 片側のExcelブックについての差分内容（シート名とそのシート上の差分個所のマップ）
      */
-    public Map<String, Piece> getPiece(Side side) {
+    public Map<String, Optional<Piece>> getPiece(Side side) {
         Objects.requireNonNull(side, "side");
         
         return results.entrySet().stream()
+                .filter(entry -> entry.getKey().isPresent(side))
                 .collect(Collectors.toMap(
                         entry -> entry.getKey().get(side),
-                        entry -> entry.getValue().getPiece(side)));
+                        entry -> entry.getValue().map(s -> s.getPiece(side))));
     }
     
     private String getText(Function<SResult, String> func) {
@@ -94,8 +96,9 @@ public class BResult {
                     pair.isPresentA() ? "[" + pair.a() + "]" : "(なし)",
                     pair.isPresentB() ? "[" + pair.b() + "]" : "(なし)"))
                     .append(BR);
+            
             if (pair.isPaired()) {
-                str.append(func.apply(results.get(pair)).indent(8));
+                str.append(func.apply(results.get(pair).get()).indent(8));
             }
             return str;
             
@@ -152,7 +155,7 @@ public class BResult {
             str.append("--- ").append(bookPath.a()).append(sheetPairs.get(0).a()).append(BR);
             str.append("+++ ").append(bookPath.b()).append(sheetPairs.get(0).b()).append(BR);
             str.append(BR);
-            str.append(results.get(sheetPairs.get(0)).getDiff());
+            str.append(results.get(sheetPairs.get(0)).get().getDiff());
             
         } else {
             str.append("--- ").append(bookPath.a()).append(BR);
@@ -162,7 +165,7 @@ public class BResult {
             Function<Pair<String>, String> sheetPairToStr = sheetPair -> {
                 if (sheetPair.isPaired()) {
                     return String.format("@@ [%s] -> [%s] @@\n", sheetPair.a(), sheetPair.b())
-                            + results.get(sheetPair).getDiff();
+                            + results.get(sheetPair).get().getDiff();
                     
                 } else if (sheetPair.isOnlyA()) {
                     return String.format("@@ -[%s] @@\n", sheetPair.a());

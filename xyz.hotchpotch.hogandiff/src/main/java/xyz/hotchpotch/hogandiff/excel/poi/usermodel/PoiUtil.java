@@ -487,9 +487,9 @@ public class PoiUtil {
      * 
      * @param sheet Excelシート
      * @param addresses 色を付けるセルコメントの位置
-     * @param color 着色する色のインデックス値
+     * @param color 着色する色
      * @throws NullPointerException
-     *              {@code sheet}, {@code addresses} のいずれかが {@code null} の場合
+     *              {@code sheet}, {@code addresses}, {@code color} のいずれかが {@code null} の場合
      */
     public static void paintComments(
             Sheet sheet,
@@ -498,6 +498,7 @@ public class PoiUtil {
         
         Objects.requireNonNull(sheet, "sheet");
         Objects.requireNonNull(addresses, "addresses");
+        Objects.requireNonNull(color, "color");
         
         Map<CellAddress, ? extends Comment> comments = sheet.getCellComments();
         
@@ -519,6 +520,29 @@ public class PoiUtil {
                 throw new AssertionError("unknown comment type: " + c.getClass().getName());
             }
         });
+    }
+    
+    /**
+     * 指定されたExcelシートの見出しに指定された色を付けます。<br>
+     * 
+     * @param sheet Excelシート
+     * @param color 着色する色
+     * @throws NullPointerException
+     *              {@code sheet}, {@code color} のいずれかが {@code null} の場合
+     */
+    public static void paintSheetTab(
+            Sheet sheet,
+            Color color) {
+        
+        Objects.requireNonNull(sheet, "sheet");
+        Objects.requireNonNull(color, "color");
+        
+        if (sheet instanceof XSSFSheet) {
+            ((XSSFSheet) sheet).setTabColor(new XSSFColor(color));
+            
+        } else if (sheet instanceof HSSFSheet) {
+            // FIXME: [No.3 着色関連] シート見出しの色の設定方法が分からない
+        }
     }
     
     // [instance members] ******************************************************

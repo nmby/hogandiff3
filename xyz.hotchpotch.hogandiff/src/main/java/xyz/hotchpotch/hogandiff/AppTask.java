@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -223,7 +224,7 @@ public class AppTask extends Task<Void> {
                     : factory.sheetLoader(settings, bookPath2);
             SComparator comparator = factory.comparator(settings);
             
-            Map<Pair<String>, SResult> results = new HashMap<>();
+            Map<Pair<String>, Optional<SResult>> results = new HashMap<>();
             List<Pair<String>> pairedPairs = pairs.stream()
                     .filter(Pair::isPaired)
                     .collect(Collectors.toList());
@@ -241,11 +242,18 @@ public class AppTask extends Task<Void> {
                 Set<CellReplica> cells1 = loader1.loadCells(bookPath1, pair.a());
                 Set<CellReplica> cells2 = loader2.loadCells(bookPath2, pair.b());
                 SResult result = comparator.compare(cells1, cells2);
-                results.put(pair, result);
+                results.put(pair, Optional.of(result));
                 
                 str.append(result.getSummary().indent(8)).append(BR);
                 updateMessage(str.toString());
                 updateProgress(progressBefore + total * i / pairedPairs.size(), PROGRESS_MAX);
+            }
+            
+            List<Pair<String>> unpairedPairs = pairs.stream()
+                    .filter(p -> !p.isPaired())
+                    .collect(Collectors.toList());
+            for (Pair<String> pair : unpairedPairs) {
+                results.put(pair, Optional.empty());
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
@@ -328,7 +336,7 @@ public class AppTask extends Task<Void> {
             str.append(String.format("  - %s\n\n", dst));
             updateMessage(str.toString());
             
-            Map<String, SResult.Piece> result = new HashMap<>(results.getPiece(Side.A));
+            Map<String, Optional<SResult.Piece>> result = new HashMap<>(results.getPiece(Side.A));
             result.putAll(results.getPiece(Side.B));
             painter.paintAndSave(src, dst, result);
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
