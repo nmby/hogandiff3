@@ -24,7 +24,7 @@ xcopy %OUTPUT_COMMON% %OUTPUT_WIN% /e /i
 copy ..\resources\方眼Diff.exe.vmoptions %OUTPUT_WIN%
 
 set JRE_WIN=C:\pleiades_202006\java\14\jmods
-set JFX_WIN=C:\Users\ya_na\OneDrive\UserLibs\javafx-jmods-14.0.1
+set JFX_WIN=C:\Users\ya_na\OneDrive\UserLibs\javafx-jmods-14.0.2.1
 
 %JLINK_CMD% --compress=2 --module-path %JRE_WIN%;%JFX_WIN% --add-modules %REQUIRED_MOD%,%ADDITIONAL_MOD% --output %OUTPUT_WIN%\jre-min
 
