@@ -8,10 +8,10 @@
 
 	<property name="poi" value="poi-4.1.2" />
 	<property name="javafx" value="javafx-14.0.2.1" />
-	<property name="javafx-sdk" value="javafx-sdk-14.0.2.1" />
+	<property name="javafx-sdk" value="javafx-sdk-14.0.2.1-win-x64" />
 
 	<property name="dir.pjhome" value=".." />
-	<property name="dir.userlib" value="C:/Users/ya_na/OneDrive/UserLibs" />
+	<property name="dir.userlib" value="C:/UserLibs" />
 	<property name="dir.out.jarfile" value="${dir.pjhome}/build/jar" />
 	<property name="dir.out.product" value="${dir.pjhome}/build/方眼Diff-${app.version}" />
 	<property name="dir.out.lib" value="${dir.out.product}/lib" />
