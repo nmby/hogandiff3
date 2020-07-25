@@ -29,7 +29,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.7.3";
+    private static final String VERSION = "v0.7.4";
     
     /** プロパティファイルの相対パス */
     private static final Path APP_PROP_PATH = Path.of("hogandiff.properties");
@@ -88,7 +88,7 @@ public class AppMain extends Application {
         Image icon = new Image(getClass().getResourceAsStream("favicon.png"));
         primaryStage.getIcons().add(icon);
         primaryStage.setTitle("方眼Diff  -  " + VERSION);
-        primaryStage.setScene(new Scene(root, 500, 430));
+        primaryStage.setScene(new Scene(root, 500, 450));
         primaryStage.setMinWidth(500);
         primaryStage.setMinHeight(450);
         

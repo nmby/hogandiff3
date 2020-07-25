@@ -40,7 +40,6 @@ mainClassName = 'xyz.hotchpotch.hogandiff.AppMain'
 jar {
     manifest {
         attributes (
-            "Main-Class": mainClassName,
-            "Class-Path": "lib")
+            "Main-Class": mainClassName)
     }
 }
