@@ -5,7 +5,7 @@
 
 rem 変数設定 -------------------------------------------------------------------
 
-set VERSION=0.7.3
+set VERSION=0.7.4
 
 set JLINK_CMD=c:\pleiades_202006\java\14\bin\jlink
 set EXEWRAP_CMD=exewrap1.6.2\x64\exewrap.exe
