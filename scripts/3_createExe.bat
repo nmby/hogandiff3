@@ -13,6 +13,8 @@ set EXEWRAP_CMD=exewrap1.6.2\x64\exewrap.exe
 set JRE_WIN=C:\UserLibs\jdk-14.0.2+12-win-x64\jmods
 set JFX_WIN=C:\UserLibs\javafx-jmods-14.0.2.1-win-x64
 
+set SOURCE_JAR=..\xyz.hotchpotch.hogandiff\build\libs\xyz.hotchpotch.hogandiff.jar
+
 set OUTPUT_COMMON=..\build\方眼Diff-%VERSION%
 set OUTPUT_WIN=%OUTPUT_COMMON%-win64
 
@@ -64,5 +66,5 @@ echo -- EXEファイルの作成
 -d "方眼Diff" ^
 -c "(c) 2020 nmby" ^
 -p "方眼Diff" ^
--j ..\xyz.hotchpotch.hogandiff\build\libs\xyz.hotchpotch.hogandiff.jar ^
+-j %SOURCE_JAR% ^
 -o %OUTPUT_WIN%\方眼Diff.exe
