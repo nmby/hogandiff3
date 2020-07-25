@@ -88,7 +88,7 @@ public class AppMain extends Application {
         Image icon = new Image(getClass().getResourceAsStream("favicon.png"));
         primaryStage.getIcons().add(icon);
         primaryStage.setTitle("方眼Diff  -  " + VERSION);
-        primaryStage.setScene(new Scene(root, 500, 430));
+        primaryStage.setScene(new Scene(root, 500, 450));
         primaryStage.setMinWidth(500);
         primaryStage.setMinHeight(450);
         
