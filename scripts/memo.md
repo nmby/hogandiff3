@@ -9,8 +9,8 @@
 
 ### ビルドスクリプト
 
-- scripts/createExecutableJar.xml
+- scripts/1_createExecutableJar.xml
     - "app.version" プロパティの値
-- myjlink-exewrap.bat
+- scripts/3_createExe.bat
     - "VERSION" 変数の値
 

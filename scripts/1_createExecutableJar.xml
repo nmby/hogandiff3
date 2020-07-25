@@ -7,11 +7,9 @@
 	<property name="app.version" value="0.7.3" />
 
 	<property name="poi" value="poi-4.1.2" />
-	<property name="javafx" value="javafx-14.0.2.1" />
-	<property name="javafx-sdk" value="javafx-sdk-14.0.2.1" />
 
 	<property name="dir.pjhome" value=".." />
-	<property name="dir.userlib" value="C:/Users/ya_na/OneDrive/UserLibs" />
+	<property name="dir.userlib" value="C:/UserLibs" />
 	<property name="dir.out.jarfile" value="${dir.pjhome}/build/jar" />
 	<property name="dir.out.product" value="${dir.pjhome}/build/方眼Diff-${app.version}" />
 	<property name="dir.out.lib" value="${dir.out.product}/lib" />
@@ -35,17 +33,5 @@
 		<copy todir="${dir.out.lib}/${poi}/lib" file="${dir.userlib}/${poi}/lib/commons-math3-3.6.1.jar" />
 		<copy todir="${dir.out.lib}/${poi}/lib" file="${dir.userlib}/${poi}/lib/SparseBitSet-1.2.jar" />
 		<copy todir="${dir.out.lib}/${poi}/ooxml-lib" file="${dir.userlib}/${poi}/ooxml-lib/xmlbeans-3.1.0.jar" />
-
-		<copy todir="${dir.out.lib}\${javafx}/legal">
-			<fileset dir="${dir.userlib}/${javafx-sdk}/legal" />
-		</copy>
-		<copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.base.jar" />
-		<copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.controls.jar" />
-		<copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.fxml.jar" />
-		<copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.graphics.jar" />
-		<copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.media.jar" />
-		<copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.swing.jar" />
-		<copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx.web.jar" />
-		<copy todir="${dir.out.lib}/${javafx}/lib" file="${dir.userlib}/${javafx-sdk}/lib/javafx-swt.jar" />
 	</target>
 </project>

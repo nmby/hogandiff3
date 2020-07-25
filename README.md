@@ -84,7 +84,7 @@
     - 詳細は[AdoptOpenJDKのWebサイト](https://adoptopenjdk.net/)および「方眼Diff-x.x.x-zzz\jre-min\legal\」フォルダ内の関連ファイルをご参照ください。
 - OpenJFX
     - GPL v2 with Classpath Exception ライセンスにより提供されています。
-    - 詳細は[OpenJFXのWebサイト](https://openjfx.io/)および「方眼Diff-x.x.x-zzz\jre-min\legal\」、「方眼Diff-x.x.x-zzz\lib\javafx-xx\legal\」両フォルダ内の関連ファイルをご参照ください。
+    - 詳細は[OpenJFXのWebサイト](https://openjfx.io/)および「方眼Diff-x.x.x-zzz\jre-min\legal\」フォルダ内の関連ファイルをご参照ください。
 - Apache POI
     - Apache License, Version 2.0 ライセンスにより提供されています。
     - 詳細は[Apache POIのWebサイト](https://poi.apache.org/)および「方眼Diff-x.x.x-zzz\lib\poi-x.x.x\」フォルダ内の関連ファイルをご参照ください。
