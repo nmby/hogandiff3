@@ -44,22 +44,22 @@ def requiredMods = '' \
 
 task setup {
     group 'distribution'
-    
+
     doLast {
         String timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
         outputDir = baseDir.resolve('build/' + timetag)
         mkdir outputDir
-        
+
     }
 }
 
 task forWin64(dependsOn: setup) {
     group 'distribution'
-    
+
     doLast {
         Path outputDirWin64 = outputDir.resolve("方眼Diff-${version}-win64")
         mkdir outputDirWin64
-        
+
         // 静的リソースのコピー
         copy {
             from projectDir
@@ -71,14 +71,14 @@ task forWin64(dependsOn: setup) {
             into outputDirWin64
             include '方眼Diff.exe.vmoptions'
         }
-        
+
         // 外部ライブラリのコピー
         copy {
             from project['myprop.userlib']
             into outputDirWin64.resolve('lib')
             include poiFiles
         }
-        
+
         // 最小構成JREの作成
         exec {
             commandLine project['myprop.cmd.jlink'],
@@ -87,7 +87,7 @@ task forWin64(dependsOn: setup) {
                     '--add-modules', requiredMods,
                     '--output', outputDirWin64.resolve('jre-min-win64')
         }
-        
+
         // .exeファイルの作成
         exec {
             commandLine project['myprop.cmd.exewrap'],
@@ -107,11 +107,11 @@ task forWin64(dependsOn: setup) {
 
 task forMacOS(dependsOn: setup) {
     group 'distribution'
-    
+
     doLast {
         Path outputDirMacOS = outputDir.resolve("方眼Diff-${version}-macos")
         mkdir outputDirMacOS
-        
+
         // 静的リソースとjarファイルのコピー
         copy {
             from projectDir
@@ -128,14 +128,14 @@ task forMacOS(dependsOn: setup) {
             into outputDirMacOS.resolve('方眼Diff.app/Contents/Java')
             include 'xyz.hotchpotch.hogandiff.jar'
         }
-        
+
         // 外部ライブラリのコピー
         copy {
             from project['myprop.userlib']
             into outputDirMacOS.resolve('方眼Diff.app/Contents/PlugIns/lib')
             include poiFiles
         }
-        
+
         // 最小構成JREの作成
         exec {
             commandLine project['myprop.cmd.jlink'],
@@ -144,7 +144,7 @@ task forMacOS(dependsOn: setup) {
                     '--add-modules', requiredMods,
                     '--output', outputDirMacOS.resolve('方眼Diff.app/Contents/PlugIns/jre-min')
         }
-        
+
     }
 }
 
@@ -154,19 +154,19 @@ task forAll(dependsOn: [forWin64, forMacOS]) {
 
 task checkDependencies {
     group 'test'
-    
+
     doLast {
         Path userLib = Path.of(project['myprop.userlib'])
         String poiMods = ''
         poiJars.each {
             poiMods += userLib.resolve(it).toString().replace('\\', '/') + ';'
         }
-        
+
         exec {
             commandLine project['myprop.cmd.jdeps'],
-                    '--module-path', "${project['myprop.jre.mod.win64']};${project['myprop.jfx.sdk.win64']};${poiMods}",
+                    '--module-path', "${project['myprop.jre.mod.win64']};${project['myprop.jfx.lib.win64']};${poiMods}",
                     '-s', baseDir.resolve('xyz.hotchpotch.hogandiff/build/libs/xyz.hotchpotch.hogandiff.jar')
         }
-        
+
     }
 }
