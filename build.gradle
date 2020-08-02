@@ -9,12 +9,17 @@
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.nio.file.Path;
+import java.nio.file.Files
+import java.nio.file.Path
 
 def version = '0.7.4'
 
 def baseDir = projectDir.toPath()
+def targetJar = baseDir.resolve('xyz.hotchpotch.hogandiff/build/libs/xyz.hotchpotch.hogandiff.jar')
+
 def outputDir
+def outputDirWin64
+def outputDirMacOS
 
 def poiJars = [
     'poi-4.1.2/poi-4.1.2.jar',
@@ -45,18 +50,21 @@ def requiredMods = '' \
 task setup {
     group 'distribution'
     
+    String timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
+    outputDir = baseDir.resolve('build/' + timetag)
+    
     doLast {
-        String timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
-        outputDir = baseDir.resolve('build/' + timetag)
+        file(targetJar, PathValidation.FILE)
         mkdir outputDir
     }
 }
 
-task forWin64(dependsOn: setup) {
+task composeForWin64(dependsOn: setup) {
     group 'distribution'
     
+    outputDirWin64 = outputDir.resolve("方眼Diff-${version}-win64")
+    
     doLast {
-        Path outputDirWin64 = outputDir.resolve("方眼Diff-${version}-win64")
         mkdir outputDirWin64
         
         // 静的リソースのコピー
@@ -98,17 +106,28 @@ task forWin64(dependsOn: setup) {
                     '-d', '方眼Diff',
                     '-p', '方眼Diff',
                     '-c', '(c) 2020 nmby',
-                    '-j', baseDir.resolve('xyz.hotchpotch.hogandiff/build/libs/xyz.hotchpotch.hogandiff.jar'),
+                    '-j', targetJar,
                     '-o', outputDirWin64.resolve('方眼Diff.exe')
         }
     }
 }
 
-task forMacOS(dependsOn: setup) {
+task zipForWin64(type: Zip, dependsOn: composeForWin64) {
     group 'distribution'
     
+    metadataCharset='UTF-8'
+    baseName = "hogandiff-${version}-win64"
+    destinationDir = file(outputDir)
+    from outputDirWin64
+    into outputDirWin64.getFileName().toString()
+}
+
+task composeForMacOS(dependsOn: setup) {
+    group 'distribution'
+    
+    outputDirMacOS = outputDir.resolve("方眼Diff-${version}-macos")
+    
     doLast {
-        Path outputDirMacOS = outputDir.resolve("方眼Diff-${version}-macos")
         mkdir outputDirMacOS
         
         // 静的リソースとjarファイルのコピー
@@ -146,7 +165,17 @@ task forMacOS(dependsOn: setup) {
     }
 }
 
-task forAll(dependsOn: [forWin64, forMacOS]) {
+task zipForMacOS(type: Zip, dependsOn: composeForMacOS) {
+    group 'distribution'
+    
+    metadataCharset='UTF-8'
+    baseName = "hogandiff-${version}-macos"
+    destinationDir = file(outputDir)
+    from outputDirMacOS
+    into outputDirMacOS.getFileName().toString()
+}
+
+task all(dependsOn: [zipForWin64, zipForMacOS]) {
     group 'distribution'
 }
 
@@ -163,7 +192,7 @@ task checkDependencies {
         exec {
             commandLine project['myprop.cmd.jdeps'],
                     '--module-path', "${project['myprop.jre.mod.win64']};${project['myprop.jfx.lib.win64']};${poiMods}",
-                    '-s', baseDir.resolve('xyz.hotchpotch.hogandiff/build/libs/xyz.hotchpotch.hogandiff.jar')
+                    '-s', targetJar
         }
     }
 }
