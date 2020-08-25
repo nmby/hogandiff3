@@ -10,18 +10,18 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellLoader;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
-class CombinedSheetLoaderTest {
+class CombinedCellLoaderTest {
     
     // [static members] ********************************************************
     
     private static final CellReplica cell1 = CellReplica.of(1, 2, "success", null);
     
-    private static final SheetLoader successLoader = (bookPath, sheetName) -> Set.of(cell1);
+    private static final CellLoader successLoader = (bookPath, sheetName) -> Set.of(cell1);
     
-    private static final SheetLoader failLoader = (bookPath, sheetName) -> {
+    private static final CellLoader failLoader = (bookPath, sheetName) -> {
         throw new RuntimeException("fail");
     };
     
@@ -32,24 +32,24 @@ class CombinedSheetLoaderTest {
         // 異常系
         assertThrows(
                 NullPointerException.class,
-                () -> CombinedSheetLoader.of(null));
+                () -> CombinedCellLoader.of(null));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> CombinedSheetLoader.of(List.of()));
+                () -> CombinedCellLoader.of(List.of()));
         
         // 正常系
         assertTrue(
-                CombinedSheetLoader.of(List.of(
-                        UnsafeSupplier.from(() -> successLoader))) instanceof CombinedSheetLoader);
+                CombinedCellLoader.of(List.of(
+                        UnsafeSupplier.from(() -> successLoader))) instanceof CombinedCellLoader);
         assertTrue(
-                CombinedSheetLoader.of(List.of(
+                CombinedCellLoader.of(List.of(
                         UnsafeSupplier.from(() -> successLoader),
-                        UnsafeSupplier.from(() -> failLoader))) instanceof CombinedSheetLoader);
+                        UnsafeSupplier.from(() -> failLoader))) instanceof CombinedCellLoader);
     }
     
     @Test
     void testLoadCells_パラメータチェック() {
-        SheetLoader testee = CombinedSheetLoader.of(List.of(
+        CellLoader testee = CombinedCellLoader.of(List.of(
                 UnsafeSupplier.from(() -> successLoader)));
         
         // null パラメータ
@@ -69,9 +69,9 @@ class CombinedSheetLoaderTest {
     
     @Test
     void testLoadCells_失敗系() {
-        SheetLoader testeeF = CombinedSheetLoader.of(List.of(
+        CellLoader testeeF = CombinedCellLoader.of(List.of(
                 UnsafeSupplier.from(() -> failLoader)));
-        SheetLoader testeeFFF = CombinedSheetLoader.of(List.of(
+        CellLoader testeeFFF = CombinedCellLoader.of(List.of(
                 UnsafeSupplier.from(() -> failLoader),
                 UnsafeSupplier.from(() -> failLoader),
                 UnsafeSupplier.from(() -> failLoader)));
@@ -89,9 +89,9 @@ class CombinedSheetLoaderTest {
     
     @Test
     void testLoadSheetNames_成功系() throws ExcelHandlingException {
-        SheetLoader testeeS = CombinedSheetLoader.of(List.of(
+        CellLoader testeeS = CombinedCellLoader.of(List.of(
                 UnsafeSupplier.from(() -> successLoader)));
-        SheetLoader testeeFFSF = CombinedSheetLoader.of(List.of(
+        CellLoader testeeFFSF = CombinedCellLoader.of(List.of(
                 UnsafeSupplier.from(() -> failLoader),
                 UnsafeSupplier.from(() -> failLoader),
                 UnsafeSupplier.from(() -> successLoader),

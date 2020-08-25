@@ -19,7 +19,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -28,13 +28,13 @@ import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
 /**
  * Apache POI のユーザーモデル API を利用して
  * .xlsx/.xlsm/.xls 形式のExcelブックのワークシートから
- * セルデータを抽出する {@link SheetLoader} の実装です。<br>
+ * セルデータを抽出する {@link CellLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS, BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class SheetLoaderWithPoiUserApi implements SheetLoader {
+public class CellLoaderWithPoiUserApi implements CellLoader {
     
     // [static members] ********************************************************
     
@@ -50,7 +50,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
      * @throw IllegalArgumentException {@code extractContents} が {@code false}
      *                               かつ {@code converter} が {@code null} 以外の場合
      */
-    public static SheetLoader of(
+    public static CellLoader of(
             boolean extractContents,
             boolean extractComments,
             Function<Cell, CellReplica> converter) {
@@ -61,7 +61,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
             throw new IllegalArgumentException("unnecessary converter.");
         }
         
-        return new SheetLoaderWithPoiUserApi(extractContents, extractComments, converter);
+        return new CellLoaderWithPoiUserApi(extractContents, extractComments, converter);
     }
     
     // [instance members] ******************************************************
@@ -70,7 +70,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
     private final boolean extractComments;
     private final Function<Cell, CellReplica> converter;
     
-    private SheetLoaderWithPoiUserApi(
+    private CellLoaderWithPoiUserApi(
             boolean extractContents,
             boolean extractComments,
             Function<Cell, CellReplica> converter) {
